@@ -4,4 +4,4 @@ resources/
 *.class
 target/
 out/
-*.iml/
+*.iml
