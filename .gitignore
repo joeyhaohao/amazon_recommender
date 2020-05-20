@@ -5,3 +5,4 @@
 target/
 out/
 *.iml
+node_modules/
