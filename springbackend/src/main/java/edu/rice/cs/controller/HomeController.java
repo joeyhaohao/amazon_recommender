@@ -1,4 +1,4 @@
-package edu.rice.cs.springbackend.payroll;
+package edu.rice.cs.controller;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;

@@ -1,4 +1,4 @@
-package edu.rice.cs.springbackend;
+package edu.rice.cs;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

@@ -1,5 +1,7 @@
-package edu.rice.cs.springbackend.payroll;
+package edu.rice.cs.service;
 
+import edu.rice.cs.model.Employee;
+import edu.rice.cs.model.EmployeeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;

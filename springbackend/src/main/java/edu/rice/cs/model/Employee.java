@@ -1,4 +1,4 @@
-package edu.rice.cs.springbackend.payroll;
+package edu.rice.cs.model;
 
 
 import javax.persistence.Entity;
