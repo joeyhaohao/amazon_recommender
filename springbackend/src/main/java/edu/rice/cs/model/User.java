@@ -14,13 +14,12 @@ public class User {
     private @Id
     @GeneratedValue
     Long id;
+    private String userID;
     private String username;
     private String password;
 
-    private User() {
-    }
-
-    public User( String username, String password) {
+    public User(String userID, String username, String password) {
+        this.userID = userID;
         this.username = username;
         this.password = password;
     }
@@ -47,6 +46,14 @@ public class User {
         this.id = id;
     }
 
+    public String getUserId() {
+        return userID;
+    }
+
+    public void setUserId(String userID) {
+        this.userID = userID;
+    }
+
     public String getUsername() {
         return username;
     }
@@ -63,13 +70,14 @@ public class User {
         this.password = password;
     }
 
-
     @Override
     public String toString() {
         return "User{" +
                 "id=" + id +
+                ", userID='" + userID + '\'' +
                 ", username='" + username + '\'' +
                 ", password='" + password + '\'' +
                 '}';
     }
+
 }
