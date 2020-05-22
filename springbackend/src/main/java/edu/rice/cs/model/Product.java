@@ -19,6 +19,10 @@ public class Product {
     private String imageUrl;
     private String category;
 
+    public Product() {
+    }
+
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
