@@ -21,9 +21,9 @@ public class HomeController {
         return "index";
     }
 
-    @RequestMapping("/products")
-    public String getProduct(Model model) {
-        model.addAttribute("products", productRepository.findAll());
-        return "products";
-    }
+//    @RequestMapping("/products")
+//    public String getProduct(Model model) {
+//        model.addAttribute("products", productRepository.findAll());
+//        return "products";
+//    }
 }
