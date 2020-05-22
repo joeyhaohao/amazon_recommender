@@ -1,7 +1,7 @@
-package edu.rice.cs.service;
+package edu.rice.cs.bootstrap;
 
 import edu.rice.cs.model.Employee;
-import edu.rice.cs.model.EmployeeRepository;
+import edu.rice.cs.repositories.EmployeeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
