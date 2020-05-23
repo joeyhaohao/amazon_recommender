@@ -7,6 +7,7 @@ import edu.rice.cs.repositories.ProductRepository;
 import edu.rice.cs.repositories.ReviewRepository;
 import edu.rice.cs.repositories.UserRepository;
 import org.hibernate.ObjectNotFoundException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -17,15 +18,20 @@ import java.util.List;
 @RestController
 public class RestfulController {
 
-    private final ProductRepository productRepository;
-    private final ReviewRepository reviewRepository;
-    private final UserRepository userRepository;
+    @Autowired
+    private ProductRepository productRepository;
 
-    public RestfulController(ProductRepository productRepository, ReviewRepository reviewRepository, UserRepository userRepository) {
-        this.productRepository = productRepository;
-        this.reviewRepository = reviewRepository;
-        this.userRepository = userRepository;
-    }
+    @Autowired
+    private ReviewRepository reviewRepository;
+
+    @Autowired
+    private UserRepository userRepository;
+
+//    public RestfulController(ProductRepository productRepository, ReviewRepository reviewRepository, UserRepository userRepository) {
+//        this.productRepository = productRepository;
+//        this.reviewRepository = reviewRepository;
+//        this.userRepository = userRepository;
+//    }
 
     @GetMapping("/products")
     List<Product> getProducts() {

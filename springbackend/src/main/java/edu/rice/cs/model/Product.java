@@ -1,5 +1,6 @@
 package edu.rice.cs.model;
 
+import org.springframework.data.mongodb.core.mapping.Document;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;

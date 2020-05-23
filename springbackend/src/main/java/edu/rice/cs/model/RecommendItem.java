@@ -1,5 +1,7 @@
 package edu.rice.cs.model;
 
+import org.springframework.data.mongodb.core.mapping.Document;
+
 import java.util.Objects;
 
 public class RecommendItem {

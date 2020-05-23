@@ -20,10 +20,4 @@ public class HomeController {
     public String index() {
         return "index";
     }
-
-//    @RequestMapping("/products")
-//    public String getProduct(Model model) {
-//        model.addAttribute("products", productRepository.findAll());
-//        return "products";
-//    }
 }

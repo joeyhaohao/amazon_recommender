@@ -1,6 +1,6 @@
 package edu.rice.cs.configure;
 
-import com.mongodb.MongoClient;
+//import com.mongodb.MongoClient;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
@@ -28,11 +28,11 @@ public class Config {
 //    public static String REDIS_HOST = "127.0.0.1";
 //    public static Integer REDIS_PORT = 6379;
 
-    @Bean(name = "mongoClient")
-    public MongoClient getMongoClient() {
-        MongoClient mongoClient = new MongoClient(MONGODB_HOST, MONGODB_PORT);
-        return mongoClient;
-    }
+//    @Bean(name = "mongoClient")
+//    public MongoClient getMongoClient() {
+//        MongoClient mongoClient = new MongoClient(MONGODB_HOST, MONGODB_PORT);
+//        return mongoClient;
+//    }
 
     static {
         Properties properties = new Properties();
