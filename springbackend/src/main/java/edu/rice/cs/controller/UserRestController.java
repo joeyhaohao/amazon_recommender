@@ -3,7 +3,7 @@ package edu.rice.cs.controller;
 import edu.rice.cs.exception.ProductNotFoundException;
 import edu.rice.cs.exception.RecommendationNotFoundException;
 import edu.rice.cs.model.Product;
-import edu.rice.cs.model.RecommendList;
+import edu.rice.cs.model.RecommendResult;
 import edu.rice.cs.repositories.RecommendationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -32,9 +32,10 @@ public class UserRestController {
 //        }
 //        return model;
 //    }
-    RecommendList getRecommendationForUser(@PathVariable String userId) {
-        return recommendationRepository.findById(userId)
+    RecommendResult getRecommendationForUser(@PathVariable String userId) {
+        return recommendationRepository.findByUserId(userId)
                 .orElseThrow(() -> new RecommendationNotFoundException(userId));
+//        return recommendationRepository.findAll();
     }
 
 }

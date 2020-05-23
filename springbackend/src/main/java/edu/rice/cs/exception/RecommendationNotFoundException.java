@@ -5,6 +5,6 @@ package edu.rice.cs.exception;
  */
 public class RecommendationNotFoundException extends RuntimeException {
     public RecommendationNotFoundException(String userId) {
-        super("Could not find recommendaiton for " + userId);
+        super("Could not find recommendaiton for user " + userId);
     }
 }

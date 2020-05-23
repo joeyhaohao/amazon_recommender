@@ -44,8 +44,8 @@ public class Config {
             throw new RuntimeException("properties file not found");
         }
 
-        MONGODB_HOST = properties.getProperty("mongo.host");
-        MONGODB_PORT = Integer.parseInt(properties.getProperty("mongo.port"));
+//        MONGODB_HOST = properties.getProperty("mongo.host");
+//        MONGODB_PORT = Integer.parseInt(properties.getProperty("mongo.port"));
 
 //        KAFKA_HOST = properties.getProperty("kafka.host");
 //        KAFKA_PORT = Integer.parseInt(properties.getProperty("kafka.port"));
