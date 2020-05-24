@@ -57,17 +57,17 @@ object ALSRecommender {
 //    ratingRDD.take(10).foreach(println)
 
     // create id map from string to int
-    val userIDMap = reviewRDD.map(_._1).distinct().zipWithUniqueId().collectAsMap()
-    val userIDMapRev = userIDMap.map{case (s, i) => (i, s)}
-    val productIDMap = reviewRDD.map(_._2).distinct().zipWithUniqueId().collectAsMap()
-    val productIDMapRev = productIDMap.map{case (s, i) => (i, s)}
+    val userIdMap = reviewRDD.map(_._1).distinct().zipWithUniqueId().collectAsMap()
+    val userIdMapRev = userIdMap.map{case (s, i) => (i, s)}
+    val productIdMap = reviewRDD.map(_._2).distinct().zipWithUniqueId().collectAsMap()
+    val productIdMapRev = productIdMap.map{case (s, i) => (i, s)}
     val ratingRDD = reviewRDD
-      .map(r => Rating(userIDMap(r._1).toInt, productIDMap(r._2).toInt, r._3.toDouble))
+      .map(r => Rating(userIdMap(r._1).toInt, productIdMap(r._2).toInt, r._3.toDouble))
       .map(x => Rating(x.user, x.product, x.rating))
 //    ratingDF.show(10)
 //    ratingDF.take(10).foreach(println)
 
-    // convert userID, productID to int
+    // convert userId, productId to int
 //    val stringIndexerUser = new StringIndexer()
 //      .setInputCol("reviewerID")
 //      .setOutputCol("userID")
@@ -76,7 +76,7 @@ object ALSRecommender {
 //
 //    val stringIndexerProd = new StringIndexer()
 //      .setInputCol("asin")
-//      .setOutputCol("productID")
+//      .setOutputCol("productId")
 //    indexer = stringIndexerProd.fit(ratingDF)
 //    ratingDF = indexer.transform(ratingDF)
 //    ratingDF.show(10)
@@ -113,7 +113,7 @@ object ALSRecommender {
     val predDF = predRDD.join(testRDD)
       .map(
         item => (item._1._1, item._1._2, item._2._1, item._2._2)
-      ).toDF("userID", "productID", "prediction", "rating")
+      ).toDF("userId", "productId", "prediction", "rating")
 //    predDF.show(10)
     val evaluator = new RegressionEvaluator()
       .setMetricName("rmse")
@@ -134,11 +134,11 @@ object ALSRecommender {
       .groupByKey()
       .map {
         case (userId, recs) =>
-          UserRecList(userIDMapRev(userId),
-            recs.toList.sortWith(_._2 > _._2).take(RECOMMEND_NUM).map(x => ProductRec(productIDMapRev(x._1), x._2)))
+          UserRecList(userIdMapRev(userId),
+            recs.toList.sortWith(_._2 > _._2).take(RECOMMEND_NUM).map(x => ProductRec(productIdMapRev(x._1), x._2)))
       }
-      .toDF("userID", "recommendations")
-//    val userRecs = model.recommendProductsForUsers(RECOMMEND_NUM).toDF("userID", "recommendations")
+      .toDF("userId", "recommendations")
+//    val userRecs = model.recommendProductsForUsers(RECOMMEND_NUM).toDF("userId", "recommendations")
 
     userRecs.show(10)
     userRecs.write
@@ -166,7 +166,7 @@ object ALSRecommender {
       .groupByKey()
       .map {
         case (productId, recs) =>
-          ProductRecList(productIDMapRev(productId), recs.toList.sortWith(_._2 > _._2).map(x => ProductRec(productIDMapRev(x._1), x._2)))
+          ProductRecList(productIdMapRev(productId), recs.toList.sortWith(_._2 > _._2).map(x => ProductRec(productIdMapRev(x._1), x._2)))
       }
       .toDF()
     productRecs.show(10)
