@@ -32,7 +32,7 @@ public class Manager {
         this.password = PASSWORD_ENCODER.encode(password);
     }
 
-    protected Manager() {
+    public Manager() {
     }
 
     public Manager(String name, String password, String... roles) {
