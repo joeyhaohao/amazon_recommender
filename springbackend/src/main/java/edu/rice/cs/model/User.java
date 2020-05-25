@@ -1,6 +1,7 @@
 package edu.rice.cs.model;
 
-import javax.persistence.Entity;
+import org.springframework.data.mongodb.core.mapping.Document;
+
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import java.util.Objects;
@@ -8,18 +9,15 @@ import java.util.Objects;
 /**
  * Created by joeyhaohao on 5/20/20
  */
-@Entity
+@Document(collection = "user")
 public class User {
 
-    private @Id
-    @GeneratedValue
-    Long id;
-    private String userID;
+    private String userId;
     private String username;
     private String password;
 
-    public User(String userID, String username, String password) {
-        this.userID = userID;
+    public User(String userId, String username, String password) {
+        this.userId = userId;
         this.username = username;
         this.password = password;
     }
@@ -29,29 +27,21 @@ public class User {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         User user = (User) o;
-        return Objects.equals(id, user.id) &&
+        return Objects.equals(userId, user.userId) &&
                 Objects.equals(username, user.username);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, username, password);
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
+        return Objects.hash(userId, username, password);
     }
 
     public String getUserId() {
-        return userID;
+        return userId;
     }
 
     public void setUserId(String userID) {
-        this.userID = userID;
+        this.userId = userID;
     }
 
     public String getUsername() {
@@ -73,8 +63,7 @@ public class User {
     @Override
     public String toString() {
         return "User{" +
-                "id=" + id +
-                ", userID='" + userID + '\'' +
+                ", userID='" + userId + '\'' +
                 ", username='" + username + '\'' +
                 ", password='" + password + '\'' +
                 '}';

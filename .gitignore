@@ -1,4 +1,4 @@
-#resources/
+recommender/src/resources/
 .DS_Store
 .idea/
 *.class

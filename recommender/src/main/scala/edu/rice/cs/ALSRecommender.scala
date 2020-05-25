@@ -1,8 +1,11 @@
 package edu.rice.cs
 
+import com.mongodb.casbah.commons.MongoDBObject
+import com.mongodb.casbah.{MongoClient, MongoClientURI}
 import org.apache.spark.SparkConf
 import org.apache.spark.ml.evaluation.RegressionEvaluator
 import org.apache.spark.ml.feature.StringIndexer
+import org.apache.spark.sql.DataFrame
 //import org.apache.spark.ml.recommendation.ALS
 import org.apache.spark.mllib.recommendation.{Rating, ALS}
 import org.apache.spark.rdd.RDD
@@ -21,16 +24,21 @@ case class UserRecList(userId: String, recs: Seq[ProductRec])
 case class ProductRecList(productId: String, recommendations: Seq[ProductRec])
 
 object ALSRecommender {
-  val MONGODB_REVIEW_COLLECTION = "review_test"
+  val MONGODB_REVIEW_COLLECTION = "review"
   val USER_RECOMMEND_COLLECTION = "user_recommendation"
   val PRODUCT_RECOMMEND_COLLECTION = "product_recommendation"
   val RECOMMEND_NUM = 10
 
   def main(args: Array[String]): Unit = {
+//    val config = Map(
+//      "spark.cores" -> "local[*]",
+//      "mongo.uri" -> "mongodb://127.0.0.1:27017/recommender",
+//      "mongo.db" -> "recommender"
+//    )
     val config = Map(
       "spark.cores" -> "local[*]",
-      "mongo.uri" -> "mongodb://127.0.0.1:27017/recommender",
-      "mongo.db" -> "recommender"
+      "mongo.uri" -> "mongodb+srv://amazon:amazon666@cluster0-u2qt7.mongodb.net/amazon_recommender?retryWrites=true&w=majority",
+      "mongo.db" -> "amazon_recommender"
     )
     // create a spark config
     val sparkConf = new SparkConf().setMaster(config("spark.cores")).setAppName("ALSRecommender")
@@ -127,7 +135,7 @@ object ALSRecommender {
     val productRDD = ratingRDD.map(_.product).distinct()
     val userProducts = userRDD.cartesian(productRDD)
     val preds = model.predict(userProducts)
-    val userRecs = preds.filter(_.rating > 0)
+    val userRecDF = preds.filter(_.rating > 0)
       .map(
         rating => (rating.user, (rating.product, rating.rating))
       )
@@ -138,21 +146,12 @@ object ALSRecommender {
             recs.toList.sortWith(_._2 > _._2).take(RECOMMEND_NUM).map(x => ProductRec(productIdMapRev(x._1), x._2)))
       }
       .toDF("userId", "recommendations")
-//    val userRecs = model.recommendProductsForUsers(RECOMMEND_NUM).toDF("userId", "recommendations")
-
-    userRecs.show(10)
-    userRecs.write
-      .option("uri", mongoConfig.uri)
-      .option("collection", USER_RECOMMEND_COLLECTION)
-      .mode("overwrite")
-      .format("com.mongodb.spark.sql")
-      .save()
 
     // compute similarity between products using product features
     val productFeatures = model.productFeatures.map {
       case (productId, features) => (productId, new DoubleMatrix(features))
     }
-    val productRecs = productFeatures.cartesian(productFeatures)
+    val productRecDF = productFeatures.cartesian(productFeatures)
       .filter {
         // filter self-self pairs
         case (a, b) => a._1 != b._1
@@ -169,15 +168,40 @@ object ALSRecommender {
           ProductRecList(productIdMapRev(productId), recs.toList.sortWith(_._2 > _._2).map(x => ProductRec(productIdMapRev(x._1), x._2)))
       }
       .toDF()
-    productRecs.show(10)
-    productRecs.write
+
+    saveResultToMongoDB(userRecDF, productRecDF)
+
+    spark.stop()
+  }
+
+  def saveResultToMongoDB(userRecDF: DataFrame, productRecDF: DataFrame)(implicit mongoConfig: MongoConfig): Unit = {
+    val mongoClient = MongoClient(MongoClientURI(mongoConfig.uri))
+
+    val userRecCollection = mongoClient(mongoConfig.db)(USER_RECOMMEND_COLLECTION)
+    val productRecCollection = mongoClient(mongoConfig.db)(PRODUCT_RECOMMEND_COLLECTION)
+    userRecCollection.dropCollection()
+    productRecCollection.dropCollection()
+
+    //  val userRecs = model.recommendProductsForUsers(RECOMMEND_NUM).toDF("userId", "recommendations")
+    userRecDF.show(10)
+    userRecDF.write
+      .option("uri", mongoConfig.uri)
+      .option("collection", USER_RECOMMEND_COLLECTION)
+      .mode("overwrite")
+      .format("com.mongodb.spark.sql")
+      .save()
+
+    productRecDF.show(10)
+    productRecDF.write
       .option("uri", mongoConfig.uri)
       .option("collection", PRODUCT_RECOMMEND_COLLECTION)
       .mode("overwrite")
       .format("com.mongodb.spark.sql")
       .save()
 
-    spark.stop()
+    userRecCollection.createIndex(MongoDBObject("userId" -> 1))
+    productRecCollection.createIndex(MongoDBObject("productId" -> 1))
+    mongoClient.close()
   }
 
 }
