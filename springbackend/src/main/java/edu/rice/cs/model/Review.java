@@ -1,5 +1,8 @@
 package edu.rice.cs.model;
 
+import org.springframework.data.redis.core.RedisHash;
+import org.springframework.data.redis.core.index.Indexed;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -8,25 +11,23 @@ import java.util.Objects;
 /**
  * Created by joeyhaohao on 5/20/20
  */
-@Entity
+@RedisHash("review")
 public class Review {
 
-    private @Id
-    @GeneratedValue
-    Long id;
-    private int userID;
-    private int productID;
+    private String id;
+    @Indexed
+    private String userId;
+    @Indexed
+    private String productId;
     private double rate;
+    private long timestamp;
     private String summary;
     private String text;
-    private long timestamp;
 
-    public Review(int userID, int productID, double rate, String summary, String text, long timestamp) {
-        this.userID = userID;
-        this.productID = productID;
+    public Review(String userId, String productId, double rate, long timestamp) {
+        this.userId = userId;
+        this.productId = productId;
         this.rate = rate;
-        this.summary = summary;
-        this.text = text;
         this.timestamp = timestamp;
     }
 
@@ -35,8 +36,9 @@ public class Review {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Review review = (Review) o;
-        return userID == review.userID &&
-                productID == review.productID &&
+        return id == review.id &&
+                userId == review.userId &&
+                productId == review.productId &&
                 Double.compare(review.rate, rate) == 0 &&
                 timestamp == review.timestamp &&
                 Objects.equals(id, review.id);
@@ -44,31 +46,27 @@ public class Review {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, userID, productID, rate, timestamp);
+        return Objects.hash(userId, userId, rate, timestamp);
     }
 
-    public Long getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public int getUserID() {
-        return userID;
+    public String getUserId() {
+        return userId;
     }
 
     public void setUserID(int userID) {
-        this.userID = userID;
+        this.userId = userId;
     }
 
-    public int getProductID() {
-        return productID;
+    public String getProductID() {
+        return productId;
     }
 
     public void setProductID(int productID) {
-        this.productID = productID;
+        this.productId = productId;
     }
 
     public double getRate() {
@@ -107,8 +105,8 @@ public class Review {
     public String toString() {
         return "Review{" +
                 "id=" + id +
-                ", userID=" + userID +
-                ", productID=" + productID +
+                ", userID=" + userId +
+                ", productID=" + productId +
                 ", rate=" + rate +
                 ", summary='" + summary + '\'' +
                 ", text='" + text + '\'' +

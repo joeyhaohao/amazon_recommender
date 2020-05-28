@@ -15,8 +15,10 @@ import java.util.List;
 /**
  * Created by songxiongfeng on 5/22/20
  */
+
 @RestController
-public class RestfulController {
+@RequestMapping("/product")
+public class ProductRestController {
 
     @Autowired
     private ProductRepository productRepository;
@@ -27,29 +29,25 @@ public class RestfulController {
     @Autowired
     private UserRepository userRepository;
 
-//    public RestfulController(ProductRepository productRepository, ReviewRepository reviewRepository, UserRepository userRepository) {
-//        this.productRepository = productRepository;
-//        this.reviewRepository = reviewRepository;
-//        this.userRepository = userRepository;
-//    }
-
-    @GetMapping("/products")
+    @GetMapping("/")
     List<Product> getProducts() {
         return productRepository.findAll();
     }
 
-    @PostMapping("/products")
+    @PostMapping("/")
     Product newProduct(@RequestBody Product product) {
-        return productRepository.save(product);
+        System.out.println("product");
+//        return productRepository.save(product);
+        return null;
     }
 
-    @GetMapping("/products/{id}")
+    @GetMapping("/{id}")
     Product getOneProduct(@PathVariable Long id) {
         return productRepository.findById(id)
                 .orElseThrow(() -> new ProductNotFoundException(id));
     }
 
-    @PutMapping("/products/{id}")
+    @PutMapping("/{id}")
     Product updateProduct(@RequestBody Product newProduct, @PathVariable Long id) {
         return productRepository.findById(id)
                 .map(product -> {
@@ -65,8 +63,21 @@ public class RestfulController {
                 });
     }
 
-    @DeleteMapping("products/{id}")
+    @DeleteMapping("/{id}")
     void deleteProduct(@PathVariable Long id) {
         productRepository.deleteById(id);
+    }
+
+    @PostMapping("/rate/{productId}")
+    void rateProduct(@PathVariable("productId") String productId, @RequestParam("userId") String userId, @RequestParam("rate") Double rate) {
+        Review review = reviewRepository.findByUserIdAndProductId(userId, productId);
+        // update the rating if exists
+        if (review != null) {
+            review.setRate(rate);
+            review.setTimestamp(System.currentTimeMillis() / 1000);
+        } else {
+            review = new Review(userId, productId, rate, System.currentTimeMillis() / 1000);
+        }
+        reviewRepository.save(review);
     }
 }
