@@ -1,9 +1,8 @@
 package edu.rice.cs.model;
 
+import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
 import java.util.Objects;
 
 /**
@@ -12,6 +11,7 @@ import java.util.Objects;
 @Document(collection = "user")
 public class User {
 
+    @Id
     private String userId;
     private String username;
     private String password;

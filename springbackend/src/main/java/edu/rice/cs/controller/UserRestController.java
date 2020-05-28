@@ -26,8 +26,8 @@ public class UserRestController {
 
     @GetMapping(value = "/{username}", produces = "application/json")
     User getUser(@PathVariable String username) {
-        return userRepository.findByUsername(username)
-                .orElseThrow(() -> new UserNotFoundException(username));
+        return userRepository.findByUsername(username);
+//                .orElseThrow(() -> new UserNotFoundException(username));
 //        return userRepository.findAll();
     }
 

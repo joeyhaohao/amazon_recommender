@@ -2,8 +2,10 @@ package edu.rice.cs.bootstrap;
 
 import edu.rice.cs.model.Employee;
 import edu.rice.cs.model.Manager;
+import edu.rice.cs.model.User;
 import edu.rice.cs.repositories.EmployeeRepository;
 import edu.rice.cs.repositories.ManagerRepository;
+import edu.rice.cs.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -30,6 +32,9 @@ public class DatabaseLoader implements CommandLineRunner {
 
     @Override
     public void run(String... strings) throws Exception {
+        System.out.println("+++++++++++++");
+
+        System.out.println("+++++++++++++");
 
         Manager greg = this.managers.save(new Manager("greg", "turnquist",
                 "ROLE_MANAGER"));
