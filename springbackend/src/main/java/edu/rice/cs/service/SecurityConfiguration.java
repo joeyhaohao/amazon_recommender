@@ -1,4 +1,4 @@
-package edu.rice.cs;
+package edu.rice.cs.service;
 
 import edu.rice.cs.model.Manager;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.rice.cs;
+package edu.rice.cs.service;
 
 import edu.rice.cs.model.Manager;
 import edu.rice.cs.repositories.ManagerRepository;
