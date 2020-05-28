@@ -6,6 +6,9 @@ import edu.rice.cs.model.Review;
 import edu.rice.cs.repositories.ProductRepository;
 import edu.rice.cs.repositories.ReviewRepository;
 import edu.rice.cs.repositories.UserRepository;
+import edu.rice.cs.service.KafkaProducer;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.hibernate.ObjectNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -28,6 +31,11 @@ public class ProductRestController {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private KafkaProducer kafkaProducer;
+
+    private static Logger logger = LogManager.getLogger(ProductRestController.class.getName());
 
     @GetMapping("/")
     List<Product> getProducts() {
@@ -79,5 +87,8 @@ public class ProductRestController {
             review = new Review(userId, productId, rate, System.currentTimeMillis() / 1000);
         }
         reviewRepository.save(review);
+
+        String msg = userId + "|" + productId + "|" + rate + "|" + System.currentTimeMillis() / 1000;
+        kafkaProducer.sendMessage(msg);
     }
 }
