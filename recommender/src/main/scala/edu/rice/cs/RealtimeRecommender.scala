@@ -11,8 +11,8 @@ import redis.clients.jedis.Jedis
 
 object RealtimeRecommender {
   val MONGODB_REVIEW_COLLECTION = "review"
-  val REALTIME_RECOMMENDATION_COLLECTION = "realtime_recommendation"
-  val PRODUCT_RECOMMENDATION_COLLECTION = "product_recommendation"
+  val REALTIME_REC_COLLECTION = "realtime_recommendation"
+  val PRODUCT_SIM_COLLECTION = "product_similarity"
 
   val USER_RATING_NUM = 20
   val SIMILAR_PRODUCTS_NUM = 20
@@ -35,20 +35,18 @@ object RealtimeRecommender {
 
     import spark.implicits._
     implicit val mongoConfig = MongoConfig(config("mongo.uri"), config("mongo.db"))
-    val mongoClient = MongoClient("mongodb+srv://amazon:amazon666@cluster0-u2qt7.mongodb.net/amazon_recommender?retryWrites=true&w=majority")
-    lazy val jedis = new Jedis("127.0.0.1")
 
     // product similarity matrix
     val productSimMatrix = spark.read
       .option("uri", mongoConfig.uri)
-      .option("collection", PRODUCT_RECOMMENDATION_COLLECTION)
+      .option("collection", PRODUCT_SIM_COLLECTION)
       .format("com.mongodb.spark.sql")
       .load()
-      .as[RecommendResult]
+      .as[ProductSimList]
       .rdd
       .map {
         item =>
-          (item.productId, item.recommendations.map(x => (x.productId, x.score)).toMap)
+          (item.productId, item.similarityArray.map(x => (x.productId, x.score)).toMap)
       }
       .collectAsMap()
     // broadcast product sim matrix
@@ -81,18 +79,19 @@ object RealtimeRecommender {
           case (userId, productId, score, timestamp) =>
             println("new rating: " + userId + "|" + productId + "|" + score + "|" + timestamp)
 
-            // retrieve the latest ratings of user
-            val userLatestRatings = getUserRecentRatings(userId, USER_RATING_NUM, jedis)
-//            userLatestRatings.foreach(println)
+            // retrieve the latest ratings of the user
+            val latestRatings = getUserRecentRatings(userId, USER_RATING_NUM)
+            latestRatings.foreach(println)
 
-            // 2. 从相似度矩阵中获取当前商品最相似的商品列表，作为备选列表，保存成一个数组 Array[productId]
-//            val similarProducts = getSimilarProducts(userId, productId, SIMILAR_PRODUCTS_NUM, productSimMatrixBcast.value, mongoClient)
+            // retrieve similar products from product similarity matrix
+            val similarProducts = getSimilarProducts(userId, productId, SIMILAR_PRODUCTS_NUM, productSimMatrixBcast.value)
+            similarProducts.foreach(println)
 
-//            // 3. 计算每个备选商品的推荐优先级，得到当前用户的实时推荐列表，保存成 Array[(productId, score)]
-//            val streamRecs = computeProductScore(candidateProducts, userRecentlyRatings, simProductsMatrixBC.value)
-//
-//            // 4. 把推荐列表保存到 mongodb
-//            saveDataToMongoDB(userId, streamRecs)
+            // compute product scores and generate real-time recommendation
+            val recommendList = generateRecommendList(similarProducts, latestRatings, productSimMatrixBcast.value)
+            recommendList.foreach(println)
+
+            saveToMongoDB(userId, recommendList)
         }
     }
 
@@ -102,18 +101,17 @@ object RealtimeRecommender {
   }
 
   /**
-   * retrieve the latest #num ratings data of user from Redis
+   * Retrieve the latest #num ratings data of user from Redis
    * Redis data format: KEY(userId: id) ----- VALUE(productId:score)
+   *
    * @return Array[(productId, score)]
    */
-
   import scala.collection.JavaConversions._
 
-  def getUserRecentRatings(userId: String, num: Int, jedis: Jedis): Array[(String, Double)] = {
-    println(userId)
+  def getUserRecentRatings(userId: String, num: Int): Array[(String, Double)] = {
+    val jedis = new Jedis("127.0.0.1")
     jedis.lrange("userId:" + userId.toString, 0, num)
       .map { item =>
-        println(item)
         val attr = item.split("\\:")
         (attr(0).trim, attr(1).trim.toDouble)
       }
@@ -121,40 +119,111 @@ object RealtimeRecommender {
   }
 
   /**
-   * 从相似度矩阵中获取当前商品最相似的商品列表，作为备选列表，保存成一个数组 Array[productId]
-   * 获取当前商品的相似列表，并过滤掉用户已经评分过的，作为备选列表
-   */
-  /**
+   * Retrieve similar products, filter out those rated by user
    *
-   * @param num         取前 num 个数据
-   * @param productId   需要寻找与之相似商品的 productId
-   * @param userId      商品推荐人
-   * @param productSimMatrix 相似度矩阵，从 ProductRecs 里面获取的，与该 productId 相似的 ( productId, score )
-   * @param mongoConfig MongoDB 连接配置
-   * @return
+   * @return Array[productId]
    */
   def getSimilarProducts(userId: String,
                          productId: String,
                          num: Int,
-                         productSimMatrix: scala.collection.Map[String, scala.collection.immutable.Map[String, Double]],
-                         mongoClient: MongoClient) // Map 里面套 Map
+                         productSimMatrix: scala.collection.Map[String, scala.collection.immutable.Map[String, Double]])
                         (implicit mongoConfig: MongoConfig): Array[String] = {
-    // 从广播变量相似度矩阵中（simProducts，他是一个 map，KEY 是 productId，VALUE 是 score）拿到当前商品的相似度列表
-    val similarProducts = productSimMatrix(productId).toArray // 取出对应 productId 的评分列表
+    // retrieve similarity list of current product
+    // Map[productId, score]
+    val mongoClient = MongoClient(MongoClientURI(mongoConfig.uri))
+    val similarProducts = productSimMatrix(productId).toArray
 
-    // 从 Rating 中获得用户已经评分过的商品，过滤掉，排序输出
+    // filter rated products
     val reviewCollection = mongoClient(mongoConfig.db)(MONGODB_REVIEW_COLLECTION)
-    val ratingExist = reviewCollection.find(MongoDBObject("userId" -> userId)) // 从已获取的 Rating 中过滤出只含 userId 的数据
+    val ratedProducts = reviewCollection.find(MongoDBObject("userId" -> userId))
       .toArray
       .map {
-        item => // 在（userId,productId,score,timestamp）中只需要 productId
-          item.get("productId").toString
+        item => item.get("productId").toString
       }
-    // 从所有的相似商品中进行过滤
-    // 如果 allSimProducts 里面的某一项在 ratingExist 里面的话就要过滤，应该 productId 取不在 ratingExist 里面的数据
-    similarProducts.filter(x => !ratingExist.contains(x._1)) // x 的格式上岗面提到过，就是(productId, score)
-      .sortWith(_._2 > _._2) // 按照 score 降序排序
+
+    similarProducts
+      .filter(
+        x => !ratedProducts.contains(x._1)
+      )
+      .sortWith(_._2 > _._2) // sort by score
       .take(num)
-      .map(x => x._1) // 最后只需要得到 productId 就行了，所以要将二元组转为一元组
+      .map(x => x._1)
   }
+
+  /**
+   * Compute candidate scores of every candidate product and generate real-time recommendation list
+   * score(i) = sum(similarity(i,j) * rating(j))
+   *
+   * @return Array[(productId, score)]
+   */
+  def generateRecommendList(candidates: Array[String],
+                          ratings: Array[(String, Double)],
+                          productSimMatrix: scala.collection.Map[String, scala.collection.immutable.Map[String, Double]]): Array[(String, Double)] = {
+    // base score of products, (productId, score)
+    val scores = scala.collection.mutable.ArrayBuffer[(String, Double)]()
+
+    // high-rating product counter
+    val increMap = scala.collection.mutable.HashMap[String, Int]()
+    // low-rating product counter
+    val decreMap = scala.collection.mutable.HashMap[String, Int]()
+
+    for (product <- candidates; rating <- ratings) {
+      // get similarity between candidate product and rated product
+      val simScore = getProductsSimScore(product, rating._1, productSimMatrix)
+      if (simScore > 0.5) {
+        // sum(similarity * rating)
+        scores += ((product, simScore * rating._2))
+        if (rating._2 >= 4) {
+          // high-rating product
+          increMap(product) = increMap.getOrDefault(product, 0) + 1
+        } else {
+          decreMap(product) = decreMap.getOrDefault(product, 0) + 1
+        }
+      }
+    }
+
+    // compute priority of all products
+    scores.groupBy(_._1).map {
+      // scores: list of scores
+      case (productId, scores) =>
+        (productId, scores.map(_._2).sum / scores.length + log(increMap.getOrDefault(productId, 1)) - log(decreMap.getOrDefault(productId, 1)))
+    }
+      .toArray
+      .sortWith(_._2 > _._2)  // sort by scores
+  }
+
+
+  def getProductsSimScore(product1: String, product2: String,
+                          productSimMatrix: scala.collection.Map[String, scala.collection.immutable.Map[String, Double]]): Double = {
+    // return 0 if not found in product similarity matrix
+    productSimMatrix.get(product1) match {
+      case Some(sims) => sims.get(product2) match {
+        case Some(score) => score
+        case None => 0.0
+      }
+      case None => 0.0
+    }
+  }
+
+  // base-10 log
+  def log(m: Int): Double = {
+    val N = 10
+    math.log(m) / math.log(N)
+  }
+
+  def saveToMongoDB(userId: String, recommendList: Array[(String, Double)])(implicit mongoConfig: MongoConfig): Unit = {
+    val mongoClient = MongoClient(MongoClientURI(mongoConfig.uri))
+    val mongoCollection = mongoClient(mongoConfig.db)(REALTIME_REC_COLLECTION)
+
+    mongoCollection.findAndRemove(MongoDBObject("userId" -> userId))
+    mongoCollection.insert(
+      MongoDBObject(
+        "userId" -> userId,
+        "recommendations" -> recommendList.map(
+          x => MongoDBObject("productId" -> x._1, "score" -> x._2)
+        )
+      )
+    )
+  }
+
 }

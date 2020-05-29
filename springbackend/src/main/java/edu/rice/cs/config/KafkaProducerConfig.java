@@ -1,4 +1,4 @@
-package edu.rice.cs.configure;
+package edu.rice.cs.config;
 
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringSerializer;

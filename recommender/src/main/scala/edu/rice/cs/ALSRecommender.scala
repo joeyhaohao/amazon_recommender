@@ -5,6 +5,7 @@ import com.mongodb.casbah.{MongoClient, MongoClientURI}
 import org.apache.spark.SparkConf
 import org.apache.spark.ml.evaluation.RegressionEvaluator
 import org.apache.spark.ml.feature.StringIndexer
+import org.apache.spark.mllib.recommendation.MatrixFactorizationModel
 import org.apache.spark.sql.DataFrame
 //import org.apache.spark.ml.recommendation.ALS
 import org.apache.spark.mllib.recommendation.{Rating, ALS}
@@ -12,21 +13,11 @@ import org.apache.spark.rdd.RDD
 import org.apache.spark.sql.SparkSession
 import org.jblas.DoubleMatrix
 
-//case class Rating(reviewerID: Int, asin: Int, overall: Double, unixReviewTime: Long)
-
-// product recommendation object
-case class ProductRec(productId: String, score: Double)
-
-// user recommendation list
-case class UserRecList(userId: String, recs: Seq[ProductRec])
-
-// item similarity list
-case class ProductRecList(productId: String, recommendations: Seq[ProductRec])
 
 object ALSRecommender {
   val MONGODB_REVIEW_COLLECTION = "review"
-  val USER_RECOMMEND_COLLECTION = "user_recommendation"
-  val PRODUCT_RECOMMEND_COLLECTION = "product_recommendation"
+  val USER_REC_COLLECTION = "user_recommendation"
+  val PRODUCT_SIM_COLLECTION = "product_similarity"
   val RECOMMEND_NUM = 10
 
   def main(args: Array[String]): Unit = {
@@ -59,7 +50,7 @@ object ALSRecommender {
       .as[Review]
       .rdd
       .map(
-        review => (review.reviewerID, review.asin, review.overall, review.unixReviewTime)
+        review => (review.userId, review.productId, review.rate)
       ).cache()
 //    ratingRDD.show(10)
 //    ratingRDD.take(10).foreach(println)
@@ -72,8 +63,6 @@ object ALSRecommender {
     val ratingRDD = reviewRDD
       .map(r => Rating(userIdMap(r._1).toInt, productIdMap(r._2).toInt, r._3.toDouble))
       .map(x => Rating(x.user, x.product, x.rating))
-//    ratingDF.show(10)
-//    ratingDF.take(10).foreach(println)
 
     // convert userId, productId to int
 //    val stringIndexerUser = new StringIndexer()
@@ -130,12 +119,29 @@ object ALSRecommender {
     val rmse = evaluator.evaluate(predDF)
     println(s"rmse: $rmse")
 
-    // recommend top-k products for all users
     val userRDD = ratingRDD.map(_.user).distinct()
     val productRDD = ratingRDD.map(_.product).distinct()
+    val userRecDF = recommendTopK(userRDD, productRDD, model, userIdMapRev, productIdMapRev).toDF()
+    val productRecDF = computeProductSimMatrix(model, productIdMapRev).toDF()
+    saveToMongoDB(userRecDF, USER_REC_COLLECTION, "userId")
+    saveToMongoDB(productRecDF, PRODUCT_SIM_COLLECTION, "productId")
+
+    spark.stop()
+  }
+
+  // recommend top-k products for all users
+  def recommendTopK(userRDD: RDD[Int],
+                    productRDD: RDD[Int],
+                    model: MatrixFactorizationModel,
+                    userIdMapRev: scala.collection.Map[Long, String],
+                    productIdMapRev: scala.collection.Map[Long, String]
+                   ) : RDD[UserRecList] = {
+
+
     val userProducts = userRDD.cartesian(productRDD)
     val preds = model.predict(userProducts)
-    val userRecDF = preds.filter(_.rating > 0)
+//    val userRecs = model.recommendProductsForUsers(RECOMMEND_NUM).toDF("userId", "recommendations")
+    val userRec = preds.filter(_.rating > 0)
       .map(
         rating => (rating.user, (rating.product, rating.rating))
       )
@@ -143,11 +149,14 @@ object ALSRecommender {
       .map {
         case (userId, recs) =>
           UserRecList(userIdMapRev(userId),
-            recs.toList.sortWith(_._2 > _._2).take(RECOMMEND_NUM).map(x => ProductRec(productIdMapRev(x._1), x._2)))
+            recs.toList.sortWith(_._2 > _._2).take(RECOMMEND_NUM).map(x => RecommendItem(productIdMapRev(x._1), x._2)))
       }
-      .toDF("userId", "recommendations")
+    userRec
+  }
 
-    // compute similarity between products using product features
+  // compute similarity between products using product features
+  def computeProductSimMatrix(model: MatrixFactorizationModel,
+                              productIdMapRev: scala.collection.Map[Long, String]): RDD[ProductSimList] = {
     val productFeatures = model.productFeatures.map {
       case (productId, features) => (productId, new DoubleMatrix(features))
     }
@@ -165,42 +174,26 @@ object ALSRecommender {
       .groupByKey()
       .map {
         case (productId, recs) =>
-          ProductRecList(productIdMapRev(productId), recs.toList.sortWith(_._2 > _._2).map(x => ProductRec(productIdMapRev(x._1), x._2)))
+          ProductSimList(productIdMapRev(productId), recs.toList.sortWith(_._2 > _._2).map(x => RecommendItem(productIdMapRev(x._1), x._2)))
       }
-      .toDF()
-
-    saveResultToMongoDB(userRecDF, productRecDF)
-
-    spark.stop()
+    productRecDF
   }
 
-  def saveResultToMongoDB(userRecDF: DataFrame, productRecDF: DataFrame)(implicit mongoConfig: MongoConfig): Unit = {
+  def saveToMongoDB(recommendDF: DataFrame, collectionName: String, index: String)(implicit mongoConfig: MongoConfig): Unit = {
     val mongoClient = MongoClient(MongoClientURI(mongoConfig.uri))
 
-    val userRecCollection = mongoClient(mongoConfig.db)(USER_RECOMMEND_COLLECTION)
-    val productRecCollection = mongoClient(mongoConfig.db)(PRODUCT_RECOMMEND_COLLECTION)
-    userRecCollection.dropCollection()
-    productRecCollection.dropCollection()
+    val mongoCollection = mongoClient(mongoConfig.db)(collectionName)
+    mongoCollection.dropCollection()
 
-    //  val userRecs = model.recommendProductsForUsers(RECOMMEND_NUM).toDF("userId", "recommendations")
-    userRecDF.show(10)
-    userRecDF.write
+    recommendDF.show(10)
+    recommendDF.write
       .option("uri", mongoConfig.uri)
-      .option("collection", USER_RECOMMEND_COLLECTION)
+      .option("collection", collectionName)
       .mode("overwrite")
       .format("com.mongodb.spark.sql")
       .save()
 
-    productRecDF.show(10)
-    productRecDF.write
-      .option("uri", mongoConfig.uri)
-      .option("collection", PRODUCT_RECOMMEND_COLLECTION)
-      .mode("overwrite")
-      .format("com.mongodb.spark.sql")
-      .save()
-
-    userRecCollection.createIndex(MongoDBObject("userId" -> 1))
-    productRecCollection.createIndex(MongoDBObject("productId" -> 1))
+    mongoCollection.createIndex(MongoDBObject(index -> 1))
     mongoClient.close()
   }
 

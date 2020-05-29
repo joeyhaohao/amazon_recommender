@@ -1,7 +1,6 @@
-package edu.rice.cs.configure;
+package edu.rice.cs.config;
 
 //import com.mongodb.MongoClient;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
