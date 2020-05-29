@@ -20,4 +20,8 @@ package object cs {
    */
   case class Review(reviewerID: String, asin: String, summary: String, reviewText: String,
                     overall: Double, unixReviewTime: Long)
+
+  case class RecommendItem(productId: String, score: Double)
+
+  case class RecommendResult(productId: String, recommendations: Seq[RecommendItem])
 }

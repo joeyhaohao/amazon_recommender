@@ -87,6 +87,7 @@ public class ProductRestController {
             review = new Review(userId, productId, rate, System.currentTimeMillis() / 1000);
         }
         reviewRepository.save(review);
+        logger.info(String.format("Save review to Redis: %s", review.toString()));
 
         String msg = userId + "|" + productId + "|" + rate + "|" + System.currentTimeMillis() / 1000;
         kafkaProducer.sendMessage(msg);
