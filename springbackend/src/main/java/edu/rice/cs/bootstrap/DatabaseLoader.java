@@ -37,6 +37,7 @@ public class DatabaseLoader implements CommandLineRunner {
         System.out.println("+++++++++++++");
 
         User sxf = this.users.save(new User("123", "sxf", "12345"));
+        sxf.encodePassword("12345");
 //        SecurityContextHolder.getContext().setAuthentication(
 //                new UsernamePasswordAuthenticationToken("sxf", "doesn't matter",
 //                        AuthorityUtils.createAuthorityList("user")));

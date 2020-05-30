@@ -1,9 +1,8 @@
 package edu.rice.cs.model;
 
+import edu.rice.cs.service.EncoderService;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Objects;
 
@@ -12,7 +11,8 @@ import java.util.Objects;
  */
 @Document(collection = "user")
 public class User {
-    public static final PasswordEncoder PASSWORD_ENCODER = new BCryptPasswordEncoder();
+//    @Autowired
+//    public static final PasswordEncoder PASSWORD_ENCODER = new BCryptPasswordEncoder();
 
     @Id
     private String userId;
@@ -22,8 +22,7 @@ public class User {
     public User(String userId, String username, String password) {
         this.userId = userId;
         this.username = username;
-//        this.password = password;
-        this.setPassword(password);
+        this.password = password;
     }
 
     @Override
@@ -60,9 +59,8 @@ public class User {
         return password;
     }
 
-    public void setPassword(String password) {
-        this.password = PASSWORD_ENCODER.encode(password);
-//        this.password = password;
+    public void encodePassword(String password) {
+        this.password = EncoderService.getEncoder().encode(password);
     }
 
     @Override
