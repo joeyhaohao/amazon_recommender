@@ -1,5 +1,6 @@
 package edu.rice.cs.model;
 
+import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.redis.core.RedisHash;
 import org.springframework.data.redis.core.index.Indexed;
 
@@ -11,7 +12,7 @@ import java.util.Objects;
 /**
  * Created by joeyhaohao on 5/20/20
  */
-@RedisHash("review")
+@Document(collection = "review")
 public class Review {
 
     private String id;
@@ -57,15 +58,15 @@ public class Review {
         return userId;
     }
 
-    public void setUserID(int userID) {
+    public void setUserId(String userId) {
         this.userId = userId;
     }
 
-    public String getProductID() {
+    public String getProductId() {
         return productId;
     }
 
-    public void setProductID(int productID) {
+    public void setProductId(String productId) {
         this.productId = productId;
     }
 

@@ -5,15 +5,6 @@ import com.mongodb.casbah.{MongoClient, MongoClientURI}
 import org.apache.spark.SparkConf
 import org.apache.spark.sql.{DataFrame, SparkSession}
 
-/**
- * product data
- * productID      0000143561
- * title          Everyday Italian (with Giada de Laurentiis)...
- * categories     [['Movies & TV', 'Movies']]
- * imUrl          http://g-ecx.images-amazon.com/images/G/01/x-site/icons/no-img-sm._CB192198896_.gif
- */
-//case class Product(productID: String, title: String, categories: List[String], imUrl: String)
-
 object DataLoader {
   // file path
   val PRODUCT_PATH = "./recommender/src/resources/meta_Movies_and_TV_test.json"
@@ -43,10 +34,15 @@ object DataLoader {
 
     // load product
     val productDF = spark.read.json(PRODUCT_PATH)
+      .withColumnRenamed("asin", "productId")
     val reviewDF = spark.read.json(REVIEW_PATH)
+      .withColumnRenamed("reviewerID", "userId")
+      .withColumnRenamed("reviewerName", "username")
+      .withColumnRenamed("asin", "productId")
+      .withColumnRenamed("overall", "rate")
+      .withColumnRenamed("unixReviewTime", "timestamp")
     val userDF = reviewDF
-      .select("reviewerID", "reviewerName")
-      .toDF("userId", "username")
+      .select("userId", "username")
       .dropDuplicates()
     productDF.printSchema()
     reviewDF.printSchema()
@@ -93,10 +89,10 @@ object DataLoader {
       .save()
 
     // create index
-    productCollection.createIndex(MongoDBObject("asin" -> 1))
-    reviewCollection.createIndex(MongoDBObject("reviewerID" -> 1))
-    reviewCollection.createIndex(MongoDBObject("asin" -> 1))
-    userCollection.createIndex(MongoDBObject("reviewerID" -> 1))
+    productCollection.createIndex(MongoDBObject("productId" -> 1))
+    reviewCollection.createIndex(MongoDBObject("userId" -> 1))
+    reviewCollection.createIndex(MongoDBObject("productId" -> 1))
+    userCollection.createIndex(MongoDBObject("userId" -> 1))
 
     mongoClient.close()
   }

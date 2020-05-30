@@ -60,6 +60,12 @@
         <artifactId>spark-graphx_2.11</artifactId>
         <version>${spark.version}</version>
     </dependency>
+    <dependency>
+        <groupId>org.apache.spark</groupId>
+        <artifactId>spark-streaming-kafka-0-10_2.11</artifactId>
+        <version>${spark.version}</version>
+    </dependency>
+
     <!-- Scala -->
     <dependency>
       <groupId>org.scala-lang</groupId>
@@ -81,6 +87,16 @@
       <groupId>org.scalanlp</groupId>
       <artifactId>jblas</artifactId>
       <version>${jblas.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.kafka</groupId>
+      <artifactId>kafka_2.12</artifactId>
+      <version>1.1.1</version>
+    </dependency>
+    <dependency>
+      <groupId>redis.clients</groupId>
+      <artifactId>jedis</artifactId>
+      <version>2.9.0</version>
     </dependency>
 
     <dependency>

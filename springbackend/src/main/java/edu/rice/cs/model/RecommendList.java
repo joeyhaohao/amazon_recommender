@@ -7,11 +7,11 @@ import java.util.List;
 import java.util.Objects;
 
 @Document(collection = "user_recommendation")
-public class RecommendResult {
+public class RecommendList {
     private String userId;
     private List<RecommendItem> recommendations;
 
-    public RecommendResult(String userId, List<RecommendItem> recommendations) {
+    public RecommendList(String userId, List<RecommendItem> recommendations) {
         this.userId = userId;
         this.recommendations = recommendations;
     }
@@ -20,7 +20,7 @@ public class RecommendResult {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        RecommendResult that = (RecommendResult) o;
+        RecommendList that = (RecommendList) o;
         return userId.equals(that.userId) &&
                 recommendations.equals(that.recommendations);
     }

@@ -17,12 +17,14 @@ public class Product {
     Long id;
     private String productID;
     private String productName;
-    private String imageUrl;
+    private String title;
+    private String description;
     private String category;
+    private String imageUrl;
+    private double price;
 
     public Product() {
     }
-
 
     @Override
     public boolean equals(Object o) {
@@ -36,7 +38,7 @@ public class Product {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, productID, productName, imageUrl, category);
+        return Objects.hash(id, productID, productName);
     }
 
     public Long getId() {
@@ -79,14 +81,41 @@ public class Product {
         this.category = category;
     }
 
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public double getPrice() {
+        return price;
+    }
+
+    public void setPrice(double price) {
+        this.price = price;
+    }
+
     @Override
     public String toString() {
         return "Product{" +
                 "id=" + id +
                 ", productID='" + productID + '\'' +
                 ", productName='" + productName + '\'' +
-                ", imageUrl='" + imageUrl + '\'' +
+                ", title='" + title + '\'' +
+                ", description='" + description + '\'' +
                 ", category='" + category + '\'' +
+                ", imageUrl='" + imageUrl + '\'' +
+                ", price=" + price +
                 '}';
     }
 }
