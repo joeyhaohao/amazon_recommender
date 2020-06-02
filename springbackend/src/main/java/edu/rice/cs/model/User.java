@@ -11,10 +11,10 @@ import java.util.Objects;
  */
 @Document(collection = "user")
 public class User {
-//    @Autowired
-//    public static final PasswordEncoder PASSWORD_ENCODER = new BCryptPasswordEncoder();
 
     @Id
+    private String id;
+
     private String userId;
     private String username;
     private String password;
@@ -38,6 +38,18 @@ public class User {
     public int hashCode() {
         return Objects.hash(userId, username, password);
     }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+//    public void setPassword(String password) {
+//        this.password = password;
+//    }
 
     public String getUserId() {
         return userId;
@@ -68,7 +80,6 @@ public class User {
         return "User{" +
                 ", userID='" + userId + '\'' +
                 ", username='" + username + '\'' +
-                ", password='" + password + '\'' +
                 '}';
     }
 

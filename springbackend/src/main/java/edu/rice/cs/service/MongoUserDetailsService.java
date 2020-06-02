@@ -2,7 +2,6 @@ package edu.rice.cs.service;
 
 import edu.rice.cs.exception.UserNotFoundException;
 import edu.rice.cs.model.User;
-import edu.rice.cs.repositories.ManagerRepository;
 import edu.rice.cs.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -29,11 +28,10 @@ public class MongoUserDetailsService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = userRepository.findByUsername(username);
-        user.encodePassword(user.getPassword());
         if (user == null) {
             throw new UserNotFoundException("User not found");
         }
-
+        user.encodePassword(user.getPassword());
         System.out.println(user.getPassword());
 
         List<SimpleGrantedAuthority> authorities = Arrays.asList(new SimpleGrantedAuthority("user"));

@@ -1,5 +1,6 @@
-package edu.rice.cs.service;
+package edu.rice.cs.config;
 
+import edu.rice.cs.service.MongoUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;

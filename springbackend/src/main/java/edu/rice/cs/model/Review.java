@@ -1,12 +1,12 @@
 package edu.rice.cs.model;
 
+import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.redis.core.RedisHash;
 import org.springframework.data.redis.core.index.Indexed;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
 import java.util.Objects;
 
 /**
@@ -15,6 +15,7 @@ import java.util.Objects;
 @Document(collection = "review")
 public class Review {
 
+    @Id
     private String id;
     @Indexed
     private String userId;
