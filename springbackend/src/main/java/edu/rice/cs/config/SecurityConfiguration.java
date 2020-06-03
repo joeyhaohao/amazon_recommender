@@ -27,7 +27,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter { // <3>
     private MongoUserDetailsService mongoUserDetailsService;
 
     @Bean
-    public PasswordEncoder passwordEncoder(){
+    public PasswordEncoder passwordEncoder() {
         PasswordEncoder encoder = new BCryptPasswordEncoder();
         return encoder;
     }
@@ -51,8 +51,9 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter { // <3>
                 .antMatchers("/built/**", "/main.css").permitAll()
                 .anyRequest().authenticated()
                 .and()
-                .formLogin()
-                .defaultSuccessUrl("/", true)
+                .formLogin().loginPage("/login")
+                .loginProcessingUrl("/perform_login")
+                .defaultSuccessUrl("/greeting", true)
                 .permitAll()
                 .and()
                 .httpBasic()
