@@ -35,8 +35,6 @@ public class ProductRestController {
     @Autowired
     private ReviewRepository reviewRepository;
 
-    @Autowired
-    private RecommendationRepository recommendationRepository;
 
     @Autowired
     private KafkaProducer kafkaProducer;
@@ -58,31 +56,31 @@ public class ProductRestController {
         return null;
     }
 
-    @GetMapping("/{id}")
-    Product getOneProduct(@PathVariable Long id) {
-        return productRepository.findById(id)
-                .orElseThrow(() -> new ProductNotFoundException(id));
+    @GetMapping("/{productId}")
+    Product getOneProduct(@PathVariable String productId) {
+        return productRepository.findByProductId(productId)
+                .orElseThrow(() -> new ProductNotFoundException(productId));
     }
 
-    @PutMapping("/{id}")
-    Product updateProduct(@RequestBody Product newProduct, @PathVariable Long id) {
-        return productRepository.findById(id)
+    @PutMapping("/{productId}")
+    Product updateProduct(@RequestBody Product newProduct, @PathVariable String productId) {
+        return productRepository.findByProductId(productId)
                 .map(product -> {
-                            product.setProductID(newProduct.getProductID());
+                            product.setProductId(newProduct.getProductId());
                             product.setProductName(newProduct.getProductName());
                             product.setImageUrl(newProduct.getImageUrl());
                             product.setCategory(newProduct.getCategory());
                             return productRepository.save(product);
                         }
                 ).orElseGet(() -> {
-                    newProduct.setId(id);
+                    newProduct.setProductId(productId);
                     return productRepository.save(newProduct);
                 });
     }
 
     @DeleteMapping("/{id}")
-    void deleteProduct(@PathVariable Long id) {
-        productRepository.deleteById(id);
+    void deleteProduct(@PathVariable String productId) {
+        productRepository.deleteByProductId(productId);
     }
 
     @PostMapping("/rate/{productId}")
