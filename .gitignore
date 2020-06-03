@@ -1,11 +1,11 @@
-recommender/src/resources/
-.DS_Store
 .idea/
 *.class
 target/
 out/
 *.iml
 node_modules/
+recommender/src/resources/
+logs/
 
 # dependencies
 /node_modules

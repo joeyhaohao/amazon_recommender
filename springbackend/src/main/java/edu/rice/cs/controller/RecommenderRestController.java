@@ -5,6 +5,9 @@ import edu.rice.cs.model.RecommendList;
 import edu.rice.cs.repositories.RecommendationRepository;
 import edu.rice.cs.service.RecommenderService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,7 +21,7 @@ public class RecommenderRestController {
     private RecommendationRepository recommendationRepository;
 
     @Autowired
-    private RecommenderService recommenderService;
+    private MongoTemplate mongoTemplate;
 
     @GetMapping(value = "/cf/{userId}", produces = "application/json")
     RecommendList getCFRecommendation(@PathVariable String userId) {
@@ -29,6 +32,8 @@ public class RecommenderRestController {
 
     @GetMapping(value = "/realtime/{userId}", produces = "application/json")
     RecommendList getRealtimeRecommendation(@PathVariable String userId) {
-        return recommenderService.getRealtimeRecommendation(userId);
+        String REALTIME_REC_COLLECTION = "realtime_recommendation";
+        RecommendList recList = mongoTemplate.findOne(Query.query(Criteria.where("userId").is(userId)), RecommendList.class, REALTIME_REC_COLLECTION);
+        return recList;
     }
 }

@@ -35,8 +35,8 @@ public class RecommenderService {
 //        return products;
 //    }
 
-    public RecommendList getRealtimeRecommendation(String userId) {
-        return null;
-    }
+//    public RecommendList getRealtimeRecommendation(String userId) {
+//        return null;
+//    }
 
 }

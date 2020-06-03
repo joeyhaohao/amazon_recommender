@@ -21,13 +21,12 @@ public class RecommendList {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         RecommendList that = (RecommendList) o;
-        return userId.equals(that.userId) &&
-                recommendations.equals(that.recommendations);
+        return userId.equals(that.userId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(userId, recommendations);
+        return Objects.hash(userId);
     }
 
     public String getUserId() {

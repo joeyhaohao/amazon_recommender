@@ -11,7 +11,7 @@ import redis.clients.jedis.Jedis
 
 object RealtimeRecommender {
   val MONGODB_REVIEW_COLLECTION = "review"
-  val REALTIME_REC_COLLECTION = "realtime_recommendation"
+  val USER_REC = "realtime_recommendation"
   val PRODUCT_SIM_COLLECTION = "product_similarity"
 
   val USER_RATING_NUM = 20

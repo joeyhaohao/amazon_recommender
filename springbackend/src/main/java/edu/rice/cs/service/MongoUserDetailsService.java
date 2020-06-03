@@ -32,7 +32,6 @@ public class MongoUserDetailsService implements UserDetailsService {
             throw new UserNotFoundException("User not found");
         }
         user.encodePassword(user.getPassword());
-        System.out.println(user.getPassword());
 
         List<SimpleGrantedAuthority> authorities = Arrays.asList(new SimpleGrantedAuthority("user"));
 

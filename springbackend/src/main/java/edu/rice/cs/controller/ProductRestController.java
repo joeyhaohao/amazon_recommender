@@ -1,9 +1,12 @@
 package edu.rice.cs.controller;
 
 import edu.rice.cs.exception.ProductNotFoundException;
+import edu.rice.cs.exception.RecommendationNotFoundException;
 import edu.rice.cs.model.Product;
+import edu.rice.cs.model.RecommendList;
 import edu.rice.cs.model.Review;
 import edu.rice.cs.repositories.ProductRepository;
+import edu.rice.cs.repositories.RecommendationRepository;
 import edu.rice.cs.repositories.ReviewRepository;
 import edu.rice.cs.repositories.UserRepository;
 import edu.rice.cs.service.KafkaProducer;
@@ -33,7 +36,7 @@ public class ProductRestController {
     private ReviewRepository reviewRepository;
 
     @Autowired
-    private UserRepository userRepository;
+    private RecommendationRepository recommendationRepository;
 
     @Autowired
     private KafkaProducer kafkaProducer;
