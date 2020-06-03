@@ -2,18 +2,19 @@ package edu.rice.cs.model;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+
 import java.util.Objects;
 
 /**
  * Created by joeyhaohao on 5/20/20
  */
-@Document(collation = "product")
+
+@Document(collection = "product")
 public class Product {
-
     @Id
-    private Long id;
+    private String id;
+    private String productId;
 
-    private String productID;
     private String productName;
     private String title;
     private String description;
@@ -30,29 +31,29 @@ public class Product {
         if (o == null || getClass() != o.getClass()) return false;
         Product product = (Product) o;
         return Objects.equals(id, product.id) &&
-                Objects.equals(productID, product.productID) &&
+                Objects.equals(productId, product.productId) &&
                 Objects.equals(productName, product.productName);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, productID, productName);
+        return Objects.hash(id, productId, productName);
     }
 
-    public Long getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(String id) {
         this.id = id;
     }
 
-    public String getProductID() {
-        return productID;
+    public String getProductId() {
+        return productId;
     }
 
-    public void setProductID(String productID) {
-        this.productID = productID;
+    public void setProductId(String productId) {
+        this.productId = productId;
     }
 
     public String getProductName() {
@@ -107,7 +108,7 @@ public class Product {
     public String toString() {
         return "Product{" +
                 "id=" + id +
-                ", productID='" + productID + '\'' +
+                ", productID='" + productId + '\'' +
                 ", productName='" + productName + '\'' +
                 ", title='" + title + '\'' +
                 ", description='" + description + '\'' +

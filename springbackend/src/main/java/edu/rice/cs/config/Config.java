@@ -33,15 +33,15 @@ public class Config {
 //        return mongoClient;
 //    }
 
-    static {
-        Properties properties = new Properties();
-        Resource resource = new ClassPathResource("application.properties");
-        try {
-            properties.load(new FileInputStream(resource.getFile()));
-        } catch (IOException e) {
-            e.printStackTrace();
-            throw new RuntimeException("properties file not found");
-        }
+//    static {
+//        Properties properties = new Properties();
+//        Resource resource = new ClassPathResource("application.properties");
+//        try {
+//            properties.load(new FileInputStream(resource.getFile()));
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//            throw new RuntimeException("properties file not found");
+//        }
 
 //        MONGODB_HOST = properties.getProperty("mongo.host");
 //        MONGODB_PORT = Integer.parseInt(properties.getProperty("mongo.port"));
@@ -52,5 +52,5 @@ public class Config {
 
 //        REDIS_HOST = properties.getProperty("redis.host");
 //        REDIS_PORT = Integer.parseInt(properties.getProperty("redis.port"));
-    }
+//    }
 }

@@ -23,15 +23,15 @@ public class DatabaseLoader implements CommandLineRunner {
 
     @Override
     public void run(String... strings) throws Exception {
-        System.out.println("+++++++++++++");
-//        User sxf = this.users.save(new User("123","sxf", "12345"));
+//        System.out.println("+++++++++++++");
+//
+//        User sxf = this.users.save(new User("123", "sxf", "12345"));
 //        sxf.encodePassword("12345");
 //        SecurityContextHolder.getContext().setAuthentication(
 //                new UsernamePasswordAuthenticationToken("sxf", "doesn't matter",
 //                        AuthorityUtils.createAuthorityList("user")));
-
-        System.out.println("+++++++++++++");
-
+//        System.out.println("+++++++++++++");
+//
 //        Manager greg = this.managers.save(new Manager("greg", "turnquist",
 //                "ROLE_MANAGER"));
 //        Manager oliver = this.managers.save(new Manager("oliver", "gierke",

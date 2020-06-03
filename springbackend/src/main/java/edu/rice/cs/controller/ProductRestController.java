@@ -1,9 +1,12 @@
 package edu.rice.cs.controller;
 
 import edu.rice.cs.exception.ProductNotFoundException;
+import edu.rice.cs.exception.RecommendationNotFoundException;
 import edu.rice.cs.model.Product;
+import edu.rice.cs.model.RecommendList;
 import edu.rice.cs.model.Review;
 import edu.rice.cs.repositories.ProductRepository;
+import edu.rice.cs.repositories.RecommendationRepository;
 import edu.rice.cs.repositories.ReviewRepository;
 import edu.rice.cs.repositories.UserRepository;
 import edu.rice.cs.service.KafkaProducer;
@@ -32,8 +35,6 @@ public class ProductRestController {
     @Autowired
     private ReviewRepository reviewRepository;
 
-    @Autowired
-    private UserRepository userRepository;
 
     @Autowired
     private KafkaProducer kafkaProducer;
@@ -55,31 +56,31 @@ public class ProductRestController {
         return null;
     }
 
-    @GetMapping("/{id}")
-    Product getOneProduct(@PathVariable Long id) {
-        return productRepository.findById(id)
-                .orElseThrow(() -> new ProductNotFoundException(id));
+    @GetMapping("/{productId}")
+    Product getOneProduct(@PathVariable String productId) {
+        return productRepository.findByProductId(productId)
+                .orElseThrow(() -> new ProductNotFoundException(productId));
     }
 
-    @PutMapping("/{id}")
-    Product updateProduct(@RequestBody Product newProduct, @PathVariable Long id) {
-        return productRepository.findById(id)
+    @PutMapping("/{productId}")
+    Product updateProduct(@RequestBody Product newProduct, @PathVariable String productId) {
+        return productRepository.findByProductId(productId)
                 .map(product -> {
-                            product.setProductID(newProduct.getProductID());
+                            product.setProductId(newProduct.getProductId());
                             product.setProductName(newProduct.getProductName());
                             product.setImageUrl(newProduct.getImageUrl());
                             product.setCategory(newProduct.getCategory());
                             return productRepository.save(product);
                         }
                 ).orElseGet(() -> {
-                    newProduct.setId(id);
+                    newProduct.setProductId(productId);
                     return productRepository.save(newProduct);
                 });
     }
 
     @DeleteMapping("/{id}")
-    void deleteProduct(@PathVariable Long id) {
-        productRepository.deleteById(id);
+    void deleteProduct(@PathVariable String productId) {
+        productRepository.deleteByProductId(productId);
     }
 
     @PostMapping("/rate/{productId}")
