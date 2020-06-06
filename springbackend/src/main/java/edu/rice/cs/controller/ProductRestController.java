@@ -67,8 +67,7 @@ public class ProductRestController {
         return productRepository.findByProductId(productId)
                 .map(product -> {
                             product.setProductId(newProduct.getProductId());
-                            product.setProductName(newProduct.getProductName());
-                            product.setImageUrl(newProduct.getImageUrl());
+                            product.setImUrl(newProduct.getImUrl());
                             product.setCategory(newProduct.getCategory());
                             return productRepository.save(product);
                         }

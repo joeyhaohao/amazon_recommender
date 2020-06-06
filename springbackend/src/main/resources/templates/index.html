@@ -8,7 +8,23 @@
 <body>
 <!-- tag::logout[] -->
 <div>
-    Hello, <span id="managername" th:text="${#authentication.name}">user</span>.
+    Hello, <span id="managername" th:text="${#authentication.name}">user</span>
+<!--    <p th:text="${username}">-->
+    <p th:text="${list}">
+
+    <table>
+        <tr th:each="product : ${list}">
+            <td th:text="${product.productId}">productId</td>
+            <td th:text="${product.title}">title</td>
+            <td th:text="${product.imUrl}">xx</td>
+            <td>
+                <img th:src="${product.imUrl}">imUrl</img>
+            </td>
+            <td th:text="${product.title}">title</td>
+        </tr>
+    </table>
+
+
     <form th:action="@{/logout}" method="post">
         <input type="submit" value="Log Out"/>
     </form>

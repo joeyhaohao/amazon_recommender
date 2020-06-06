@@ -15,11 +15,10 @@ public class Product {
     @Id
     String id;
     private String productId;
-    private String productName;
     private String title;
     private String description;
     private String category;
-    private String imageUrl;
+    private String imUrl;
     private double price;
 
     public Product() {
@@ -31,13 +30,12 @@ public class Product {
         if (o == null || getClass() != o.getClass()) return false;
         Product product = (Product) o;
         return Objects.equals(id, product.id) &&
-                Objects.equals(productId, product.productId) &&
-                Objects.equals(productName, product.productName);
+                Objects.equals(productId, product.productId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, productId, productName);
+        return Objects.hash(id, productId);
     }
 
     public String getId() {
@@ -56,20 +54,12 @@ public class Product {
         this.productId = productId;
     }
 
-    public String getProductName() {
-        return productName;
+    public String getImUrl() {
+        return imUrl;
     }
 
-    public void setProductName(String productName) {
-        this.productName = productName;
-    }
-
-    public String getImageUrl() {
-        return imageUrl;
-    }
-
-    public void setImageUrl(String imageUrl) {
-        this.imageUrl = imageUrl;
+    public void setImUrl(String imUrl) {
+        this.imUrl = imUrl;
     }
 
     public String getCategory() {
@@ -109,11 +99,10 @@ public class Product {
         return "Product{" +
                 "id=" + id +
                 ", productID='" + productId + '\'' +
-                ", productName='" + productName + '\'' +
                 ", title='" + title + '\'' +
                 ", description='" + description + '\'' +
                 ", category='" + category + '\'' +
-                ", imageUrl='" + imageUrl + '\'' +
+                ", imUrl='" + imUrl + '\'' +
                 ", price=" + price +
                 '}';
     }
