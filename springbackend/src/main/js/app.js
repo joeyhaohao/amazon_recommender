@@ -6,9 +6,9 @@ import ReactDOM from 'react-dom'
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 
 // import './index.css'
-import Form from './Form'
-import Login from './Login'
-import Registration from "./Registration";
+// import Form from './Form'
+import Login from './auth/Login'
+import Registration from "./auth/Registration";
 
 const inputs = [{
     name: "username",
