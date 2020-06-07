@@ -3,7 +3,16 @@ input.field {
 }
 
 table {
+    display: table;
     border-collapse: collapse;
+}
+
+table tr {
+    display: table-cell;
+}
+
+table tr td {
+    display: block;
 }
 
 td, th {

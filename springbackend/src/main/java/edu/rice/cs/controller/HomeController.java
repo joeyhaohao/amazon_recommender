@@ -10,6 +10,9 @@ import edu.rice.cs.repositories.ProductRepository;
 import edu.rice.cs.repositories.RecommendationRepository;
 import edu.rice.cs.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
@@ -35,23 +38,36 @@ public class HomeController {
     @Autowired
     private RecommendationRepository recommendationRepository;
 
+    @Autowired
+    private MongoTemplate mongoTemplate;
+
     @GetMapping(value = "/")
     public String getIndex(Model model) {
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String username = ((UserDetails) principal).getUsername();
         System.out.println(username);
         User user = userRepository.findByUsername(username);
-        RecommendList recList = recommendationRepository.findByUserId(user.getUserId())
+        RecommendList cfRecs = recommendationRepository.findByUserId(user.getUserId())
                 .orElseThrow(() -> new RecommendationNotFoundException(username));
-        List<Product> productList = new ArrayList<>();
-        for (RecommendItem item: recList.getRecList()) {
+        List<Product> cfProdList = new ArrayList<>();
+        for (RecommendItem item: cfRecs.getRecList()) {
             Product product = productRepository.findByProductId(item.getProductId())
                     .orElseThrow(() -> new ProductNotFoundException(item.getProductId()));
-            System.out.println(product.toString());
-            productList.add(product);
+            cfProdList.add(product);
         }
+
+//        String REALTIME_REC_COLLECTION = "realtime_recommendation";
+//        RecommendList realtimeRecs = mongoTemplate.findOne(Query.query(Criteria.where("userId").is(user.getUserId())), RecommendList.class, REALTIME_REC_COLLECTION);
+//        List<Product> realtimeProdList = new ArrayList<>();
+//        for (RecommendItem item: realtimeRecs.getRecList()) {
+//            Product product = productRepository.findByProductId(item.getProductId())
+//                    .orElseThrow(() -> new ProductNotFoundException(item.getProductId()));
+//            realtimeProdList.add(product);
+//        }
         model.addAttribute("username", username);
-        model.addAttribute("list", productList);
+        model.addAttribute("cfRecs", cfProdList);
+//        model.addAttribute("realtimeRecs", realtimeProdList);
+
         return "index";
     }
 

@@ -4,34 +4,51 @@
     <meta charset="UTF-8"/>
     <title>ReactJS + Spring Data REST</title>
     <link rel="stylesheet" href="/main.css" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+    <script src="/js/rate.js"></script>
 </head>
+
 <body>
-<!-- tag::logout[] -->
 <div>
     Hello, <span id="managername" th:text="${#authentication.name}">user</span>
-<!--    <p th:text="${username}">-->
-    <p th:text="${list}">
-
-    <table>
-        <tr th:each="product : ${list}">
-            <td th:text="${product.productId}">productId</td>
-            <td th:text="${product.title}">title</td>
-            <td th:text="${product.imUrl}">xx</td>
-            <td>
-                <img th:src="${product.imUrl}">imUrl</img>
-            </td>
-            <td th:text="${product.title}">title</td>
-        </tr>
-    </table>
-
-
     <form th:action="@{/logout}" method="post">
         <input type="submit" value="Log Out"/>
     </form>
-</div>
-<!-- end::logout[] -->
+<!--    <p th:text="${username}">-->
+<!--    <p th:text="${list}">-->
 
-<div id="react"></div>
+    <h2>Recommend For You</h2>
+    <table>
+        <tr th:each="product : ${cfRecs}">
+            <td th:text="${product.productId}">productId</td>
+            <td th:text="${product.title}">title</td>
+            <td>
+                <img th:src="${product.imUrl}">
+            </td>
+            <td th:text="${product.price}">price</td>
+            <td>
+                <form id="rate-form" th:action="@{/product/rate(productId=${product.productId},rate=5)}" method="post">
+                    <input type="submit" value="rate"/>
+                </form>
+            </td>
+        </tr>
+    </table>
+
+    <h2>Guess You Like</h2>
+<!--    <tr th:each="product : ${realtimeRecs}">-->
+<!--        <td th:text="${product.productId}">productId</td>-->
+<!--        <td th:text="${product.title}">title</td>-->
+<!--        <td>-->
+<!--            <img th:src="${product.imUrl}">-->
+<!--        </td>-->
+<!--        <td th:text="${product.price}">price</td>-->
+<!--        <td>-->
+<!--            <form th:action="@{/product/rate(productId=${product.productId},rate=5)}" method="post">-->
+<!--                <input type="submit" value="rate"/>-->
+<!--            </form>-->
+<!--        </td>-->
+<!--    </tr>-->
+</div>
 
 <script src="built/bundle.js"></script>
 

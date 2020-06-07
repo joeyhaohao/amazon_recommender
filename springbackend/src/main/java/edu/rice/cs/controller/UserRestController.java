@@ -30,9 +30,7 @@ public class UserRestController {
         User user = userRepository.findByUsername(username);
         user.setUserId(newUser.getUserId());
         user.setUsername(newUser.getUsername());
-        // ??
         return user;
-
     }
 
     @PostMapping("/")

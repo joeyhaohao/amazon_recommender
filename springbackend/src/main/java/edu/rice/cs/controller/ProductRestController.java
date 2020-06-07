@@ -5,6 +5,7 @@ import edu.rice.cs.exception.RecommendationNotFoundException;
 import edu.rice.cs.model.Product;
 import edu.rice.cs.model.RecommendList;
 import edu.rice.cs.model.Review;
+import edu.rice.cs.model.User;
 import edu.rice.cs.repositories.ProductRepository;
 import edu.rice.cs.repositories.RecommendationRepository;
 import edu.rice.cs.repositories.ReviewRepository;
@@ -14,8 +15,13 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.hibernate.ObjectNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.redis.core.ListOperations;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -35,12 +41,17 @@ public class ProductRestController {
     @Autowired
     private ReviewRepository reviewRepository;
 
+    @Autowired
+    private UserRepository userRepository;
 
     @Autowired
     private KafkaProducer kafkaProducer;
 
     @Autowired
     private RedisTemplate<String, String> redisTemplate;
+
+    @Autowired
+    private MongoTemplate mongoTemplate;
 
     private static Logger logger = LogManager.getLogger(ProductRestController.class.getName());
 
@@ -68,7 +79,7 @@ public class ProductRestController {
                 .map(product -> {
                             product.setProductId(newProduct.getProductId());
                             product.setImUrl(newProduct.getImUrl());
-                            product.setCategory(newProduct.getCategory());
+                            product.setCategories(newProduct.getCategories());
                             return productRepository.save(product);
                         }
                 ).orElseGet(() -> {
@@ -82,8 +93,14 @@ public class ProductRestController {
         productRepository.deleteByProductId(productId);
     }
 
-    @PostMapping("/rate/{productId}")
-    void rateProduct(@PathVariable("productId") String productId, @RequestParam("userId") String userId, @RequestParam("rate") Double rate) {
+    @PostMapping("/rate")
+    RecommendList rateProduct(@RequestParam("productId") String productId, @RequestParam("rate") Double rate) {
+        System.out.println("rate");
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String username = ((UserDetails) principal).getUsername();
+        User user = userRepository.findByUsername(username);
+        String userId = user.getUserId();
+
         ListOperations<String, String> ops = redisTemplate.opsForList();
         String key = "userId:" + userId;
         String value = productId + ":" + rate;
@@ -104,5 +121,10 @@ public class ProductRestController {
         String msg = userId + "|" + productId + "|" + rate + "|" + System.currentTimeMillis() / 1000;
         logger.info(String.format("Send message to Kafka: %s", msg));
         kafkaProducer.sendMessage(msg);
+
+        String REALTIME_REC_COLLECTION = "realtime_recommendation";
+        RecommendList recList = mongoTemplate.findOne(
+                Query.query(Criteria.where("userId").is(userId)), RecommendList.class, REALTIME_REC_COLLECTION);
+        return recList;
     }
 }

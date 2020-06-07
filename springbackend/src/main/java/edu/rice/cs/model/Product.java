@@ -17,7 +17,7 @@ public class Product {
     private String productId;
     private String title;
     private String description;
-    private String category;
+    private String categories;
     private String imUrl;
     private double price;
 
@@ -62,12 +62,12 @@ public class Product {
         this.imUrl = imUrl;
     }
 
-    public String getCategory() {
-        return category;
+    public String getCategories() {
+        return categories;
     }
 
-    public void setCategory(String category) {
-        this.category = category;
+    public void setCategories(String categories) {
+        this.categories = categories;
     }
 
     public String getTitle() {
@@ -98,10 +98,10 @@ public class Product {
     public String toString() {
         return "Product{" +
                 "id=" + id +
-                ", productID='" + productId + '\'' +
+                ", productId='" + productId + '\'' +
                 ", title='" + title + '\'' +
                 ", description='" + description + '\'' +
-                ", category='" + category + '\'' +
+                ", categories='" + categories + '\'' +
                 ", imUrl='" + imUrl + '\'' +
                 ", price=" + price +
                 '}';
