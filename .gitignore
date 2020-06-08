@@ -6,6 +6,7 @@ target/
 out/
 *.iml
 node_modules/
+logs/
 
 # dependencies
 /node_modules

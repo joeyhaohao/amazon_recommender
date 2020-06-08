@@ -18,7 +18,7 @@ object ALSRecommender {
   val MONGODB_REVIEW_COLLECTION = "review"
   val USER_REC_COLLECTION = "user_recommendation"
   val PRODUCT_SIM_COLLECTION = "product_similarity"
-  val RECOMMEND_NUM = 10
+  val RECOMMEND_NUM = 20
 
   def main(args: Array[String]): Unit = {
 //    val config = Map(
@@ -179,14 +179,14 @@ object ALSRecommender {
     productRecDF
   }
 
-  def saveToMongoDB(recommendDF: DataFrame, collectionName: String, index: String)(implicit mongoConfig: MongoConfig): Unit = {
+  def saveToMongoDB(df: DataFrame, collectionName: String, index: String)(implicit mongoConfig: MongoConfig): Unit = {
     val mongoClient = MongoClient(MongoClientURI(mongoConfig.uri))
 
     val mongoCollection = mongoClient(mongoConfig.db)(collectionName)
     mongoCollection.dropCollection()
 
-    recommendDF.show(10)
-    recommendDF.write
+    df.show(10)
+    df.write
       .option("uri", mongoConfig.uri)
       .option("collection", collectionName)
       .mode("overwrite")
