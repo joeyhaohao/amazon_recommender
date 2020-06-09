@@ -6,13 +6,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-@Document(collection = "user_recommendation")
-public class RecommendList {
-    private String userId;
+public class ProductRecList {
+    private String productId;
     private List<RecommendItem> recommendations;
 
-    public RecommendList(String userId, List<RecommendItem> recommendations) {
-        this.userId = userId;
+    public ProductRecList(String productId, List<RecommendItem> recommendations) {
+        this.productId = productId;
         this.recommendations = recommendations;
     }
 
@@ -20,21 +19,21 @@ public class RecommendList {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        RecommendList that = (RecommendList) o;
-        return userId.equals(that.userId);
+        ProductRecList that = (ProductRecList) o;
+        return productId.equals(that.productId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(userId);
+        return Objects.hash(productId);
     }
 
-    public String getUserId() {
-        return userId;
+    public String getProductId() {
+        return productId;
     }
 
-    public void setUserId(String userId) {
-        this.userId = userId;
+    public void setProductId(String productId) {
+        this.productId = productId;
     }
 
     public List<RecommendItem> getRecList() {
@@ -48,7 +47,7 @@ public class RecommendList {
     @Override
     public String toString() {
         return "RecommendResult{" +
-                "userId='" + userId + '\'' +
+                "productId='" + productId + '\'' +
                 ", recList=" + recommendations +
                 '}';
     }

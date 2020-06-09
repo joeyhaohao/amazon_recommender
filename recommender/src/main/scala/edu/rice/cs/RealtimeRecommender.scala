@@ -42,11 +42,11 @@ object RealtimeRecommender {
       .option("collection", PRODUCT_SIM_COLLECTION)
       .format("com.mongodb.spark.sql")
       .load()
-      .as[ProductSimList]
+      .as[ProductRecList]
       .rdd
       .map {
         item =>
-          (item.productId, item.similarityArray.map(x => (x.productId, x.score)).toMap)
+          (item.productId, item.recommendations.map(x => (x.productId, x.score)).toMap)
       }
       .collectAsMap()
     // broadcast product sim matrix

@@ -1,24 +1,18 @@
 package edu.rice.cs.controller;
 
 import edu.rice.cs.exception.ProductNotFoundException;
-import edu.rice.cs.exception.RecommendationNotFoundException;
 import edu.rice.cs.model.Product;
-import edu.rice.cs.model.RecommendList;
 import edu.rice.cs.model.Review;
 import edu.rice.cs.repositories.ProductRepository;
-import edu.rice.cs.repositories.RecommendationRepository;
 import edu.rice.cs.repositories.ReviewRepository;
-import edu.rice.cs.repositories.UserRepository;
 import edu.rice.cs.service.KafkaProducer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.hibernate.ObjectNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.ListOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.*;
 
-import javax.annotation.Resource;
 import java.util.List;
 
 /**

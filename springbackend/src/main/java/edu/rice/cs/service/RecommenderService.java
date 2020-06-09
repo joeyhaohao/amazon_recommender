@@ -1,7 +1,6 @@
 package edu.rice.cs.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import edu.rice.cs.model.RecommendList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

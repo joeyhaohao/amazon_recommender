@@ -46,5 +46,5 @@ package object cs {
   case class UserRecList(userId: String, recommendations: Seq[RecommendItem])
 
   // product similarity list
-  case class ProductSimList(productId: String, similarityArray: Seq[RecommendItem])
+  case class ProductRecList(productId: String, recommendations: Seq[RecommendItem])
 }

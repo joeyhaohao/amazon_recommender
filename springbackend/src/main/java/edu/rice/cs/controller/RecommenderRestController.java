@@ -1,9 +1,9 @@
 package edu.rice.cs.controller;
 
+import edu.rice.cs.model.ProductRecList;
 import edu.rice.cs.model.RecommendItem;
-import net.minidev.json.JSONObject;
 import edu.rice.cs.exception.RecommendationNotFoundException;
-import edu.rice.cs.model.RecommendList;
+import edu.rice.cs.model.UserRecList;
 import edu.rice.cs.repositories.RecommendationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -41,17 +41,25 @@ public class RecommenderRestController {
         return recList;
     }
 
-    @GetMapping(value = "/cf/{userId}", produces = "application/json")
-    RecommendList getCFRecommendation(@PathVariable String userId) {
+    @GetMapping(value = "/als/{userId}", produces = "application/json")
+    UserRecList getCFRecommendation(@PathVariable String userId) {
         return recommendationRepository.findByUserId(userId)
                 .orElseThrow(() -> new RecommendationNotFoundException(userId));
 //        return recommendationRepository.findAll();
     }
 
     @GetMapping(value = "/realtime/{userId}", produces = "application/json")
-    RecommendList getRealtimeRecommendation(@PathVariable String userId) {
+    UserRecList getRealtimeRecommendation(@PathVariable String userId) {
         String REALTIME_REC_COLLECTION = "realtime_recommendation";
-        RecommendList recList = mongoTemplate.findOne(Query.query(Criteria.where("userId").is(userId)), RecommendList.class, REALTIME_REC_COLLECTION);
+        UserRecList recList = mongoTemplate.findOne(Query.query(Criteria.where("userId").is(userId)), UserRecList.class, REALTIME_REC_COLLECTION);
+        return recList;
+    }
+
+    @GetMapping(value = "/itemcf/{productId}", produces = "application/json")
+    ProductRecList getItemCFRecommendation(@PathVariable String productId) {
+        String ITEMCF_REC_COLLECTION = "itemcf_recommendation";
+        ProductRecList recList = mongoTemplate.findOne(
+                Query.query(Criteria.where("productId").is(productId)), ProductRecList.class, ITEMCF_REC_COLLECTION);
         return recList;
     }
 }

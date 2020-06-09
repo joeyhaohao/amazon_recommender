@@ -156,7 +156,7 @@ object ALSRecommender {
 
   // compute similarity between products using product features
   def computeProductSimMatrix(model: MatrixFactorizationModel,
-                              productIdMapRev: scala.collection.Map[Long, String]): RDD[ProductSimList] = {
+                              productIdMapRev: scala.collection.Map[Long, String]): RDD[ProductRecList] = {
     val productFeatures = model.productFeatures.map {
       case (productId, features) => (productId, new DoubleMatrix(features))
     }
@@ -174,7 +174,7 @@ object ALSRecommender {
       .groupByKey()
       .map {
         case (productId, recs) =>
-          ProductSimList(productIdMapRev(productId), recs.toList.sortWith(_._2 > _._2).map(x => RecommendItem(productIdMapRev(x._1), x._2)))
+          ProductRecList(productIdMapRev(productId), recs.toList.sortWith(_._2 > _._2).map(x => RecommendItem(productIdMapRev(x._1), x._2)))
       }
     productRecDF
   }
