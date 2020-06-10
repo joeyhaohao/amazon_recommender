@@ -46,9 +46,9 @@ public class User {
         this.id = id;
     }
 
-//    public void setPassword(String password) {
-//        this.password = password;
-//    }
+    public void setPassword(String password) {
+        this.password = password;
+    }
 
     public String getUserId() {
         return userId;

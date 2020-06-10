@@ -60,7 +60,7 @@ export default function SignIn() {
                 <Typography component="h1" variant="h5">
                     Sign in
                 </Typography>
-                <form action="/perform_login" method="post" className={classes.form} noValidate>
+                <form action="/login" method="post" className={classes.form} noValidate>
                     <TextField
                         variant="outlined"
                         margin="normal"

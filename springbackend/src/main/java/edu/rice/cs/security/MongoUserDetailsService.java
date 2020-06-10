@@ -1,4 +1,4 @@
-package edu.rice.cs.service;
+package edu.rice.cs.security;
 
 import edu.rice.cs.exception.UserNotFoundException;
 import edu.rice.cs.model.User;
@@ -8,15 +8,16 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.stereotype.Component;
 
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import java.util.Arrays;
 import java.util.List;
 
 /**
  * Created by songxiongfeng on 5/27/20
  */
-@Component
+@Service
 public class MongoUserDetailsService implements UserDetailsService {
     private UserRepository userRepository;
 
@@ -26,14 +27,14 @@ public class MongoUserDetailsService implements UserDetailsService {
     }
 
     @Override
+    @Transactional
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = userRepository.findByUsername(username);
-        if (user == null) {
-            throw new UserNotFoundException("User not found");
-        }
-        user.encodePassword(user.getPassword());
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
 
-        List<SimpleGrantedAuthority> authorities = Arrays.asList(new SimpleGrantedAuthority("user"));
+//        user.encodePassword(user.getPassword());
+
+        List<SimpleGrantedAuthority> authorities = Arrays.asList(new SimpleGrantedAuthority("user")); // user
 
         return new org.springframework.security.core.userdetails.User(user.getUsername(), user.getPassword(), authorities);
 
