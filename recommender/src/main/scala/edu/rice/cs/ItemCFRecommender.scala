@@ -6,17 +6,25 @@ import org.apache.spark.SparkConf
 import org.apache.spark.sql.{DataFrame, SparkSession}
 
 object ItemCFRecommender {
-  val MONGODB_REVIEW_COLLECTION = "review"
-  val MONGODB_ITEMCF_REC_COLLECTION = "itemcf_recommendation"
+  // online db
+  //  val config = Map(
+  //    "spark.cores" -> "local[*]",
+  //    "mongo.uri" -> "mongodb+srv://amazon:amazon666@cluster0-u2qt7.mongodb.net/amazon_recommender?retryWrites=true&w=majority",
+  //    "mongo.db" -> "amazon_recommender"
+  //  )
+
+  // test db
+  val config = Map(
+    "spark.cores" -> "local[*]",
+    "mongo.uri" -> "mongodb+srv://amazon:amazon666@cluster0-u2qt7.mongodb.net/test?retryWrites=true&w=majority",
+    "mongo.db" -> "test"
+  )
+
+  val RATING_COLLECTION = "rating"
+  val ITEMCF_REC_COLLECTION = "itemcf_recommendation"
   val RECOMMENDATION_NUM = 20
 
   def main(args: Array[String]): Unit = {
-    val config = Map(
-      "spark.cores" -> "local[*]",
-      "mongo.uri" -> "mongodb+srv://amazon:amazon666@cluster0-u2qt7.mongodb.net/amazon_recommender?retryWrites=true&w=majority",
-      "mongo.db" -> "amazon_recommender"
-    )
-
     val sparkConf = new SparkConf().setMaster(config("spark.cores")).setAppName("TrendingRecommender")
     val spark = SparkSession.builder().config(sparkConf).getOrCreate()
     val sc = spark.sparkContext
@@ -25,34 +33,33 @@ object ItemCFRecommender {
     import spark.implicits._
     implicit val mongoConfig = MongoConfig(config("mongo.uri"), config("mongo.db"))
 
-    val ratingsDF = spark.read
+    val ratingDF = spark.read
       .option("uri", mongoConfig.uri)
-      .option("collection", MONGODB_REVIEW_COLLECTION)
+      .option("collection", RATING_COLLECTION)
       .format("com.mongodb.spark.sql")
       .load()
-      .as[Review]
+      .as[Rating]
       .map(
-        review => (review.userId, review.productId, review.rate)
+        rating => (rating.userId, rating.productId, rating.rating)
       )
-      .toDF("userId", "productId", "rate")
+      .toDF("userId", "productId", "rating")
 
-    val ratingCountDF = ratingsDF.groupBy("productId").count()
+    val ratingCountDF = ratingDF.groupBy("productId").count()
 
     /*
-      +---------+------+-----+-----+
-      |productId|userId|score|count|
-      +---------+------+-----+-----+
-      |505556   |13784 |3.0  |172  |
+      +---------+------+------+-----+
+      |productId|userId|rating|count|
+      +---------+------+------+-----+
+      |505556   |13784 |3.0   |172  |
      */
-    val ratingWithCountDF = ratingsDF.join(ratingCountDF, "productId")
+    val ratingWithCountDF = ratingDF.join(ratingCountDF, "productId")
 
     // create product-product pair
     val crossProductDF = ratingWithCountDF.join(ratingWithCountDF, "userId")
-      .toDF("userId", "product1", "score1", "count1", "product2", "score2", "count2")
+      .toDF("userId", "product1", "rating1", "count1", "product2", "rating2", "count2")
       .select("userId", "product1", "count1", "product2", "count2")
     crossProductDF.createOrReplaceTempView("cross_product")
 
-    // (productId, [(productId1, score), ...])
     val crossProductCountDF = spark.sql(
       "select product1, product2, count(userId) as conCount, first(count1) as count1, first(count2) as count2 " +
         "from cross_product " +
@@ -83,7 +90,7 @@ object ItemCFRecommender {
       }
       .toDF()
 
-    saveToMongoDB(itemCF, MONGODB_ITEMCF_REC_COLLECTION, "productId");
+    saveToMongoDB(itemCF, ITEMCF_REC_COLLECTION, "productId");
   }
 
   def getSimilarity(conCount: Long, count1: Long, count2: Long): Double = {
@@ -96,7 +103,7 @@ object ItemCFRecommender {
     val mongoCollection = mongoClient(mongoConfig.db)(collectionName)
     mongoCollection.dropCollection()
 
-    df.show(10)
+    df.show()
     df.write
       .option("uri", mongoConfig.uri)
       .option("collection", collectionName)

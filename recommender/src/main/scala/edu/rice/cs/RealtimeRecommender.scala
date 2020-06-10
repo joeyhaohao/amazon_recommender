@@ -10,10 +10,23 @@ import org.apache.kafka.common.serialization.StringDeserializer
 import redis.clients.jedis.Jedis
 
 object RealtimeRecommender {
-  val MONGODB_REVIEW_COLLECTION = "review"
-  val USER_REC = "realtime_recommendation"
-  val PRODUCT_SIM_COLLECTION = "product_similarity"
+  // online db
+  //  val config = Map(
+  //    "spark.cores" -> "local[*]",
+  //    "mongo.uri" -> "mongodb+srv://amazon:amazon666@cluster0-u2qt7.mongodb.net/amazon_recommender?retryWrites=true&w=majority",
+  //    "mongo.db" -> "amazon_recommender"
+  //  )
 
+  // test db
+  val config = Map(
+    "spark.cores" -> "local[*]",
+    "mongo.uri" -> "mongodb+srv://amazon:amazon666@cluster0-u2qt7.mongodb.net/test?retryWrites=true&w=majority",
+    "mongo.db" -> "test"
+  )
+
+  val RATING_COLLECTION = "rating"
+  val REALTIME_REC_COLLECTION = "realtime_recommendation"
+  val PRODUCT_SIM_COLLECTION = "product_similarity"
   val USER_RATING_NUM = 20
   val SIMILAR_PRODUCTS_NUM = 20
 
@@ -134,8 +147,8 @@ object RealtimeRecommender {
     val similarProducts = productSimMatrix(productId).toArray
 
     // filter rated products
-    val reviewCollection = mongoClient(mongoConfig.db)(MONGODB_REVIEW_COLLECTION)
-    val ratedProducts = reviewCollection.find(MongoDBObject("userId" -> userId))
+    val ratingCollection = mongoClient(mongoConfig.db)(RATING_COLLECTION)
+    val ratedProducts = ratingCollection.find(MongoDBObject("userId" -> userId))
       .toArray
       .map {
         item => item.get("productId").toString

@@ -8,29 +8,34 @@ import org.apache.spark.ml.feature.StringIndexer
 import org.apache.spark.mllib.recommendation.MatrixFactorizationModel
 import org.apache.spark.sql.DataFrame
 //import org.apache.spark.ml.recommendation.ALS
-import org.apache.spark.mllib.recommendation.{Rating, ALS}
+import org.apache.spark.mllib.recommendation.{Rating => ALSRating, ALS}
 import org.apache.spark.rdd.RDD
 import org.apache.spark.sql.SparkSession
 import org.jblas.DoubleMatrix
 
-
 object ALSRecommender {
-  val MONGODB_REVIEW_COLLECTION = "review"
-  val USER_REC_COLLECTION = "user_recommendation"
+  // online db
+//  val config = Map(
+//    "spark.cores" -> "local[*]",
+//    "mongo.uri" -> "mongodb+srv://amazon:amazon666@cluster0-u2qt7.mongodb.net/amazon_recommender?retryWrites=true&w=majority",
+//    "mongo.db" -> "amazon_recommender"
+//  )
+
+  // test db
+  val config = Map(
+    "spark.cores" -> "local[*]",
+    "mongo.uri" -> "mongodb+srv://amazon:amazon666@cluster0-u2qt7.mongodb.net/test?retryWrites=true&w=majority",
+    "mongo.db" -> "test"
+  )
+
+//  val REVIEW_COLLECTION = "review"
+  val RATING_COLLECTION = "rating"
+  val USER_REC_COLLECTION = "als_recommendation"
   val PRODUCT_SIM_COLLECTION = "product_similarity"
   val RECOMMEND_NUM = 20
 
   def main(args: Array[String]): Unit = {
-//    val config = Map(
-//      "spark.cores" -> "local[*]",
-//      "mongo.uri" -> "mongodb://127.0.0.1:27017/recommender",
-//      "mongo.db" -> "recommender"
-//    )
-    val config = Map(
-      "spark.cores" -> "local[*]",
-      "mongo.uri" -> "mongodb+srv://amazon:amazon666@cluster0-u2qt7.mongodb.net/amazon_recommender?retryWrites=true&w=majority",
-      "mongo.db" -> "amazon_recommender"
-    )
+
     // create a spark config
     val sparkConf = new SparkConf().setMaster(config("spark.cores")).setAppName("ALSRecommender")
     // create a spark session
@@ -38,31 +43,27 @@ object ALSRecommender {
     val sc = spark.sparkContext
     sc.setLogLevel("WARN")
 
-    implicit val mongoConfig = MongoConfig(config("mongo.uri"), config("mongo.db"))
-
     import spark.implicits._
+    implicit val mongoConfig = MongoConfig(config("mongo.uri"), config("mongo.db"))
     // load rating
-    val reviewRDD = spark.read
+    val ratingRDD = spark.read
       .option("uri", mongoConfig.uri)
-      .option("collection", MONGODB_REVIEW_COLLECTION)
+      .option("collection", RATING_COLLECTION)
       .format("com.mongodb.spark.sql")
       .load()
-      .as[Review]
+      .as[Rating]
       .rdd
-      .map(
-        review => (review.userId, review.productId, review.rate)
-      ).cache()
+      .cache()
 //    ratingRDD.show(10)
 //    ratingRDD.take(10).foreach(println)
 
     // create id map from string to int
-    val userIdMap = reviewRDD.map(_._1).distinct().zipWithUniqueId().collectAsMap()
+    val userIdMap = ratingRDD.map(_.userId).distinct().zipWithUniqueId().collectAsMap()
     val userIdMapRev = userIdMap.map{case (s, i) => (i, s)}
-    val productIdMap = reviewRDD.map(_._2).distinct().zipWithUniqueId().collectAsMap()
+    val productIdMap = ratingRDD.map(_.productId).distinct().zipWithUniqueId().collectAsMap()
     val productIdMapRev = productIdMap.map{case (s, i) => (i, s)}
-    val ratingRDD = reviewRDD
-      .map(r => Rating(userIdMap(r._1).toInt, productIdMap(r._2).toInt, r._3.toDouble))
-      .map(x => Rating(x.user, x.product, x.rating))
+    val ratingTransRDD = ratingRDD
+      .map(r => ALSRating(userIdMap(r.userId).toInt, productIdMap(r.productId).toInt, r.rating))
 
     // convert userId, productId to int
 //    val stringIndexerUser = new StringIndexer()
@@ -87,17 +88,18 @@ object ALSRecommender {
 //      .setRatingCol("overall")
 //    val model = als.fit(trainData)
 //
-    // evaluate test data
-    // set cold start strategy to "drop" to ensure no NAN evaluation metrics
-//    model.setColdStartStrategy("drop")
-//    val userRecs = model.recommendForAllUsers(RECOMMEND_NUM).toDF()
-//    val productRecs = model.recommendForAllItems(1)
-//    userRecs.printSchema()
-//    userRecs.show()
+//    // evaluate test data
+//    // set cold start strategy to "drop" to ensure no NAN evaluation metrics
+////    model.setColdStartStrategy("drop")
+////    val userRecs = model.recommendForAllUsers(RECOMMEND_NUM).toDF()
+////    val productRecs = model.recommendForAllItems(1)
+////    userRecs.printSchema()
+////    userRecs.show()
+//
 
     // train ALS model
-    val Array(trainData, testData) = ratingRDD.randomSplit(Array(0.8, 0.2))
-    val (rank, iterations, lambda) = (5, 10, 0.05)
+    val Array(trainData, testData) = ratingTransRDD.randomSplit(Array(0.8, 0.2))
+    val (rank, iterations, lambda) = (10, 10, 0.05)
     val model = ALS.train(trainData, rank, iterations, lambda)
 
     // evaluate test data
@@ -119,8 +121,8 @@ object ALSRecommender {
     val rmse = evaluator.evaluate(predDF)
     println(s"rmse: $rmse")
 
-    val userRDD = ratingRDD.map(_.user).distinct()
-    val productRDD = ratingRDD.map(_.product).distinct()
+    val userRDD = ratingTransRDD.map(_.user).distinct()
+    val productRDD = ratingTransRDD.map(_.product).distinct()
     val userRecDF = recommendTopK(userRDD, productRDD, model, userIdMapRev, productIdMapRev).toDF()
     val productRecDF = computeProductSimMatrix(model, productIdMapRev).toDF()
     saveToMongoDB(userRecDF, USER_REC_COLLECTION, "userId")
@@ -185,7 +187,7 @@ object ALSRecommender {
     val mongoCollection = mongoClient(mongoConfig.db)(collectionName)
     mongoCollection.dropCollection()
 
-    df.show(10)
+    df.show()
     df.write
       .option("uri", mongoConfig.uri)
       .option("collection", collectionName)
