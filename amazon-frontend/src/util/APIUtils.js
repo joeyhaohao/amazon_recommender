@@ -1,26 +1,32 @@
-import { API_BASE_URL, ACCESS_TOKEN } from '../constants';
+import {
+    API_BASE_URL,
+    ACCESS_TOKEN,
+    BASE_URL
+} from '../constants';
 
 const request = (options) => {
     const headers = new Headers({
         'Content-Type': 'application/json',
     })
-    
-    if(localStorage.getItem(ACCESS_TOKEN)) {
+
+    if (localStorage.getItem(ACCESS_TOKEN)) {
         headers.append('Authorization', 'Bearer ' + localStorage.getItem(ACCESS_TOKEN))
     }
 
-    const defaults = {headers: headers};
+    const defaults = {
+        headers: headers
+    };
     options = Object.assign({}, defaults, options);
 
     return fetch(options.url, options)
-    .then(response => 
-        response.json().then(json => {
-            if(!response.ok) {
-                return Promise.reject(json);
-            }
-            return json;
-        })
-    );
+        .then(response =>
+            response.json().then(json => {
+                if (!response.ok) {
+                    return Promise.reject(json);
+                }
+                return json;
+            })
+        );
 };
 
 
@@ -40,9 +46,16 @@ export function signup(signupRequest) {
     });
 }
 
-export function getRecommendList(userId) {
+export function getRecommendList() {
     return request({
-        url: "http://localhost:8080" + "/recommender/cf/" + userId,
+        url: BASE_URL + "/recommender/trending",
+        method: 'GET'
+    });
+}
+
+export function getProduct(productId) {
+    return request({
+        url: BASE_URL + "/product/" + productId,
         method: 'GET'
     });
 }
@@ -56,7 +69,7 @@ export function checkUsernameAvailability(username) {
 
 
 export function getCurrentUser() {
-    if(!localStorage.getItem(ACCESS_TOKEN)) {
+    if (!localStorage.getItem(ACCESS_TOKEN)) {
         return Promise.reject("No access token set.");
     }
 

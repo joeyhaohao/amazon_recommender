@@ -15,6 +15,7 @@ import Container from "@material-ui/core/Container";
 import Link from "@material-ui/core/Link";
 
 import { getRecommendList } from "../util/APIUtils";
+import RecommendList from "./RecommendationList";
 
 function Copyright() {
   return (
@@ -61,7 +62,7 @@ const useStyles = (theme) => ({
   },
 });
 
-const cards = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+
 
 class Album extends Component {
   constructor(props) {
@@ -71,38 +72,40 @@ class Album extends Component {
       isLoading: false,
       recommendList: null,
     };
-    this.loadRecommendation = this.loadRecommendation.bind(this);
+    // this.loadRecommendation = this.loadRecommendation.bind(this);
   }
 
-  componentDidUpdate(nextProps) {
-    if (this.props.isAuthenticated !== nextProps.isAuthenticated) {
-      // Reset State
-      this.setState({
-        isLoading: false,
-        recommendList: null,
-      });
-      this.loadRecommendation();
-    }
-  }
+  // componentDidUpdate(nextProps) {
+  //   if (this.props.isAuthenticated !== nextProps.isAuthenticated) {
+  //     // Reset State
+  //     this.setState({
+  //       isLoading: false,
+  //       recommendList: null,
+  //     });
+  //     this.loadRecommendation();
+  //   }
+  // }
 
-  loadRecommendation() {
-    this.setState({
-      isLoading: true,
-    });
-    getRecommendList("A38I4SUI5XZVUT")
-      .then((response) => {
-        this.setState({
-          recommendList: response,
-          isLoading: false,
-        });
-        console.log(this.state.recommendList);
-      })
-      .catch((error) => {
-        this.setState({
-          isLoading: false,
-        });
-      });
-  }
+  // loadRecommendation() {
+  //   this.setState({
+  //     isLoading: true,
+  //   });
+  //   getRecommendList().then(
+  //     (response) => {
+  //       this.setState({
+  //         recommendList: response,
+  //         isLoading: false,
+  //       });
+  //       console.log(this.state.recommendList);
+  //     },
+  //     (error) => {
+  //       this.setState({
+  //         isLoading: false,
+  //       });
+  //       console.log(error);
+  //     }
+  //   );
+  // }
 
   render() {
     const { classes } = this.props;
@@ -119,79 +122,9 @@ class Album extends Component {
           </Toolbar>
         </AppBar>
         <main>
-          {/* Hero unit */}
-          <div className={classes.heroContent}>
-            <Container maxWidth="sm">
-              <Typography
-                component="h1"
-                variant="h2"
-                align="center"
-                color="textPrimary"
-                gutterBottom
-              >
-                Logged in !{this.props.isAuthenticated ? "true" : "false"}
-              </Typography>
-              <Typography
-                variant="h5"
-                align="center"
-                color="textSecondary"
-                paragraph
-              >
-                {this.state.recommendList
-                  ? this.state.recommendList.recList.map((rec) => (
-                      <li key={rec.productId}>{rec.score}</li>
-                    ))
-                  : ""}
-              </Typography>
-              <div className={classes.heroButtons}>
-                <Grid container spacing={2} justify="center">
-                  <Grid item>
-                    <Button variant="contained" color="primary">
-                      Main call to action
-                    </Button>
-                  </Grid>
-                  <Grid item>
-                    <Button variant="outlined" color="primary">
-                      Secondary action
-                    </Button>
-                  </Grid>
-                </Grid>
-              </div>
-            </Container>
-          </div>
-          <Container className={classes.cardGrid} maxWidth="md">
-            {/* End hero unit */}
-            <Grid container spacing={4}>
-              {cards.map((card) => (
-                <Grid item key={card} xs={12} sm={6} md={4}>
-                  <Card className={classes.card}>
-                    <CardMedia
-                      className={classes.cardMedia}
-                      image="https://source.unsplash.com/random"
-                      title="Image title"
-                    />
-                    <CardContent className={classes.cardContent}>
-                      <Typography gutterBottom variant="h5" component="h2">
-                        Heading
-                      </Typography>
-                      <Typography>
-                        This is a media card. You can use this section to
-                        describe the content.
-                      </Typography>
-                    </CardContent>
-                    <CardActions>
-                      <Button size="small" color="primary">
-                        View
-                      </Button>
-                      <Button size="small" color="primary">
-                        Edit
-                      </Button>
-                    </CardActions>
-                  </Card>
-                </Grid>
-              ))}
-            </Grid>
-          </Container>
+          <RecommendList title="Recommend for you" />
+
+          <RecommendList title="Guess you like" />
         </main>
         {/* Footer */}
         <footer className={classes.footer}>

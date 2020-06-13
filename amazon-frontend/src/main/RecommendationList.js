@@ -6,13 +6,16 @@ import Card from "@material-ui/core/Card";
 import CardActions from "@material-ui/core/CardActions";
 import CardContent from "@material-ui/core/CardContent";
 import CardMedia from "@material-ui/core/CardMedia";
-import Typography from "@material-ui/core/Typography";
 
 import Grid from "@material-ui/core/Grid";
 
+import Typography from "@material-ui/core/Typography";
 import { withStyles } from "@material-ui/core/styles";
+import Container from "@material-ui/core/Container";
+import Link from "@material-ui/core/Link";
 
-import { getProduct } from "../util/APIUtils";
+import { getRecommendList, getProduct } from "../util/APIUtils";
+import Product from "./Product";
 
 const useStyles = (theme) => ({
   icon: {
@@ -46,28 +49,32 @@ const useStyles = (theme) => ({
   },
 });
 
-class Product extends Component {
+class RecommendList extends Component {
   constructor(props) {
     super(props);
     this.state = {
       isLoading: false,
-      productDetail: null,
+      recommendList: [],
     };
-    this.loadProduct = this.loadProduct.bind(this);
+    this.loadRecommendation = this.loadRecommendation.bind(this);
   }
 
   componentDidMount() {
-    this.loadProduct(this.props.product.productId);
+    this.loadRecommendation();
   }
 
-  loadProduct(productId) {
-    getProduct(productId).then(
+  loadRecommendation() {
+    this.setState({
+      isLoading: true,
+    });
+    getRecommendList().then(
       (response) => {
         this.setState({
-          productDetail: response,
+          recommendList: response,
           isLoading: false,
         });
-        console.log(this.state.productDetail);
+        console.log(this.state.recommendList);
+        console.log("asfwef");
       },
       (error) => {
         this.setState({
@@ -83,31 +90,31 @@ class Product extends Component {
 
     return (
       <React.Fragment>
-        <Grid item xs={12} sm={6} md={4}>
-          <Card className={classes.card}>
-            <CardMedia
-              className={classes.cardMedia}
-              image="https://source.unsplash.com/random"
-              title="Image title"
-            />
-            <CardContent className={classes.cardContent}>
-              <Typography gutterBottom variant="h5" component="h2">
-              {this.state.productDetail ? this.state.productDetail.title : "Product title"}
-              </Typography>
-              <Typography>
-                {this.state.productDetail ? this.state.productDetail.description : "Product description"}
-              </Typography>
-            </CardContent>
-            <CardActions>
-              <Button size="small" color="primary">
-                View
-              </Button>
-            </CardActions>
-          </Card>
-        </Grid>
+        {/* Hero unit */}
+        <div className={classes.heroContent}>
+          <Container maxWidth="sm">
+            <Typography
+              component="h1"
+              variant="h2"
+              align="center"
+              color="textPrimary"
+              gutterBottom
+            >
+              {this.props.title}
+            </Typography>
+          </Container>
+        </div>
+        {/* End hero unit */}
+        <Container className={classes.cardGrid} maxWidth="md">
+          <Grid container spacing={4}>
+            {this.state.recommendList.map((product, index) => (
+              <Product key={index} product={product} />
+            ))}
+          </Grid>
+        </Container>
       </React.Fragment>
     );
   }
 }
 
-export default withStyles(useStyles)(Product);
+export default withStyles(useStyles)(RecommendList);
