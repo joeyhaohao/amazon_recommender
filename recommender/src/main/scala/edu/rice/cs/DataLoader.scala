@@ -6,41 +6,13 @@ import org.apache.spark.SparkConf
 import org.apache.spark.sql.{DataFrame, SparkSession}
 import org.apache.spark.sql.functions.lit
 
-
 object DataLoader {
-  // local db
-//  val config = Map(
-//    "spark.cores" -> "local[*]",
-//    "mongo.uri" -> "mongodb://127.0.0.1:27017/recommender",
-//    "mongo.db" -> "recommender"
-//  )
-
-  // test db
-  val PRODUCT_PATH = "./recommender/src/resources/meta_Movies_and_TV_test.json"
-  val RATING_PATH = "./recommender/src/resources/ratings_Movies_and_TV_test.csv"
-  val REVIEW_PATH = "./recommender/src/resources/reviews_Movies_and_TV_5_test.json"
-  val config = Map(
-    "spark.cores" -> "local[*]",
-    "mongo.uri" -> "mongodb+srv://amazon:amazon666@cluster0-u2qt7.mongodb.net/test?retryWrites=true&w=majority",
-    "mongo.db" -> "test"
-  )
-
-  // online db
-//  val PRODUCT_PATH = "./recommender/src/resources/meta_Movies_and_TV.json"
-//  val RATING_PATH = "./recommender/src/resources/ratings_Movies_and_TV.csv"
-////  val REVIEW_PATH = "./recommender/src/resources/reviews_Movies_and_TV_5.json"
-//  val config = Map(
-//    "spark.cores" -> "local[*]",
-//    "mongo.uri" -> "mongodb+srv://amazon:amazon666@cluster0-u2qt7.mongodb.net/amazon_recommender?retryWrites=true&w=majority",
-//    "mongo.db" -> "amazon_recommender"
-//  )
 
   // collection name
   val PRODUCT_COLLECTION = "product"
 //  val REVIEW_COLLECTION = "review"
   val RATING_COLLECTION = "rating"
   val USER_COLLECTION = "user"
-
 
   def main(args: Array[String]): Unit = {
     // create a spark config
@@ -50,9 +22,9 @@ object DataLoader {
     val sc = spark.sparkContext
     sc.setLogLevel("WARN")
 
-    import spark.implicits._
     // load product
-    val productDF = spark.read.json(PRODUCT_PATH)
+    val productDF = spark.read.format("json")
+      .load(PRODUCT_PATH)
       .withColumnRenamed("asin", "productId")
       .select("productId", "categories", "description", "imUrl", "price", "title")
       .na.drop(Seq("productId", "title"))
