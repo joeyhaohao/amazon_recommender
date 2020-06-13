@@ -15,8 +15,12 @@ object DataLoader {
   val USER_COLLECTION = "user"
 
   def main(args: Array[String]): Unit = {
+    println(PRODUCT_PATH)
     // create a spark config
-    val sparkConf = new SparkConf().setMaster(config("spark.cores")).setAppName("DataLoader")
+    val sparkConf = new SparkConf()
+      .setMaster(config("spark.cores"))
+      .setAppName("DataLoader")
+      .set("spark.testing.memory", "2147480000")
     // create a spark session
     val spark = SparkSession.builder().config(sparkConf).getOrCreate()
     val sc = spark.sparkContext

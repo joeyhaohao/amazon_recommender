@@ -14,12 +14,10 @@ public class Product {
     @Id
     private String id;
     private String productId;
-
-    private String productName;
     private String title;
     private String description;
-    private String category;
-    private String imageUrl;
+    private String categories;
+    private String imUrl;
     private double price;
 
     public Product() {
@@ -32,12 +30,12 @@ public class Product {
         Product product = (Product) o;
         return Objects.equals(id, product.id) &&
                 Objects.equals(productId, product.productId) &&
-                Objects.equals(productName, product.productName);
+                Objects.equals(title, product.title);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, productId, productName);
+        return Objects.hash(id, productId, title);
     }
 
     public String getId() {
@@ -56,28 +54,20 @@ public class Product {
         this.productId = productId;
     }
 
-    public String getProductName() {
-        return productName;
+    public String getImUrl() {
+        return imUrl;
     }
 
-    public void setProductName(String productName) {
-        this.productName = productName;
+    public void setImUrl(String imUrl) {
+        this.imUrl = imUrl;
     }
 
-    public String getImageUrl() {
-        return imageUrl;
+    public String getCategories() {
+        return categories;
     }
 
-    public void setImageUrl(String imageUrl) {
-        this.imageUrl = imageUrl;
-    }
-
-    public String getCategory() {
-        return category;
-    }
-
-    public void setCategory(String category) {
-        this.category = category;
+    public void setCategories(String categories) {
+        this.categories = categories;
     }
 
     public String getTitle() {
@@ -108,12 +98,9 @@ public class Product {
     public String toString() {
         return "Product{" +
                 "id=" + id +
-                ", productID='" + productId + '\'' +
-                ", productName='" + productName + '\'' +
+                ", productId='" + productId + '\'' +
                 ", title='" + title + '\'' +
-                ", description='" + description + '\'' +
-                ", category='" + category + '\'' +
-                ", imageUrl='" + imageUrl + '\'' +
+                ", categories='" + categories + '\'' +
                 ", price=" + price +
                 '}';
     }
