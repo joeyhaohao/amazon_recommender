@@ -1,20 +1,12 @@
 import React, { Component } from "react";
 
-import Button from "@material-ui/core/Button";
-
-import Card from "@material-ui/core/Card";
-import CardActions from "@material-ui/core/CardActions";
-import CardContent from "@material-ui/core/CardContent";
-import CardMedia from "@material-ui/core/CardMedia";
-
 import Grid from "@material-ui/core/Grid";
 
 import Typography from "@material-ui/core/Typography";
 import { withStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
-import Link from "@material-ui/core/Link";
 
-import { getRecommendList, getProduct } from "../util/APIUtils";
+import { getRecommendList } from "../util/APIUtils";
 import Product from "./Product";
 
 const useStyles = (theme) => ({
@@ -74,7 +66,6 @@ class RecommendList extends Component {
           isLoading: false,
         });
         console.log(this.state.recommendList);
-        console.log("asfwef");
       },
       (error) => {
         this.setState({
