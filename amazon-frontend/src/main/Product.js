@@ -36,7 +36,6 @@ const useStyles = (theme) => ({
   },
   cardMedia: {
     paddingTop: "100%", // 16:9 56.25%
-
   },
   cardContent: {
     flexGrow: 1,
@@ -105,7 +104,8 @@ class Product extends Component {
                 {/* {this.state.productDetail
                   ? this.state.productDetail.description
                   : "Product description"} */}
-                 This is a media card. You can use this section to describe the content.
+                This is a media card. You can use this section to describe the
+                content.
               </Typography>
             </CardContent>
             <CardActions>
