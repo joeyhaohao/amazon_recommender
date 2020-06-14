@@ -35,7 +35,8 @@ const useStyles = (theme) => ({
     flexDirection: "column",
   },
   cardMedia: {
-    paddingTop: "56.25%", // 16:9
+    paddingTop: "100%", // 16:9 56.25%
+
   },
   cardContent: {
     flexGrow: 1,
@@ -87,15 +88,24 @@ class Product extends Component {
           <Card className={classes.card}>
             <CardMedia
               className={classes.cardMedia}
-              image="https://source.unsplash.com/random"
+              image={
+                this.state.productDetail
+                  ? this.state.productDetail.imUrl
+                  : "https://source.unsplash.com/random"
+              }
               title="Image title"
             />
             <CardContent className={classes.cardContent}>
               <Typography gutterBottom variant="h5" component="h2">
-              {this.state.productDetail ? this.state.productDetail.title : "Product title"}
+                {this.state.productDetail
+                  ? this.state.productDetail.title
+                  : "Product title"}
               </Typography>
               <Typography>
-                {this.state.productDetail ? this.state.productDetail.description : "Product description"}
+                {/* {this.state.productDetail
+                  ? this.state.productDetail.description
+                  : "Product description"} */}
+                 This is a media card. You can use this section to describe the content.
               </Typography>
             </CardContent>
             <CardActions>
