@@ -22,6 +22,7 @@ const request = (options) => {
         .then(response =>
             response.json().then(json => {
                 if (!response.ok) {
+                    // console.log(response.status)
                     return Promise.reject(json);
                 }
                 return json;
@@ -46,9 +47,9 @@ export function signup(signupRequest) {
     });
 }
 
-export function getRecommendList() {
+export function getRecommendList(context) {
     return request({
-        url: BASE_URL + "/recommender/trending",
+        url: BASE_URL + "/recommender/" + context,
         method: 'GET'
     });
 }

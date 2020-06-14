@@ -8,38 +8,7 @@ import Container from "@material-ui/core/Container";
 
 import { getRecommendList } from "../util/APIUtils";
 import Product from "./Product";
-
-const useStyles = (theme) => ({
-  icon: {
-    marginRight: theme.spacing(2),
-  },
-  heroContent: {
-    backgroundColor: theme.palette.background.paper,
-    padding: theme.spacing(8, 0, 6),
-  },
-  heroButtons: {
-    marginTop: theme.spacing(4),
-  },
-  cardGrid: {
-    paddingTop: theme.spacing(8),
-    paddingBottom: theme.spacing(8),
-  },
-  card: {
-    height: "100%",
-    display: "flex",
-    flexDirection: "column",
-  },
-  cardMedia: {
-    paddingTop: "56.25%", // 16:9
-  },
-  cardContent: {
-    flexGrow: 1,
-  },
-  footer: {
-    backgroundColor: theme.palette.background.paper,
-    padding: theme.spacing(6),
-  },
-});
+import { useStyles } from "./MyStyle";
 
 class RecommendList extends Component {
   constructor(props) {
@@ -59,21 +28,50 @@ class RecommendList extends Component {
     this.setState({
       isLoading: true,
     });
-    getRecommendList().then(
-      (response) => {
-        this.setState({
-          recommendList: response,
-          isLoading: false,
-        });
-        console.log(this.state.recommendList);
-      },
-      (error) => {
-        this.setState({
-          isLoading: false,
-        });
-        console.log(error);
-      }
-    );
+
+    let userId = this.props.currentUser
+      ? this.props.currentUser.userId
+      : "null";
+
+    console.log(userId);
+
+    if (this.props.title == "Recommend for you") {
+      getRecommendList("als/" + userId).then(
+        (response) => {
+          this.setState({
+            recommendList: response.recList,
+            isLoading: false,
+          });
+          // console.log(this.state.recommendList);
+        },
+        (error) => {
+          getRecommendList("trending").then((response) => {
+            this.setState({
+              recommendList: response,
+              isLoading: false,
+            });
+            // console.log(this.state.recommendList);
+          });
+        }
+      );
+    } else {
+      getRecommendList("realtime/" + userId).then(
+        (response) => {
+          this.setState({
+            recommendList: response.recList,
+            isLoading: false,
+          });
+        },
+        (error) => {
+          getRecommendList("top_rate").then((response) => {
+            this.setState({
+              recommendList: response,
+              isLoading: false,
+            });
+          });
+        }
+      );
+    }
   }
 
   render() {
