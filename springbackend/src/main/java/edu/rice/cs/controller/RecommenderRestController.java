@@ -4,7 +4,6 @@ import edu.rice.cs.model.ProductRecList;
 import edu.rice.cs.model.RecommendItem;
 import edu.rice.cs.exception.RecommendationNotFoundException;
 import edu.rice.cs.model.UserRecList;
-import edu.rice.cs.repositories.RecommendationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -21,16 +20,15 @@ import java.util.List;
 public class RecommenderRestController {
 
     @Autowired
-    private RecommendationRepository recommendationRepository;
-
-    @Autowired
     private MongoTemplate mongoTemplate;
-
 
     @GetMapping(value = "/trending", produces = "application/json")
     List<RecommendItem> getTrendingRecommendation() {
         String TRENDING_REC_COLLECTION = "trending_recommendation";
         List<RecommendItem> recList = mongoTemplate.findAll(RecommendItem.class, TRENDING_REC_COLLECTION);
+        if (recList == null) {
+            throw new RecommendationNotFoundException("trending", "");
+        }
         return recList;
     }
 
@@ -38,20 +36,30 @@ public class RecommenderRestController {
     List<RecommendItem> getTopRateRecommendation() {
         String TOPRATE_REC_COLLECTION = "top_rate_recommendation";
         List<RecommendItem> recList = mongoTemplate.findAll(RecommendItem.class, TOPRATE_REC_COLLECTION);
+        if (recList == null) {
+            throw new RecommendationNotFoundException("top rate", "");
+        }
         return recList;
     }
 
     @GetMapping(value = "/als/{userId}", produces = "application/json")
-    UserRecList getCFRecommendation(@PathVariable String userId) {
-        return recommendationRepository.findByUserId(userId)
-                .orElseThrow(() -> new RecommendationNotFoundException(userId));
-//        return recommendationRepository.findAll();
+    UserRecList getALSRecommendation(@PathVariable String userId) {
+        String ALS_REC_COLLECTION = "als_recommendation";
+        UserRecList recList = mongoTemplate.findOne(Query.query(Criteria.where("userId").is(userId)), UserRecList.class, ALS_REC_COLLECTION);
+        if (recList == null) {
+            throw new RecommendationNotFoundException("ALS", userId);
+        } else {
+            return recList;
+        }
     }
 
     @GetMapping(value = "/realtime/{userId}", produces = "application/json")
     UserRecList getRealtimeRecommendation(@PathVariable String userId) {
         String REALTIME_REC_COLLECTION = "realtime_recommendation";
         UserRecList recList = mongoTemplate.findOne(Query.query(Criteria.where("userId").is(userId)), UserRecList.class, REALTIME_REC_COLLECTION);
+        if (recList == null) {
+            throw new RecommendationNotFoundException("realtime", userId);
+        }
         return recList;
     }
 
@@ -60,6 +68,9 @@ public class RecommenderRestController {
         String ITEMCF_REC_COLLECTION = "itemcf_recommendation";
         ProductRecList recList = mongoTemplate.findOne(
                 Query.query(Criteria.where("productId").is(productId)), ProductRecList.class, ITEMCF_REC_COLLECTION);
+        if (recList == null) {
+            throw new RecommendationNotFoundException("itemCF", productId);
+        }
         return recList;
     }
 }

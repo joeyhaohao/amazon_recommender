@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-@Document(collection = "user_recommendation")
+@Document(collection = "als_recommendation")
 public class UserRecList {
     private String userId;
     private List<RecommendItem> recommendations;
