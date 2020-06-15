@@ -73,4 +73,34 @@ public class RecommenderRestController {
         }
         return recList;
     }
+
+    @GetMapping(value = "/recommend_for_you/{userId}", produces = "application/json")
+    UserRecList getRecommendForYou(@PathVariable String userId) {
+        String TRENDING_REC_COLLECTION = "trending_recommendation";
+        String ALS_REC_COLLECTION = "als_recommendation";
+        UserRecList recList = mongoTemplate.findOne(Query.query(Criteria.where("userId").is(userId)), UserRecList.class, ALS_REC_COLLECTION);
+        if (recList == null) {
+            List<RecommendItem> list = mongoTemplate.findAll(RecommendItem.class, TRENDING_REC_COLLECTION);
+            recList = new UserRecList(userId, list);
+            if (recList == null) {
+                throw new RecommendationNotFoundException("trending", userId);
+            }
+        }
+        return recList;
+    }
+
+    @GetMapping(value = "/guess_you_like/{userId}", produces = "application/json")
+    UserRecList getGuessYouLike(@PathVariable String userId) {
+        String TOPRATE_REC_COLLECTION = "top_rate_recommendation";
+        String REALTIME_REC_COLLECTION = "realtime_recommendation";
+        UserRecList recList = mongoTemplate.findOne(Query.query(Criteria.where("userId").is(userId)), UserRecList.class, TOPRATE_REC_COLLECTION);
+        if (recList == null) {
+            List<RecommendItem> list = mongoTemplate.findAll(RecommendItem.class, REALTIME_REC_COLLECTION);
+            recList = new UserRecList(userId, list);
+            if (recList == null) {
+                throw new RecommendationNotFoundException("top_rate", userId);
+            }
+        }
+        return recList;
+    }
 }

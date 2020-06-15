@@ -14,19 +14,6 @@ import org.apache.spark.sql.SparkSession
 import org.jblas.DoubleMatrix
 
 object ALSRecommender {
-  // online db
-//  val config = Map(
-//    "spark.cores" -> "local[*]",
-//    "mongo.uri" -> "mongodb+srv://amazon:amazon666@cluster0-u2qt7.mongodb.net/amazon_recommender?retryWrites=true&w=majority",
-//    "mongo.db" -> "amazon_recommender"
-//  )
-
-  // test db
-  val config = Map(
-    "spark.cores" -> "local[*]",
-    "mongo.uri" -> "mongodb+srv://amazon:amazon666@cluster0-u2qt7.mongodb.net/test?retryWrites=true&w=majority",
-    "mongo.db" -> "test"
-  )
 
 //  val REVIEW_COLLECTION = "review"
   val RATING_COLLECTION = "rating"
@@ -37,7 +24,11 @@ object ALSRecommender {
   def main(args: Array[String]): Unit = {
 
     // create a spark config
-    val sparkConf = new SparkConf().setMaster(config("spark.cores")).setAppName("ALSRecommender")
+    val sparkConf = new SparkConf()
+      .setMaster(config("spark.cores"))
+      .setAppName("ALSRecommender")
+      .set("spark.testing.memory", "2147480000")
+
     // create a spark session
     val spark = SparkSession.builder().config(sparkConf).getOrCreate()
     val sc = spark.sparkContext
@@ -125,6 +116,7 @@ object ALSRecommender {
     val productRDD = ratingTransRDD.map(_.product).distinct()
     val userRecDF = recommendTopK(userRDD, productRDD, model, userIdMapRev, productIdMapRev).toDF()
     val productRecDF = computeProductSimMatrix(model, productIdMapRev).toDF()
+
     saveToMongoDB(userRecDF, USER_REC_COLLECTION, "userId")
     saveToMongoDB(productRecDF, PRODUCT_SIM_COLLECTION, "productId")
 

@@ -15,7 +15,6 @@ object DataLoader {
   val USER_COLLECTION = "user"
 
   def main(args: Array[String]): Unit = {
-    println(PRODUCT_PATH)
     // create a spark config
     val sparkConf = new SparkConf()
       .setMaster(config("spark.cores"))
@@ -26,28 +25,33 @@ object DataLoader {
     val sc = spark.sparkContext
     sc.setLogLevel("WARN")
 
+    implicit val mongoConfig = MongoConfig(config("mongo.uri"), config("mongo.db"))
     // load product
-    val productDF = spark.read.format("json")
-      .load(PRODUCT_PATH)
-      .withColumnRenamed("asin", "productId")
-      .select("productId", "categories", "description", "imUrl", "price", "title")
-      .na.drop(Seq("productId", "title"))
+//    val productDF = spark.read.json(PRODUCT_PATH)
+//      .withColumnRenamed("asin", "productId")
+//      .select("productId", "categories", "description", "imUrl", "price", "title")
+//      .na.drop(Seq("productId", "title"))
+//      .cache()
+//    productDF.printSchema()
+//    println(productDF.count())
+//    saveToMongoDB(productDF, PRODUCT_COLLECTION, "productId")
+
     val ratingDF = spark.read.format("csv")
       .option("inferSchema", "true")
       .load(RATING_PATH)
       .toDF("userId", "productId", "rating", "timestamp")
+      .cache()
+    ratingDF.printSchema()
+    println(ratingDF.count())
+    saveToMongoDB(ratingDF, RATING_COLLECTION, "userId")
 
     val userDF = ratingDF
       .select("userId")
-      .withColumn("password", lit("default"))
       .dropDuplicates()
-//    productDF.printSchema()
-//    ratingDF.printSchema()
-//    userDF.printSchema()
-
-    implicit val mongoConfig = MongoConfig(config("mongo.uri"), config("mongo.db"))
-    saveToMongoDB(productDF, PRODUCT_COLLECTION, "productId")
-    saveToMongoDB(ratingDF, RATING_COLLECTION, "userId")
+      .withColumn("password", lit("default"))
+      .cache()
+    userDF.printSchema()
+    println(userDF.count())
     saveToMongoDB(userDF, USER_COLLECTION, "userId")
 
     spark.stop()

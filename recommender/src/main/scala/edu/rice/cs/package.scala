@@ -1,22 +1,22 @@
 package edu.rice
 
 package object cs {
-  val PRODUCT_PATH = "/home/ubuntu/data/meta_Movies_and_TV_test.json"
-  val RATING_PATH = "/home/ubuntu/data/ratings_Movies_and_TV_test.csv"
+  val PRODUCT_PATH = "/home/ubuntu/data/meta_Movies_and_TV.json"
+  val RATING_PATH = "/home/ubuntu/data/ratings_Movies_and_TV.csv"
 
   // test data
-//  val PRODUCT_PATH = "./src/main/resources/data/meta_Movies_and_TV_test.json"
-//  val RATING_PATH = "./src/main/resources/data/ratings_Movies_and_TV_test.csv"
+//  val PRODUCT_PATH = "recommender/src/main/resources/data/meta_Movies_and_TV_test.json"
+//  val RATING_PATH = "recommender/src/main/resources/data/ratings_Movies_and_TV_test.csv"
   // complete data
-//  val PRODUCT_PATH = "./src/main/resources/data/meta_Movies_and_TV.json"
-//  val RATING_PATH = "./src/main/resources/data/ratings_Movies_and_TV_test.csv"
+//  val PRODUCT_PATH = "recommender/src/main/resources/data/meta_Movies_and_TV.json"
+//  val RATING_PATH = "recommender/src/main/resources/data/ratings_Movies_and_TV.csv"
 
   // local db
   val config = Map(
     "spark.cores" -> "local[*]",
     "spark.testing.memory" -> "2147480000",
-    "mongo.uri" -> "mongodb://127.0.0.1:27017/test",
-    "mongo.db" -> "test"
+    "mongo.uri" -> "mongodb://127.0.0.1:27017/recommender",
+    "mongo.db" -> "recommender"
   )
   // test db
   //  val config = Map(
