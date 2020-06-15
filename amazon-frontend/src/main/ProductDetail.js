@@ -13,9 +13,10 @@ import IconButton from "@material-ui/core/IconButton";
 import Typography from "@material-ui/core/Typography";
 import { red } from "@material-ui/core/colors";
 import FavoriteIcon from "@material-ui/icons/Favorite";
-
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import CloseIcon from "@material-ui/icons/Close";
+import Rating from "@material-ui/lab/Rating";
+import Box from "@material-ui/core/Box";
 
 import { rateProduct } from "../util/APIUtils";
 
@@ -26,7 +27,8 @@ const useStyles = (theme) => ({
   },
   media: {
     height: 0,
-    paddingTop: "56.25%", // 16:9
+    paddingTop: "56.25%", // 16:9,
+    marginTop: "30",
   },
   expand: {
     transform: "rotate(0deg)",
@@ -49,6 +51,7 @@ class ProductDetail extends Component {
     this.state = {
       expanded: false,
       recommendList: [],
+      rateVal: 0,
     };
   }
 
@@ -83,30 +86,42 @@ class ProductDetail extends Component {
                   <CloseIcon />
                 </IconButton>
               }
-              title={this.props.product ? this.props.product.title : "Title"}
+              title={
+                this.props.product ? this.props.product.product.title : "Title"
+              }
             />
             <CardMedia
               className={classes.media}
               image={
                 this.props.product
-                  ? this.props.product.imUrl
+                  ? this.props.product.product.imUrl
                   : "https://source.unsplash.com/random"
               }
             />
             <CardContent>
               <Typography variant="body2" color="textSecondary" component="p">
                 {this.props.product
-                  ? this.props.product.categories
+                  ? this.props.product.product.categories
                   : "Product score"}
+              </Typography>
+
+              <Typography>
+                Average rating: {this.props.product.ratingAvg}
+              </Typography>
+              <Typography>
+                Total num of rating: {this.props.product.ratingCount}
               </Typography>
             </CardContent>
             <CardActions disableSpacing>
-              <IconButton
-                aria-label="add to favorites"
-                onClick={this.handleRate}
-              >
-                <FavoriteIcon />
-              </IconButton>
+              <Box component="fieldset" mb={3} borderColor="transparent">
+                <Rating
+                  name="simple-controlled"
+                  value={this.state.rateVal}
+                  onChange={(event, newValue) => {
+                    this.setValue({ rateVal: newValue });
+                  }}
+                />
+              </Box>
 
               <IconButton
                 className={clsx(classes.expand, {
@@ -123,7 +138,7 @@ class ProductDetail extends Component {
               <CardContent>
                 <Typography paragraph>
                   {this.props.product
-                    ? this.props.product.description
+                    ? this.props.product.product.description
                     : "Heat 1/2 cup of the broth in a pot until simmering, add saffron and set aside for 10 minutes."}
                 </Typography>
               </CardContent>

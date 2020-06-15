@@ -33,7 +33,7 @@ class Product extends Component {
     getProduct(productId).then(
       (response) => {
         this.setState({
-          productDetail: response.product,
+          productDetail: response,
           isLoading: false,
           popup: false,
         });
@@ -66,7 +66,7 @@ class Product extends Component {
               className={classes.cardMedia}
               image={
                 this.state.productDetail
-                  ? this.state.productDetail.imUrl
+                  ? this.state.productDetail.product.imUrl
                   : "https://source.unsplash.com/random"
               }
               title="Image title"
@@ -74,7 +74,7 @@ class Product extends Component {
             <CardContent className={classes.cardContent}>
               <Typography gutterBottom variant="h5" component="h2">
                 {this.state.productDetail
-                  ? this.state.productDetail.title
+                  ? this.state.productDetail.product.title
                   : "Product title"}
               </Typography>
               <Typography>
