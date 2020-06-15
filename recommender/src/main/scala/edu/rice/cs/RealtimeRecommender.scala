@@ -10,19 +10,6 @@ import org.apache.kafka.common.serialization.StringDeserializer
 import redis.clients.jedis.Jedis
 
 object RealtimeRecommender {
-  // online db
-  //  val config = Map(
-  //    "spark.cores" -> "local[*]",
-  //    "mongo.uri" -> "mongodb+srv://amazon:amazon666@cluster0-u2qt7.mongodb.net/amazon_recommender?retryWrites=true&w=majority",
-  //    "mongo.db" -> "amazon_recommender"
-  //  )
-
-  // test db
-  val config = Map(
-    "spark.cores" -> "local[*]",
-    "mongo.uri" -> "mongodb+srv://amazon:amazon666@cluster0-u2qt7.mongodb.net/test?retryWrites=true&w=majority",
-    "mongo.db" -> "test"
-  )
 
   val RATING_COLLECTION = "rating"
   val REALTIME_REC_COLLECTION = "realtime_recommendation"
@@ -31,13 +18,6 @@ object RealtimeRecommender {
   val SIMILAR_PRODUCTS_NUM = 20
 
   def main(args: Array[String]): Unit = {
-    val config = Map(
-      "spark.cores" -> "local[*]",
-      "mongo.uri" -> "mongodb+srv://amazon:amazon666@cluster0-u2qt7.mongodb.net/amazon_recommender?retryWrites=true&w=majority",
-      "mongo.db" -> "amazon_recommender",
-      "kafka.topic" -> "rating"
-    )
-
     val sparkConf = new SparkConf().setMaster(config("spark.cores")).setAppName("RealtimeRecommender")
     val spark = SparkSession.builder().config(sparkConf).getOrCreate()
     val sc = spark.sparkContext
@@ -82,6 +62,7 @@ object RealtimeRecommender {
 
     // userId|productId|score|timestamp
     val ratingStream = kafkaStream.map { msg =>
+      println(msg)
       var attr = msg.value().split("\\|")
       (attr(0), attr(1), attr(2).toDouble, attr(3).toInt)
     }

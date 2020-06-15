@@ -8,6 +8,7 @@ import edu.rice.cs.model.Review;
 import edu.rice.cs.payload.JwtAuthenticationResponse;
 import edu.rice.cs.payload.ProductResponse;
 import edu.rice.cs.repositories.ProductRepository;
+import edu.rice.cs.repositories.RatingRepository;
 import edu.rice.cs.repositories.ReviewRepository;
 import edu.rice.cs.service.KafkaProducer;
 import org.apache.logging.log4j.LogManager;
@@ -35,7 +36,7 @@ public class ProductRestController {
     private ProductRepository productRepository;
 
     @Autowired
-    private ReviewRepository reviewRepository;
+    private RatingRepository ratingRepository;
 
     @Autowired
     private KafkaProducer kafkaProducer;
@@ -95,25 +96,25 @@ public class ProductRestController {
     }
 
     @PostMapping("/rate/{productId}")
-    void rateProduct(@PathVariable("productId") String productId, @RequestParam("userId") String userId, @RequestParam("rate") Double rate) {
+    void rateProduct(@PathVariable("productId") String productId, @RequestParam("userId") String userId, @RequestParam("rate") Double score) {
         ListOperations<String, String> ops = redisTemplate.opsForList();
         String key = "userId:" + userId;
-        String value = productId + ":" + rate;
+        String value = productId + ":" + score;
         ops.leftPush(key, value);
         logger.info(String.format("Save rating to Redis, key: %s, value: %s", key, value));
 
-        Review review = reviewRepository.findByUserIdAndProductId(userId, productId);
+        Rating rating = ratingRepository.findByUserIdAndProductId(userId, productId);
         // update the rating if exists
-        if (review != null) {
-            review.setRate(rate);
-            review.setTimestamp(System.currentTimeMillis() / 1000);
+        if (rating != null) {
+            rating.setRating(score);
+            rating.setTimestamp(System.currentTimeMillis() / 1000);
         } else {
-            review = new Review(userId, productId, rate, System.currentTimeMillis() / 1000);
+            rating = new Rating(userId, productId, score, System.currentTimeMillis() / 1000);
         }
-        reviewRepository.save(review);
-        logger.info(String.format("Save review to mongoDB: %s", review.toString()));
+        ratingRepository.save(rating);
+        logger.info(String.format("Save rating to mongoDB: %s", rating.toString()));
 
-        String msg = userId + "|" + productId + "|" + rate + "|" + System.currentTimeMillis() / 1000;
+        String msg = userId + "|" + productId + "|" + score + "|" + System.currentTimeMillis() / 1000;
         logger.info(String.format("Send message to Kafka: %s", msg));
         kafkaProducer.sendMessage(msg);
     }

@@ -10,10 +10,12 @@ import javax.persistence.GeneratedValue;
 import java.util.Objects;
 
 /**
- * Created by joeyhaohao on 5/20/20
+ * Created by joeyhaohao on 6/14/20
  */
+@Document(collection = "rating")
 public class Rating {
-
+    @Id
+    private String id;
     @Indexed
     private String userId;
     @Indexed
@@ -65,8 +67,7 @@ public class Rating {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Rating rating1 = (Rating) o;
-        return Double.compare(rating1.rating, rating) == 0 &&
-                timestamp == rating1.timestamp &&
+        return Objects.equals(id, rating1.id) &&
                 Objects.equals(userId, rating1.userId) &&
                 Objects.equals(productId, rating1.productId);
     }
