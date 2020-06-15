@@ -33,7 +33,7 @@ class Product extends Component {
     getProduct(productId).then(
       (response) => {
         this.setState({
-          productDetail: response,
+          productDetail: response.product,
           isLoading: false,
           popup: false,
         });
