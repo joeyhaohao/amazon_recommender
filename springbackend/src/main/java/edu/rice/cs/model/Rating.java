@@ -14,7 +14,8 @@ import java.util.Objects;
  */
 @Document(collection = "rating")
 public class Rating {
-
+    @Id
+    private String id;
     @Indexed
     private String userId;
     @Indexed
@@ -66,8 +67,7 @@ public class Rating {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Rating rating1 = (Rating) o;
-        return Double.compare(rating1.rating, rating) == 0 &&
-                timestamp == rating1.timestamp &&
+        return Objects.equals(id, rating1.id) &&
                 Objects.equals(userId, rating1.userId) &&
                 Objects.equals(productId, rating1.productId);
     }
