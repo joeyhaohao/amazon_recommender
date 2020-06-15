@@ -22,7 +22,6 @@ object ALSRecommender {
   val RECOMMEND_NUM = 20
 
   def main(args: Array[String]): Unit = {
-
     // create a spark config
     val sparkConf = new SparkConf()
       .setMaster(config("spark.cores"))

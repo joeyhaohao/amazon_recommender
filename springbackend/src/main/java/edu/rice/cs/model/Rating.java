@@ -10,8 +10,9 @@ import javax.persistence.GeneratedValue;
 import java.util.Objects;
 
 /**
- * Created by joeyhaohao on 5/20/20
+ * Created by joeyhaohao on 6/14/20
  */
+@Document(collection = "rating")
 public class Rating {
 
     @Indexed
