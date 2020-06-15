@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Route, withRouter, Switch } from "react-router-dom";
+import { Route, withRouter, Switch, Redirect } from "react-router-dom";
 
 import { getCurrentUser } from "../util/APIUtils";
 import { ACCESS_TOKEN } from "../constants";
@@ -7,7 +7,6 @@ import { ACCESS_TOKEN } from "../constants";
 import Login from "../auth/Login";
 import Registration from "../auth/Registration";
 import Album from "../main/Album";
-import MainPage from "../main/MainPage";
 
 class App extends Component {
   constructor(props) {
@@ -75,6 +74,9 @@ class App extends Component {
             render={(props) => <Login onLogin={this.handleLogin} {...props} />}
           />
           <Route path="/registration" exact component={Registration} />
+          {/* <Route exact path="/">
+            {this.state.isAuthenticated ? <Redirect to="/login" /> : <Album />}
+          </Route> */}
           <Route
             path="/"
             exact

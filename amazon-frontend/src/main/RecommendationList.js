@@ -35,7 +35,7 @@ class RecommendList extends Component {
 
     console.log(userId);
 
-    if (this.props.title == "Recommend for you") {
+    if (this.props.title === "Recommend for you") {
       getRecommendList("als/" + userId).then(
         (response) => {
           this.setState({
@@ -94,10 +94,10 @@ class RecommendList extends Component {
           </Container>
         </div>
         {/* End hero unit */}
-        <Container className={classes.cardGrid} maxWidth="md">
+        <Container className={classes.cardGrid} maxWidth="lg">
           <Grid container spacing={4}>
             {this.state.recommendList.map((product, index) => (
-              <Product key={index} product={product} />
+              <Product key={index} product={product}/>
             ))}
           </Grid>
         </Container>

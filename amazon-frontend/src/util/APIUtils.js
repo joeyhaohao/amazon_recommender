@@ -61,6 +61,13 @@ export function getProduct(productId) {
     });
 }
 
+export function rateProduct(productId, rateRequest) {
+    return request({
+        url: BASE_URL + "/product/rate/" + productId + "?userId=" + rateRequest.userId + "&rate=" + rateRequest.rate,
+        method: 'POST',
+    });
+}
+
 export function checkUsernameAvailability(username) {
     return request({
         url: API_BASE_URL + "/user/checkUsernameAvailability?username=" + username,

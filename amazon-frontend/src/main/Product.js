@@ -13,6 +13,7 @@ import Grid from "@material-ui/core/Grid";
 import { withStyles } from "@material-ui/core/styles";
 import { getProduct } from "../util/APIUtils";
 import { useStyles } from "./MyStyle";
+import ProductDetail from "./ProductDetail";
 
 class Product extends Component {
   constructor(props) {
@@ -34,6 +35,7 @@ class Product extends Component {
         this.setState({
           productDetail: response,
           isLoading: false,
+          popup: false,
         });
         // console.log(this.state.productDetail);
       },
@@ -45,6 +47,13 @@ class Product extends Component {
       }
     );
   }
+
+  // This syntax ensures `this` is bound within
+  togglePop = () => {
+    this.setState({
+      popup: !this.state.popup,
+    });
+  };
 
   render() {
     const { classes } = this.props;
@@ -77,9 +86,15 @@ class Product extends Component {
               </Typography>
             </CardContent>
             <CardActions>
-              <Button size="small" color="primary">
+              <Button size="small" color="primary" onClick={this.togglePop}>
                 View
               </Button>
+              {this.state.popup ? (
+                <ProductDetail
+                  toggle={this.togglePop}
+                  product={this.state.productDetail}
+                />
+              ) : null}
             </CardActions>
           </Card>
         </Grid>
