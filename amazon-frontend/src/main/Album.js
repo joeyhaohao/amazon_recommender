@@ -1,23 +1,28 @@
 import React, { Component } from "react";
 
+import Button from "@material-ui/core/Button";
 import AppBar from "@material-ui/core/AppBar";
 import CameraIcon from "@material-ui/icons/PhotoCamera";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import Toolbar from "@material-ui/core/Toolbar";
 import Typography from "@material-ui/core/Typography";
 import { withStyles } from "@material-ui/core/styles";
-import Link from "@material-ui/core/Link";
+import LinkMaterial from "@material-ui/core/Link";
+
+import { Link } from "react-router-dom";
 
 import RecommendList from "./RecommendationList";
 import { useStyles } from "./MyStyle";
+import ProductDetail from "./ProductDetail"
+import "./Popup.css"
 
 function Copyright() {
   return (
     <Typography variant="body2" color="textSecondary" align="center">
       {"Copyright © "}
-      <Link color="inherit" href="https://material-ui.com/">
+      <LinkMaterial color="inherit" href="https://material-ui.com/">
         Your Website
-      </Link>{" "}
+      </LinkMaterial>{" "}
       {new Date().getFullYear()}
       {"."}
     </Typography>
@@ -33,6 +38,7 @@ class Album extends Component {
     };
   }
 
+
   render() {
     const { classes } = this.props;
 
@@ -42,15 +48,26 @@ class Album extends Component {
         <AppBar position="relative">
           <Toolbar>
             <CameraIcon className={classes.icon} />
-            <Typography variant="h6" color="inherit" noWrap>
+            <Typography className = {classes.title} variant="h6" color="inherit" noWrap>
               {this.state.title}
             </Typography>
+            <Button component={Link} to="/login" color="inherit">
+              Login
+            </Button>
+            <Button color="inherit">Log out</Button>
           </Toolbar>
         </AppBar>
         <main>
-          <RecommendList currentUser = {this.props.currentUser} title="Recommend for you" />
 
-          <RecommendList currentUser = {this.props.currentUser} title="Guess you like" />
+          <RecommendList
+            currentUser={this.props.currentUser}
+            title="Recommend for you"
+            toggle={this.togglePop}
+          />
+          <RecommendList
+            currentUser={this.props.currentUser}
+            title="Guess you like"
+          />
         </main>
         {/* Footer */}
         <footer className={classes.footer}>
