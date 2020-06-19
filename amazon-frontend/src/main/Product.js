@@ -9,7 +9,7 @@ import CardMedia from "@material-ui/core/CardMedia";
 import Typography from "@material-ui/core/Typography";
 
 import Grid from "@material-ui/core/Grid";
-
+import Rating from "@material-ui/lab/Rating";
 import { withStyles } from "@material-ui/core/styles";
 import { getProduct } from "../util/APIUtils";
 import { useStyles } from "./MyStyle";
@@ -37,7 +37,7 @@ class Product extends Component {
           isLoading: false,
           popup: false,
         });
-        // console.log(this.state.productDetail);
+        console.log(this.state.productDetail);
       },
       (error) => {
         this.setState({
@@ -77,13 +77,21 @@ class Product extends Component {
                   ? this.state.productDetail.product.title
                   : "Product title"}
               </Typography>
-              <Typography>
-                {/* {this.state.productDetail
-                  ? this.state.productDetail.description
-                  : "Product description"} */}
-                This is a media card. You can use this section to describe the
-                content.
-              </Typography>
+              {/* <Typography>
+                {this.state.productDetail
+                  ? this.state.productDetail.product.description
+                  : "This is a media card. You can use this section to describe the content."}
+              </Typography> */}
+              <Rating
+                precision={0.1}
+                value={
+                  this.state.productDetail
+                    ? this.state.productDetail.ratingAvg
+                    : null
+                }
+                name="disabled"
+                disabled
+              />
             </CardContent>
             <CardActions>
               <Button size="small" color="primary" onClick={this.togglePop}>

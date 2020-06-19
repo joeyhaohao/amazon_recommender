@@ -13,8 +13,8 @@ import { Link } from "react-router-dom";
 
 import RecommendList from "./RecommendationList";
 import { useStyles } from "./MyStyle";
-import ProductDetail from "./ProductDetail"
-import "./Popup.css"
+import ProductDetail from "./ProductDetail";
+import "./Popup.css";
 
 function Copyright() {
   return (
@@ -38,27 +38,34 @@ class Album extends Component {
     };
   }
 
-
   render() {
     const { classes } = this.props;
 
     return (
       <React.Fragment>
         <CssBaseline />
+
         <AppBar position="relative">
           <Toolbar>
             <CameraIcon className={classes.icon} />
-            <Typography className = {classes.title} variant="h6" color="inherit" noWrap>
+            <Typography
+              className={classes.title}
+              variant="h6"
+              color="inherit"
+              noWrap
+            >
               {this.state.title}
             </Typography>
             <Button component={Link} to="/login" color="inherit">
               Login
             </Button>
-            <Button color="inherit">Log out</Button>
+            <Button color="inherit" onClick={this.props.handleLogout}>
+              Log out
+            </Button>
           </Toolbar>
         </AppBar>
-        <main>
 
+        <main>
           <RecommendList
             currentUser={this.props.currentUser}
             title="Recommend for you"

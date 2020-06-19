@@ -30,6 +30,10 @@ const request = (options) => {
         );
 };
 
+export function isLogin() {
+    return localStorage.getItem(ACCESS_TOKEN);
+}
+
 
 export function login(loginRequest) {
     return request({
@@ -39,7 +43,7 @@ export function login(loginRequest) {
     });
 }
 
-export function signup(signupRequest) {
+export function signUp(signupRequest) {
     return request({
         url: API_BASE_URL + "/auth/signup",
         method: 'POST',

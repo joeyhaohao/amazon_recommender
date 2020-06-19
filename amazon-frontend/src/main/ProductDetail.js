@@ -111,17 +111,19 @@ class ProductDetail extends Component {
               <Typography>
                 Total num of rating: {this.props.product.ratingCount}
               </Typography>
-            </CardContent>
-            <CardActions disableSpacing>
-              <Box component="fieldset" mb={3} borderColor="transparent">
-                <Rating
+              <br/>
+              <Rating
                   name="simple-controlled"
                   value={this.state.rateVal}
                   onChange={(event, newValue) => {
                     this.setValue({ rateVal: newValue });
                   }}
                 />
-              </Box>
+            </CardContent>
+            <CardActions disableSpacing>
+              {/* <Box component="span" mb={3} borderColor="transparent"> */}
+
+              {/* </Box> */}
 
               <IconButton
                 className={clsx(classes.expand, {

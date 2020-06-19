@@ -24,6 +24,12 @@ class RecommendList extends Component {
     this.loadRecommendation();
   }
 
+  componentDidUpdate(prevProps) {
+    if (this.props.currentUser !== prevProps.currentUser) {
+      this.loadRecommendation();
+    }
+  }
+
   loadRecommendation() {
     this.setState({
       isLoading: true,
@@ -45,13 +51,20 @@ class RecommendList extends Component {
           // console.log(this.state.recommendList);
         },
         (error) => {
-          getRecommendList("trending").then((response) => {
-            this.setState({
-              recommendList: response,
-              isLoading: false,
+          getRecommendList("trending")
+            .then((response) => {
+              this.setState({
+                recommendList: response,
+                isLoading: false,
+              });
+              // console.log(this.state.recommendList);
+            })
+            .catch((error) => {
+              this.setState({
+                recommendList: [],
+                isLoading: false,
+              });
             });
-            // console.log(this.state.recommendList);
-          });
         }
       );
     } else {
@@ -63,12 +76,19 @@ class RecommendList extends Component {
           });
         },
         (error) => {
-          getRecommendList("top_rate").then((response) => {
-            this.setState({
-              recommendList: response,
-              isLoading: false,
+          getRecommendList("top_rate")
+            .then((response) => {
+              this.setState({
+                recommendList: response,
+                isLoading: false,
+              });
+            })
+            .catch((error) => {
+              this.setState({
+                recommendList: [],
+                isLoading: false,
+              });
             });
-          });
         }
       );
     }
@@ -79,7 +99,7 @@ class RecommendList extends Component {
 
     return (
       <React.Fragment>
-        {/* Hero unit */}
+
         <div className={classes.heroContent}>
           <Container maxWidth="sm">
             <Typography
@@ -93,11 +113,11 @@ class RecommendList extends Component {
             </Typography>
           </Container>
         </div>
-        {/* End hero unit */}
+
         <Container className={classes.cardGrid} maxWidth="lg">
           <Grid container spacing={4}>
             {this.state.recommendList.map((product, index) => (
-              <Product key={index} product={product}/>
+              <Product key={index} product={product} />
             ))}
           </Grid>
         </Container>

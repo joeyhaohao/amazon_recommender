@@ -7,6 +7,7 @@ import { ACCESS_TOKEN } from "../constants";
 import Login from "../auth/Login";
 import Registration from "../auth/Registration";
 import Album from "../main/Album";
+import PrivateRouter from "../util/PrivateRouter";
 
 class App extends Component {
   constructor(props) {
@@ -77,7 +78,15 @@ class App extends Component {
           {/* <Route exact path="/">
             {this.state.isAuthenticated ? <Redirect to="/login" /> : <Album />}
           </Route> */}
-          <Route
+          <PrivateRouter
+            path="/"
+            exact
+            component={Album}
+            isAuthenticated={this.state.isAuthenticated}
+            currentUser={this.state.currentUser}
+            handleLogout={this.handleLogout}
+          />
+          {/* <Route
             path="/"
             exact
             render={(props) => (
@@ -88,7 +97,7 @@ class App extends Component {
                 {...props}
               />
             )}
-          />
+          /> */}
         </Switch>
       </div>
     );
