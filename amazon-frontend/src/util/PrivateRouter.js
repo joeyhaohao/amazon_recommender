@@ -18,8 +18,6 @@ const PrivateRoute = ({
         isLogin() ? (
           <Component
             {...props}
-            isAuthenticated={isAuthenticated}
-            currentUser={currentUser}
             handleLogout={handleLogout}
           />
         ) : (

@@ -8,9 +8,10 @@ import Toolbar from "@material-ui/core/Toolbar";
 import Typography from "@material-ui/core/Typography";
 import { withStyles } from "@material-ui/core/styles";
 import LinkMaterial from "@material-ui/core/Link";
-
 import { Link } from "react-router-dom";
-import { getRecommendList } from "../util/APIUtils";
+
+import { getRecommendList, getCurrentUser } from "../util/APIUtils";
+
 import RecommendList from "./RecommendationList";
 import { useStyles } from "./MyStyle";
 import "./Popup.css";
@@ -34,16 +35,39 @@ class Album extends Component {
     this.state = {
       title: "Amazon Recommender",
       isLoading: false,
+      currentUser: null,
       recommendList: [],
       guessList: [],
     };
     this.loadRecommendation = this.loadRecommendation.bind(this);
     this.loadGuess = this.loadGuess.bind(this);
+    this.loadCurrentUser = this.loadCurrentUser.bind(this);
   }
 
-  componentDidMount() {
+  async componentDidMount() {
+    await this.loadCurrentUser();
     this.loadRecommendation();
     this.loadGuess();
+  }
+
+  async loadCurrentUser() {
+    this.setState({
+      isLoading: true,
+    });
+    await getCurrentUser()
+      .then((response) => {
+        this.setState({
+          currentUser: response,
+          isLoading: false,
+        });
+        console.log("load user success");
+      })
+      .catch((error) => {
+        this.setState({
+          isLoading: false,
+        });
+      });
+    console.log(this.state.currentUser);
   }
 
   loadGuess() {
@@ -51,8 +75,8 @@ class Album extends Component {
       isLoading: true,
     });
 
-    let userId = this.props.currentUser
-      ? this.props.currentUser.userId
+    let userId = this.state.currentUser
+      ? this.state.currentUser.userId
       : "null";
 
     getRecommendList("realtime/" + userId).then(
@@ -61,8 +85,6 @@ class Album extends Component {
           guessList: response.recList,
           isLoading: false,
         });
-        console.log("realtime")
-        console.log("load guess again!")
       },
       (error) => {
         getRecommendList("top_rate")
@@ -71,9 +93,8 @@ class Album extends Component {
               guessList: response,
               isLoading: false,
             });
-            console.log("top_rate")
           })
-          .catch((error) => {
+          .catch((err) => {
             this.setState({
               guessList: [],
               isLoading: false,
@@ -88,11 +109,9 @@ class Album extends Component {
       isLoading: true,
     });
 
-    let userId = this.props.currentUser
-      ? this.props.currentUser.userId
+    let userId = this.state.currentUser
+      ? this.state.currentUser.userId
       : "null";
-
-    // console.log(userId);
 
     getRecommendList("als/" + userId).then(
       (response) => {
@@ -100,7 +119,7 @@ class Album extends Component {
           recommendList: response.recList,
           isLoading: false,
         });
-        // console.log(this.state.recommendList);
+        console.log("als");
       },
       (error) => {
         getRecommendList("trending")
@@ -109,9 +128,9 @@ class Album extends Component {
               recommendList: response,
               isLoading: false,
             });
-            // console.log(this.state.recommendList);
+            console.log("trending");
           })
-          .catch((error) => {
+          .catch((err) => {
             this.setState({
               recommendList: [],
               isLoading: false,
