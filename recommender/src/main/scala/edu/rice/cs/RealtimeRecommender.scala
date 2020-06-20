@@ -8,6 +8,7 @@ import org.apache.spark.streaming.{Seconds, StreamingContext}
 import org.apache.spark.streaming.kafka010.{ConsumerStrategies, KafkaUtils, LocationStrategies}
 import org.apache.kafka.common.serialization.StringDeserializer
 import redis.clients.jedis.Jedis
+import org.apache.log4j.Logger
 
 object RealtimeRecommender {
 
@@ -16,6 +17,7 @@ object RealtimeRecommender {
   val PRODUCT_SIM_COLLECTION = "product_similarity"
   val USER_RATING_NUM = 20
   val SIMILAR_PRODUCTS_NUM = 20
+  val logger = Logger.getLogger(this.getClass)
 
   def main(args: Array[String]): Unit = {
     val sparkConf = new SparkConf().setMaster(config("spark.cores")).setAppName("RealtimeRecommender")
@@ -75,11 +77,11 @@ object RealtimeRecommender {
 
             // retrieve the latest ratings of the user
             val latestRatings = getUserRecentRatings(userId, USER_RATING_NUM)
+            logger.warn("Fetch recent ratings")
             latestRatings.foreach(println)
 
             // retrieve similar products from product similarity matrix
             val similarProducts = getSimilarProducts(userId, productId, SIMILAR_PRODUCTS_NUM, productSimMatrixBcast.value)
-            similarProducts.foreach(println)
 
             // compute product scores and generate real-time recommendation
             val recommendList = generateRecommendList(similarProducts, latestRatings, productSimMatrixBcast.value)
@@ -218,6 +220,7 @@ object RealtimeRecommender {
         )
       )
     )
+    logger.warn("Save %d recommendations to mongoDB".format(recommendList.size))
   }
 
 }
