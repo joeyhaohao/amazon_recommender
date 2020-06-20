@@ -82,7 +82,6 @@ class App extends Component {
             path="/"
             exact
             component={Album}
-            isAuthenticated={this.state.isAuthenticated}
             currentUser={this.state.currentUser}
             handleLogout={this.handleLogout}
           />

@@ -37,13 +37,13 @@ class Product extends Component {
           isLoading: false,
           popup: false,
         });
-        console.log(this.state.productDetail);
+        // console.log(this.state.productDetail);
       },
       (error) => {
         this.setState({
           isLoading: false,
         });
-        console.log(error);
+        // console.log(error);
       }
     );
   }
@@ -101,6 +101,7 @@ class Product extends Component {
                 <ProductDetail
                   toggle={this.togglePop}
                   product={this.state.productDetail}
+                  loadGuess={this.props.loadGuess}
                 />
               ) : null}
             </CardActions>

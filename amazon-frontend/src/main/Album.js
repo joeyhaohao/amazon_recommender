@@ -10,10 +10,9 @@ import { withStyles } from "@material-ui/core/styles";
 import LinkMaterial from "@material-ui/core/Link";
 
 import { Link } from "react-router-dom";
-
+import { getRecommendList } from "../util/APIUtils";
 import RecommendList from "./RecommendationList";
 import { useStyles } from "./MyStyle";
-import ProductDetail from "./ProductDetail";
 import "./Popup.css";
 
 function Copyright() {
@@ -35,7 +34,91 @@ class Album extends Component {
     this.state = {
       title: "Amazon Recommender",
       isLoading: false,
+      recommendList: [],
+      guessList: [],
     };
+    this.loadRecommendation = this.loadRecommendation.bind(this);
+    this.loadGuess = this.loadGuess.bind(this);
+  }
+
+  componentDidMount() {
+    this.loadRecommendation();
+    this.loadGuess();
+  }
+
+  loadGuess() {
+    this.setState({
+      isLoading: true,
+    });
+
+    let userId = this.props.currentUser
+      ? this.props.currentUser.userId
+      : "null";
+
+    getRecommendList("realtime/" + userId).then(
+      (response) => {
+        this.setState({
+          guessList: response.recList,
+          isLoading: false,
+        });
+        console.log("realtime")
+        console.log("load guess again!")
+      },
+      (error) => {
+        getRecommendList("top_rate")
+          .then((response) => {
+            this.setState({
+              guessList: response,
+              isLoading: false,
+            });
+            console.log("top_rate")
+          })
+          .catch((error) => {
+            this.setState({
+              guessList: [],
+              isLoading: false,
+            });
+          });
+      }
+    );
+  }
+
+  loadRecommendation() {
+    this.setState({
+      isLoading: true,
+    });
+
+    let userId = this.props.currentUser
+      ? this.props.currentUser.userId
+      : "null";
+
+    // console.log(userId);
+
+    getRecommendList("als/" + userId).then(
+      (response) => {
+        this.setState({
+          recommendList: response.recList,
+          isLoading: false,
+        });
+        // console.log(this.state.recommendList);
+      },
+      (error) => {
+        getRecommendList("trending")
+          .then((response) => {
+            this.setState({
+              recommendList: response,
+              isLoading: false,
+            });
+            // console.log(this.state.recommendList);
+          })
+          .catch((error) => {
+            this.setState({
+              recommendList: [],
+              isLoading: false,
+            });
+          });
+      }
+    );
   }
 
   render() {
@@ -70,12 +153,18 @@ class Album extends Component {
             currentUser={this.props.currentUser}
             title="Recommend for you"
             toggle={this.togglePop}
+            productList={this.state.recommendList}
+            loadGuess={this.loadGuess}
           />
           <RecommendList
             currentUser={this.props.currentUser}
             title="Guess you like"
+            toggle={this.togglePop}
+            productList={this.state.guessList}
+            loadGuess={this.loadGuess}
           />
         </main>
+
         {/* Footer */}
         <footer className={classes.footer}>
           <Typography variant="h6" align="center" gutterBottom>

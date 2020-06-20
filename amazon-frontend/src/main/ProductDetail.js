@@ -66,6 +66,7 @@ class ProductDetail extends Component {
       .then((response) => {
         console.log("response!!");
         console.log(response);
+        this.props.loadGuess();
       })
       .catch((error) => {
         console.log("Error!!")
