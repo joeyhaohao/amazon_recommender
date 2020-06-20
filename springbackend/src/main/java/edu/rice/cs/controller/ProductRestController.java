@@ -5,6 +5,7 @@ import edu.rice.cs.model.Product;
 import edu.rice.cs.model.ProductRecList;
 import edu.rice.cs.model.Rating;
 import edu.rice.cs.model.Review;
+import edu.rice.cs.payload.ApiResponse;
 import edu.rice.cs.payload.JwtAuthenticationResponse;
 import edu.rice.cs.payload.ProductResponse;
 import edu.rice.cs.repositories.ProductRepository;
@@ -19,6 +20,7 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.redis.core.ListOperations;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -95,8 +97,8 @@ public class ProductRestController {
         productRepository.deleteByProductId(productId);
     }
 
-    @PostMapping("/rate/{productId}")
-    void rateProduct(@PathVariable("productId") String productId, @RequestParam("userId") String userId, @RequestParam("rate") Double score) {
+    @PostMapping(value = "/rate/{productId}", produces = "application/json")
+    ApiResponse rateProduct(@PathVariable("productId") String productId, @RequestParam("userId") String userId, @RequestParam("rate") Double score) {
         ListOperations<String, String> ops = redisTemplate.opsForList();
         String key = "userId:" + userId;
         String value = productId + ":" + score;
@@ -117,5 +119,7 @@ public class ProductRestController {
         String msg = userId + "|" + productId + "|" + score + "|" + System.currentTimeMillis() / 1000;
         logger.info(String.format("Send message to Kafka: %s", msg));
         kafkaProducer.sendMessage(msg);
+
+        return new ApiResponse(true, "rate success");
     }
 }
