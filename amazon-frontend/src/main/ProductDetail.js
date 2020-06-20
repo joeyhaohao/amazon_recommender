@@ -61,7 +61,7 @@ class ProductDetail extends Component {
       rate: 5.0,
     };
     console.log("Rating!!");
-    rateProduct(this.props.product.productId, rateRequest)
+    rateProduct(this.props.product.product.productId, rateRequest)
       .then((response) => {
         console.log("response!!");
         console.log(response);
