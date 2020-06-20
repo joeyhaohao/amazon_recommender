@@ -17,89 +17,88 @@ class RecommendList extends Component {
       isLoading: false,
       recommendList: [],
     };
-    this.loadRecommendation = this.loadRecommendation.bind(this);
+    // this.loadRecommendation = this.loadRecommendation.bind(this);
   }
 
-  componentDidMount() {
-    this.loadRecommendation();
-  }
+  // componentDidMount() {
+  //   this.loadRecommendation();
+  // }
 
-  componentDidUpdate(prevProps) {
-    if (this.props.currentUser !== prevProps.currentUser) {
-      this.loadRecommendation();
-    }
-  }
+  // componentDidUpdate(prevProps) {
+  //   if (this.props.currentUser !== prevProps.currentUser) {
+  //     this.loadRecommendation();
+  //   }
+  // }
 
-  loadRecommendation() {
-    this.setState({
-      isLoading: true,
-    });
+  // loadRecommendation() {
+  //   this.setState({
+  //     isLoading: true,
+  //   });
 
-    let userId = this.props.currentUser
-      ? this.props.currentUser.userId
-      : "null";
+  //   let userId = this.props.currentUser
+  //     ? this.props.currentUser.userId
+  //     : "null";
 
-    console.log(userId);
+  //   console.log(userId);
 
-    if (this.props.title === "Recommend for you") {
-      getRecommendList("als/" + userId).then(
-        (response) => {
-          this.setState({
-            recommendList: response.recList,
-            isLoading: false,
-          });
-          // console.log(this.state.recommendList);
-        },
-        (error) => {
-          getRecommendList("trending")
-            .then((response) => {
-              this.setState({
-                recommendList: response,
-                isLoading: false,
-              });
-              // console.log(this.state.recommendList);
-            })
-            .catch((error) => {
-              this.setState({
-                recommendList: [],
-                isLoading: false,
-              });
-            });
-        }
-      );
-    } else {
-      getRecommendList("realtime/" + userId).then(
-        (response) => {
-          this.setState({
-            recommendList: response.recList,
-            isLoading: false,
-          });
-        },
-        (error) => {
-          getRecommendList("top_rate")
-            .then((response) => {
-              this.setState({
-                recommendList: response,
-                isLoading: false,
-              });
-            })
-            .catch((error) => {
-              this.setState({
-                recommendList: [],
-                isLoading: false,
-              });
-            });
-        }
-      );
-    }
-  }
+  //   if (this.props.title === "Recommend for you") {
+  //     getRecommendList("als/" + userId).then(
+  //       (response) => {
+  //         this.setState({
+  //           recommendList: response.recList,
+  //           isLoading: false,
+  //         });
+  //         // console.log(this.state.recommendList);
+  //       },
+  //       (error) => {
+  //         getRecommendList("trending")
+  //           .then((response) => {
+  //             this.setState({
+  //               recommendList: response,
+  //               isLoading: false,
+  //             });
+  //             // console.log(this.state.recommendList);
+  //           })
+  //           .catch((error) => {
+  //             this.setState({
+  //               recommendList: [],
+  //               isLoading: false,
+  //             });
+  //           });
+  //       }
+  //     );
+  //   } else {
+  //     getRecommendList("realtime/" + userId).then(
+  //       (response) => {
+  //         this.setState({
+  //           recommendList: response.recList,
+  //           isLoading: false,
+  //         });
+  //       },
+  //       (error) => {
+  //         getRecommendList("top_rate")
+  //           .then((response) => {
+  //             this.setState({
+  //               recommendList: response,
+  //               isLoading: false,
+  //             });
+  //           })
+  //           .catch((error) => {
+  //             this.setState({
+  //               recommendList: [],
+  //               isLoading: false,
+  //             });
+  //           });
+  //       }
+  //     );
+  //   }
+  // }
 
   render() {
     const { classes } = this.props;
 
     return (
       <React.Fragment>
-
         <div className={classes.heroContent}>
           <Container maxWidth="sm">
             <Typography
@@ -116,8 +115,12 @@ class RecommendList extends Component {
 
         <Container className={classes.cardGrid} maxWidth="lg">
           <Grid container spacing={4}>
-            {this.state.recommendList.map((product, index) => (
-              <Product key={index} product={product} />
+            {this.props.productList.map((product, index) => (
+              <Product
+                key={index}
+                product={product}
+                loadGuess={this.props.loadGuess}
+              />
             ))}
           </Grid>
         </Container>

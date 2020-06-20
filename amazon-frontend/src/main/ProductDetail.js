@@ -61,10 +61,12 @@ class ProductDetail extends Component {
       rate: 5.0,
     };
     console.log("Rating!!");
+    console.log(this.props.product.product.productId)
     rateProduct(this.props.product.product.productId, rateRequest)
       .then((response) => {
         console.log("response!!");
         console.log(response);
+        this.props.loadGuess();
       })
       .catch((error) => {
         console.log("Error!!")
