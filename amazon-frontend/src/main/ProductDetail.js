@@ -116,7 +116,8 @@ class ProductDetail extends Component {
                   name="simple-controlled"
                   value={this.state.rateVal}
                   onChange={(event, newValue) => {
-                    this.setValue({ rateVal: newValue });
+                    this.setState({ rateVal: newValue });
+                    this.handleRate();
                   }}
                 />
             </CardContent>
