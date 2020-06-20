@@ -60,9 +60,16 @@ class ProductDetail extends Component {
       userId: "001",
       rate: 5.0,
     };
-    rateProduct(this.props.product.productId, rateRequest).then((response) => {
-      console.log(response);
-    });
+    console.log("Rating!!");
+    rateProduct(this.props.product.productId, rateRequest)
+      .then((response) => {
+        console.log("response!!");
+        console.log(response);
+      })
+      .catch((error) => {
+        console.log("Error!!")
+        console.log(error);
+      });
   };
 
   handleExpandClick = () => {
@@ -111,15 +118,15 @@ class ProductDetail extends Component {
               <Typography>
                 Total num of rating: {this.props.product.ratingCount}
               </Typography>
-              <br/>
+              <br />
               <Rating
-                  name="simple-controlled"
-                  value={this.state.rateVal}
-                  onChange={(event, newValue) => {
-                    this.setState({ rateVal: newValue });
-                    this.handleRate();
-                  }}
-                />
+                name="simple-controlled"
+                value={this.state.rateVal}
+                onChange={(event, newValue) => {
+                  this.setState({ rateVal: newValue });
+                  this.handleRate();
+                }}
+              />
             </CardContent>
             <CardActions disableSpacing>
               {/* <Box component="span" mb={3} borderColor="transparent"> */}
