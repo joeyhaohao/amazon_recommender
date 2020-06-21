@@ -79,12 +79,15 @@ class Album extends Component {
       ? this.state.currentUser.userId
       : "null";
 
+      console.log("load guess again!")
+
     getRecommendList("realtime/" + userId).then(
       (response) => {
         this.setState({
           guessList: response.recList,
           isLoading: false,
         });
+        console.log("real time")
       },
       (error) => {
         getRecommendList("top_rate")
@@ -93,6 +96,7 @@ class Album extends Component {
               guessList: response,
               isLoading: false,
             });
+            console.log("top rate")
           })
           .catch((err) => {
             this.setState({

@@ -35,7 +35,7 @@ class App extends Component {
   }
 
   handleLogin() {
-    this.loadCurrentUser();
+    // this.loadCurrentUser();
     this.props.history.push("/");
   }
 
