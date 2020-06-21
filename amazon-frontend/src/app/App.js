@@ -1,7 +1,7 @@
 import React, { Component } from "react";
-import { Route, withRouter, Switch, Redirect } from "react-router-dom";
+import { Route, withRouter, Switch } from "react-router-dom";
 
-import { getCurrentUser } from "../util/APIUtils";
+
 import { ACCESS_TOKEN } from "../constants";
 
 import Login from "../auth/Login";

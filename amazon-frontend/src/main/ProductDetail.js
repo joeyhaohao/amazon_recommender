@@ -12,11 +12,11 @@ import Collapse from "@material-ui/core/Collapse";
 import IconButton from "@material-ui/core/IconButton";
 import Typography from "@material-ui/core/Typography";
 import { red } from "@material-ui/core/colors";
-import FavoriteIcon from "@material-ui/icons/Favorite";
+
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import CloseIcon from "@material-ui/icons/Close";
 import Rating from "@material-ui/lab/Rating";
-import Box from "@material-ui/core/Box";
+
 
 import { rateProduct } from "../util/APIUtils";
 
