@@ -80,7 +80,7 @@ class SignIn extends Component {
     login(loginRequest)
       .then((response) => {
         localStorage.setItem(ACCESS_TOKEN, response.accessToken);
-        this.props.onLogin();
+        this.props.history.push("/");
         console.log("OK!!!!!!!");
       })
       .catch((error) => {

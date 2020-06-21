@@ -37,13 +37,11 @@ class Product extends Component {
           isLoading: false,
           popup: false,
         });
-        // console.log(this.state.productDetail);
       },
       (error) => {
         this.setState({
           isLoading: false,
         });
-        // console.log(error);
       }
     );
   }
@@ -77,11 +75,7 @@ class Product extends Component {
                   ? this.state.productDetail.product.title
                   : "Product title"}
               </Typography>
-              {/* <Typography>
-                {this.state.productDetail
-                  ? this.state.productDetail.product.description
-                  : "This is a media card. You can use this section to describe the content."}
-              </Typography> */}
+   
               <Rating
                 precision={0.1}
                 value={

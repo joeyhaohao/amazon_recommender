@@ -46,8 +46,10 @@ class Album extends Component {
 
   async componentDidMount() {
     await this.loadCurrentUser();
-    this.loadRecommendation();
-    this.loadGuess();
+    if (this.state.currentUser) {
+      this.loadRecommendation();
+      this.loadGuess();
+    }
   }
 
   async loadCurrentUser() {
@@ -75,11 +77,9 @@ class Album extends Component {
       isLoading: true,
     });
 
-    let userId = this.state.currentUser
-      ? this.state.currentUser.userId
-      : "null";
+    let userId = this.state.currentUser.userId;
 
-      console.log("load guess again!")
+    console.log("load guess again!");
 
     getRecommendList("realtime/" + userId).then(
       (response) => {
@@ -87,7 +87,7 @@ class Album extends Component {
           guessList: response.recList,
           isLoading: false,
         });
-        console.log("real time")
+        console.log("real time");
       },
       (error) => {
         getRecommendList("top_rate")
@@ -96,7 +96,7 @@ class Album extends Component {
               guessList: response,
               isLoading: false,
             });
-            console.log("top rate")
+            console.log("top rate");
           })
           .catch((err) => {
             this.setState({
@@ -113,9 +113,7 @@ class Album extends Component {
       isLoading: true,
     });
 
-    let userId = this.state.currentUser
-      ? this.state.currentUser.userId
-      : "null";
+    let userId = this.state.currentUser.userId;
 
     getRecommendList("als/" + userId).then(
       (response) => {
@@ -175,14 +173,12 @@ class Album extends Component {
           <RecommendList
             currentUser={this.props.currentUser}
             title="Recommend for you"
-            toggle={this.togglePop}
             productList={this.state.recommendList}
             loadGuess={this.loadGuess}
           />
           <RecommendList
             currentUser={this.props.currentUser}
             title="Guess you like"
-            toggle={this.togglePop}
             productList={this.state.guessList}
             loadGuess={this.loadGuess}
           />
