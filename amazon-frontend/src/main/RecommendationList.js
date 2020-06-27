@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 
 import Grid from "@material-ui/core/Grid";
-
 import Typography from "@material-ui/core/Typography";
 import { withStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
@@ -16,7 +15,6 @@ class RecommendList extends Component {
       isLoading: false,
     };
   }
-
 
   render() {
     const { classes } = this.props;
@@ -40,13 +38,15 @@ class RecommendList extends Component {
         <Container className={classes.cardGrid} maxWidth="lg">
           <Grid container spacing={4}>
             {this.props.productList.map((product, index) => (
-              <Product
-                key={index}
-                product={product}
-                loadGuess={this.props.loadGuess}
-                userId={this.props.userId}
-                listTitle={this.props.title}
-              />
+              <Grid item xs={12} sm={6} md={4}>
+                <Product
+                  key={index}
+                  product={product}
+                  loadGuess={this.props.loadGuess}
+                  userId={this.props.userId}
+                  listTitle={this.props.title}
+                />
+              </Grid>
             ))}
           </Grid>
         </Container>

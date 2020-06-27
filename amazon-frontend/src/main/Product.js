@@ -66,7 +66,7 @@ class Product extends Component {
 
     return (
       <React.Fragment>
-        <Grid item xs={12} sm={6} md={4}>
+
           <Card className={classes.card}>
             <CardMedia
               className={classes.cardMedia}
@@ -113,7 +113,7 @@ class Product extends Component {
               ) : null}
             </CardActions>
           </Card>
-        </Grid>
+
       </React.Fragment>
     );
   }

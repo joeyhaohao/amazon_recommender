@@ -11,7 +11,7 @@ import LinkMaterial from "@material-ui/core/Link";
 import { Link } from "react-router-dom";
 
 import { getRecommendList, getCurrentUser } from "../util/APIUtils";
-
+import MyCarousel from "./MyCarousel";
 import RecommendList from "./RecommendationList";
 import { useStyles } from "./MyStyle";
 import "./Popup.css";
@@ -170,6 +170,13 @@ class Album extends Component {
         </AppBar>
 
         <main>
+          <MyCarousel
+            currentUser={this.props.currentUser}
+            title="Recommend for you"
+            productList={this.state.recommendList}
+            loadGuess={this.loadGuess}
+            userId={this.state.currentUser ? this.state.currentUser.userId : 0}
+          />
           <RecommendList
             currentUser={this.props.currentUser}
             title="Recommend for you"
