@@ -175,12 +175,14 @@ class Album extends Component {
             title="Recommend for you"
             productList={this.state.recommendList}
             loadGuess={this.loadGuess}
+            userId={this.state.currentUser ? this.state.currentUser.userId : 0}
           />
           <RecommendList
             currentUser={this.props.currentUser}
             title="Guess you like"
             productList={this.state.guessList}
             loadGuess={this.loadGuess}
+            userId={this.state.currentUser ? this.state.currentUser.userId : 0}
           />
         </main>
 

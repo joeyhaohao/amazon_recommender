@@ -7,10 +7,11 @@ import CardActions from "@material-ui/core/CardActions";
 import CardContent from "@material-ui/core/CardContent";
 import CardMedia from "@material-ui/core/CardMedia";
 import Typography from "@material-ui/core/Typography";
-
 import Grid from "@material-ui/core/Grid";
 import Rating from "@material-ui/lab/Rating";
+import CircularProgress from "@material-ui/core/CircularProgress";
 import { withStyles } from "@material-ui/core/styles";
+
 import { getProduct } from "../util/APIUtils";
 import { useStyles } from "./MyStyle";
 import ProductDetail from "./ProductDetail";
@@ -20,22 +21,29 @@ class Product extends Component {
     super(props);
     this.state = {
       isLoading: false,
+      // productDetail: {product{id, productId, title, description, categories, imUrl, price},
+      // ratingList[{userId, productId, rating, timestamp},{},...],ratingCount, ratingAvg}
       productDetail: null,
+      popup: false,
     };
     this.loadProduct = this.loadProduct.bind(this);
   }
 
   componentDidMount() {
-    this.loadProduct(this.props.product.productId);
+    // product: {productId, score}
+    this.loadProduct();
   }
 
-  loadProduct(productId) {
+  loadProduct() {
+    let productId = this.props.product.productId;
+    this.setState({
+      isLoading: true,
+    });
     getProduct(productId).then(
       (response) => {
         this.setState({
           productDetail: response,
           isLoading: false,
-          popup: false,
         });
       },
       (error) => {
@@ -69,13 +77,14 @@ class Product extends Component {
               }
               title="Image title"
             />
+
             <CardContent className={classes.cardContent}>
               <Typography gutterBottom variant="h5" component="h2">
                 {this.state.productDetail
                   ? this.state.productDetail.product.title
                   : "Product title"}
               </Typography>
-   
+
               <Rating
                 precision={0.1}
                 value={
@@ -91,11 +100,15 @@ class Product extends Component {
               <Button size="small" color="primary" onClick={this.togglePop}>
                 View
               </Button>
-              {this.state.popup ? (
+
+              {this.state.popup && this.state.productDetail ? (
                 <ProductDetail
                   toggle={this.togglePop}
-                  product={this.state.productDetail}
+                  productDetail={this.state.productDetail}
                   loadGuess={this.props.loadGuess}
+                  loadCurrentProduct={this.loadProduct}
+                  userId={this.props.userId}
+                  listTitle={this.props.listTitle}
                 />
               ) : null}
             </CardActions>

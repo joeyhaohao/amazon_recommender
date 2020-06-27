@@ -22,7 +22,8 @@ export const useStyles = (theme) => ({
       flexDirection: "column",
     },
     cardMedia: {
-      paddingTop: "100%", // 16:9 56.25%
+      // paddingTop: "100%", // 16:9 56.25%
+      height: 300,
     },
     cardContent: {
       flexGrow: 1,

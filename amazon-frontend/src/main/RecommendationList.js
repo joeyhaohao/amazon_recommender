@@ -44,6 +44,8 @@ class RecommendList extends Component {
                 key={index}
                 product={product}
                 loadGuess={this.props.loadGuess}
+                userId={this.props.userId}
+                listTitle={this.props.title}
               />
             ))}
           </Grid>

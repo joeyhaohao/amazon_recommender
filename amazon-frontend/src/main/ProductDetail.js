@@ -17,7 +17,6 @@ import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import CloseIcon from "@material-ui/icons/Close";
 import Rating from "@material-ui/lab/Rating";
 
-
 import { rateProduct } from "../util/APIUtils";
 
 const useStyles = (theme) => ({
@@ -26,7 +25,7 @@ const useStyles = (theme) => ({
     marginLeft: "auto",
   },
   media: {
-    height: 0,
+    // height: 0,
     paddingTop: "56.25%", // 16:9,
     marginTop: "30",
   },
@@ -51,27 +50,31 @@ class ProductDetail extends Component {
     this.state = {
       expanded: false,
       recommendList: [],
-      rateVal: 0,
     };
   }
 
-  handleRate = () => {
+  handleRate = (newVal) => {
     const rateRequest = {
-      userId: "001",
-      rate: 5.0,
+      userId: this.props.userId,
+      rate: newVal,
     };
     console.log("Rating!!");
-    console.log(this.props.product.product.productId)
-    rateProduct(this.props.product.product.productId, rateRequest)
-      .then((response) => {
+    console.log(rateRequest);
+    rateProduct(this.props.productDetail.product.productId, rateRequest).then(
+      (response) => {
         console.log("response!!");
         console.log(response);
         this.props.loadGuess();
-      })
-      .catch((error) => {
-        console.log("Error!!")
+        if (this.props.listTitle === "Recommend for you") {
+          this.props.loadCurrentProduct();
+          console.log("Reload this product");
+        }
+      },
+      (error) => {
+        console.log("Error!!");
         console.log(error);
-      });
+      }
+    );
   };
 
   handleExpandClick = () => {
@@ -95,38 +98,30 @@ class ProductDetail extends Component {
                   <CloseIcon />
                 </IconButton>
               }
-              title={
-                this.props.product ? this.props.product.product.title : "Title"
-              }
+              title={this.props.productDetail.product.title}
             />
             <CardMedia
               className={classes.media}
-              image={
-                this.props.product
-                  ? this.props.product.product.imUrl
-                  : "https://source.unsplash.com/random"
-              }
+              image={this.props.productDetail.product.imUrl}
             />
             <CardContent>
               <Typography variant="body2" color="textSecondary" component="p">
-                {this.props.product
-                  ? this.props.product.product.categories
-                  : "Product score"}
+                {this.props.productDetail.product.categories}
               </Typography>
 
               <Typography>
-                Average rating: {this.props.product.ratingAvg}
+                Average rating: {this.props.productDetail.ratingAvg}
               </Typography>
               <Typography>
-                Total num of rating: {this.props.product.ratingCount}
+                Total num of rating: {this.props.productDetail.ratingCount}
               </Typography>
               <br />
               <Rating
                 name="simple-controlled"
-                value={this.state.rateVal}
+                precision={0.1}
+                value={this.props.productDetail.ratingAvg}
                 onChange={(event, newValue) => {
-                  this.setState({ rateVal: newValue });
-                  this.handleRate();
+                  this.handleRate(newValue);
                 }}
               />
             </CardContent>
@@ -149,9 +144,7 @@ class ProductDetail extends Component {
             <Collapse in={this.state.expanded} timeout="auto" unmountOnExit>
               <CardContent>
                 <Typography paragraph>
-                  {this.props.product
-                    ? this.props.product.product.description
-                    : "Heat 1/2 cup of the broth in a pot until simmering, add saffron and set aside for 10 minutes."}
+                  {this.props.productDetail.product.description}
                 </Typography>
               </CardContent>
             </Collapse>
