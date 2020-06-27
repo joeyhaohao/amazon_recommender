@@ -65,10 +65,8 @@ class ProductDetail extends Component {
         console.log("response!!");
         console.log(response);
         this.props.loadGuess();
-        if (this.props.listTitle === "Recommend for you") {
-          this.props.loadCurrentProduct();
-          console.log("Reload this product");
-        }
+
+        this.props.loadCurrentProduct();
       },
       (error) => {
         console.log("Error!!");
