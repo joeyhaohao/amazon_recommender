@@ -22,7 +22,7 @@ class RecommendList extends Component {
     return (
       <React.Fragment>
         <div className={classes.heroContent}>
-          <Container maxWidth="sm">
+          <Container maxWidth="lg">
             <Typography
               component="h1"
               variant="h2"

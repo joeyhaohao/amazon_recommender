@@ -7,13 +7,13 @@ export const useStyles = (theme) => ({
     },
     heroContent: {
       // backgroundColor: theme.palette.background.paper,
-      padding: theme.spacing(8, 0, 6),
+      padding: theme.spacing(3, 0, 2),
     },
     heroButtons: {
       marginTop: theme.spacing(4),
     },
     cardGrid: {
-      paddingTop: theme.spacing(8),
+      paddingTop: theme.spacing(4),
       paddingBottom: theme.spacing(8),
     },
     card: {
@@ -22,8 +22,8 @@ export const useStyles = (theme) => ({
       flexDirection: "column",
     },
     cardMedia: {
-      // paddingTop: "100%", // 16:9 56.25%
-      height: 300,
+      // paddingTop: "56.25%", // 16:9 56.25%
+      height: 200,
     },
     cardContent: {
       flexGrow: 1,

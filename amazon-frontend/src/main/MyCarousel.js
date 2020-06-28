@@ -12,8 +12,8 @@ import { useStyles } from "./MyStyle";
 const responsive = {
   desktop: {
     breakpoint: { max: 3000, min: 1024 },
-    items: 4,
-    slidesToSlide: 4, // optional, default to 1.
+    items: 5,
+    slidesToSlide: 5, // optional, default to 1.
   },
   tablet: {
     breakpoint: { max: 1024, min: 464 },
@@ -34,13 +34,15 @@ class MyCarousel extends Component {
     return (
       <React.Fragment>
         <div className={classes.heroContent}>
-          <Container maxWidth="sm">
+          <Container maxWidth="lg">
             <Typography
               component="h1"
               variant="h2"
               align="center"
               color="textPrimary"
               gutterBottom
+              fontWeight="fontWeightBold"
+              fontFamily="italic"
             >
               {this.props.title}
             </Typography>
@@ -53,16 +55,16 @@ class MyCarousel extends Component {
             draggable={false}
             showDots={true}
             responsive={responsive}
-            ssr={true} // means to render carousel on server-side.
+            // ssr={true} // means to render carousel on server-side.
             infinite={true}
             autoPlay={false}
-            autoPlaySpeed={3000}
+            // autoPlaySpeed={3000}
             keyBoardControl={true}
             customTransition="all .5"
             transitionDuration={500}
             containerClass="carousel-container"
-            removeArrowOnDeviceType={["tablet", "mobile"]}
-            deviceType={this.props.deviceType}
+            // removeArrowOnDeviceType={["tablet", "mobile"]}
+            // deviceType={this.props.deviceType}
             dotListClass="custom-dot-list-style"
             itemClass="carousel-item-padding-40-px"
           >

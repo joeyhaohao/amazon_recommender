@@ -7,7 +7,7 @@ import CardActions from "@material-ui/core/CardActions";
 import CardContent from "@material-ui/core/CardContent";
 import CardMedia from "@material-ui/core/CardMedia";
 import Typography from "@material-ui/core/Typography";
-
+import Box from "@material-ui/core/Box";
 import Rating from "@material-ui/lab/Rating";
 
 import { withStyles } from "@material-ui/core/styles";
@@ -66,54 +66,62 @@ class Product extends Component {
 
     return (
       <React.Fragment>
+        <Card className={classes.card}>
+          <CardMedia
+            className={classes.cardMedia}
+            image={
+              this.state.productDetail
+                ? this.state.productDetail.product.imUrl
+                : "null"
+            }
+            title="Image title"
+          />
 
-          <Card className={classes.card}>
-            <CardMedia
-              className={classes.cardMedia}
-              image={
+          <CardContent
+            className={classes.cardContent}
+            style={{ whiteSpace: "nowrap" }}
+          >
+            <Box
+              component="div"
+              my={2}
+              textOverflow="ellipsis"
+              overflow="hidden"
+              bgcolor="background.paper"
+            >
+              {this.state.productDetail
+                ? this.state.productDetail.product.title
+                : "Product title"}
+            </Box>
+
+            <Rating
+              precision={0.1}
+              value={
                 this.state.productDetail
-                  ? this.state.productDetail.product.imUrl
-                  : "null"
+                  ? this.state.productDetail.ratingAvg
+                  : null
               }
-              title="Image title"
+              name="disabled"
+              disabled
             />
+          </CardContent>
 
-            <CardContent className={classes.cardContent}>
-              <Typography gutterBottom variant="h5" component="h2">
-                {this.state.productDetail
-                  ? this.state.productDetail.product.title
-                  : "Product title"}
-              </Typography>
+          <CardActions>
+            <Button size="small" color="primary" onClick={this.togglePop}>
+              View
+            </Button>
 
-              <Rating
-                precision={0.1}
-                value={
-                  this.state.productDetail
-                    ? this.state.productDetail.ratingAvg
-                    : null
-                }
-                name="disabled"
-                disabled
+            {this.state.popup && this.state.productDetail ? (
+              <ProductDetail
+                toggle={this.togglePop}
+                productDetail={this.state.productDetail}
+                loadGuess={this.props.loadGuess}
+                loadCurrentProduct={this.loadProduct}
+                userId={this.props.userId}
+                listTitle={this.props.listTitle}
               />
-            </CardContent>
-            <CardActions>
-              <Button size="small" color="primary" onClick={this.togglePop}>
-                View
-              </Button>
-
-              {this.state.popup && this.state.productDetail ? (
-                <ProductDetail
-                  toggle={this.togglePop}
-                  productDetail={this.state.productDetail}
-                  loadGuess={this.props.loadGuess}
-                  loadCurrentProduct={this.loadProduct}
-                  userId={this.props.userId}
-                  listTitle={this.props.listTitle}
-                />
-              ) : null}
-            </CardActions>
-          </Card>
-
+            ) : null}
+          </CardActions>
+        </Card>
       </React.Fragment>
     );
   }

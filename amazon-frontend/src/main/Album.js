@@ -36,8 +36,8 @@ class Album extends Component {
       title: "Amazon Recommender",
       isLoading: false,
       currentUser: null,
-      recommendList: [],
-      guessList: [],
+      recommendList: null,
+      guessList: null,
     };
     this.loadRecommendation = this.loadRecommendation.bind(this);
     this.loadGuess = this.loadGuess.bind(this);
@@ -121,6 +121,7 @@ class Album extends Component {
           recommendList: response.recList,
           isLoading: false,
         });
+        console.log(this.state.recommendList);
         console.log("als");
       },
       (error) => {
@@ -170,27 +171,46 @@ class Album extends Component {
         </AppBar>
 
         <main>
-          <MyCarousel
-            currentUser={this.props.currentUser}
-            title="Recommend for you"
-            productList={this.state.recommendList}
-            loadGuess={this.loadGuess}
-            userId={this.state.currentUser ? this.state.currentUser.userId : 0}
-          />
-          <RecommendList
-            currentUser={this.props.currentUser}
-            title="Recommend for you"
-            productList={this.state.recommendList}
-            loadGuess={this.loadGuess}
-            userId={this.state.currentUser ? this.state.currentUser.userId : 0}
-          />
-          <RecommendList
-            currentUser={this.props.currentUser}
-            title="Guess you like"
-            productList={this.state.guessList}
-            loadGuess={this.loadGuess}
-            userId={this.state.currentUser ? this.state.currentUser.userId : 0}
-          />
+          {this.state.recommendList && this.state.guessList ? (
+            <div>
+              <MyCarousel
+                currentUser={this.props.currentUser}
+                title="Recommend for you"
+                productList={this.state.recommendList}
+                loadGuess={this.loadGuess}
+                userId={
+                  this.state.currentUser ? this.state.currentUser.userId : 0
+                }
+              />
+              <MyCarousel
+                currentUser={this.props.currentUser}
+                title="Guess you like"
+                productList={this.state.guessList}
+                loadGuess={this.loadGuess}
+                userId={
+                  this.state.currentUser ? this.state.currentUser.userId : 0
+                }
+              />
+              {/* <RecommendList
+                currentUser={this.props.currentUser}
+                title="Recommend for you"
+                productList={this.state.recommendList}
+                loadGuess={this.loadGuess}
+                userId={
+                  this.state.currentUser ? this.state.currentUser.userId : 0
+                }
+              />
+              <RecommendList
+                currentUser={this.props.currentUser}
+                title="Guess you like"
+                productList={this.state.guessList}
+                loadGuess={this.loadGuess}
+                userId={
+                  this.state.currentUser ? this.state.currentUser.userId : 0
+                } */}
+              />
+            </div>
+          ) : null}
         </main>
 
         {/* Footer */}
