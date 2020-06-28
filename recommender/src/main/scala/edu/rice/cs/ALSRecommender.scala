@@ -2,6 +2,7 @@ package edu.rice.cs
 
 import com.mongodb.casbah.commons.MongoDBObject
 import com.mongodb.casbah.{MongoClient, MongoClientURI}
+import edu.rice.cs.RealtimeRecommender.logger
 import org.apache.spark.SparkConf
 import org.apache.spark.ml.evaluation.RegressionEvaluator
 import org.apache.spark.ml.feature.StringIndexer
@@ -26,7 +27,7 @@ object ALSRecommender {
     val sparkConf = new SparkConf()
       .setMaster(config("spark.cores"))
       .setAppName("ALSRecommender")
-      .set("spark.testing.memory", "2147480000")
+//      .set("spark.testing.memory", "2147480000")
 
     // create a spark session
     val spark = SparkSession.builder().config(sparkConf).getOrCreate()
@@ -43,7 +44,7 @@ object ALSRecommender {
       .load()
       .as[Rating]
       .rdd
-      .cache()
+//      .cache()
 //    ratingRDD.show(10)
 //    ratingRDD.take(10).foreach(println)
 
@@ -113,10 +114,14 @@ object ALSRecommender {
 
     val userRDD = ratingTransRDD.map(_.user).distinct()
     val productRDD = ratingTransRDD.map(_.product).distinct()
-    val userRecDF = recommendTopK(userRDD, productRDD, model, userIdMapRev, productIdMapRev).toDF()
-    val productRecDF = computeProductSimMatrix(model, productIdMapRev).toDF()
-
+//    val userRecDF = recommendTopK(userRDD, productRDD, model, userIdMapRev, productIdMapRev).toDF()
+    val userRecDF = model.recommendProductsForUsers(RECOMMEND_NUM)
+      .map(x => UserRecList(userIdMapRev(x._1),
+        x._2.toList.map(x => RecommendItem(productIdMapRev(x.product), x.rating))))
+      .toDF()
     saveToMongoDB(userRecDF, USER_REC_COLLECTION, "userId")
+
+    val productRecDF = computeProductSimMatrix(model, productIdMapRev).toDF()
     saveToMongoDB(productRecDF, PRODUCT_SIM_COLLECTION, "productId")
 
     spark.stop()
@@ -141,8 +146,10 @@ object ALSRecommender {
       .groupByKey()
       .map {
         case (userId, recs) =>
-          UserRecList(userIdMapRev(userId),
-            recs.toList.sortWith(_._2 > _._2).take(RECOMMEND_NUM).map(x => RecommendItem(productIdMapRev(x._1), x._2)))
+          UserRecList(
+            userIdMapRev(userId),
+            recs.toList.sortWith(_._2 > _._2).take(RECOMMEND_NUM).map(x => RecommendItem(productIdMapRev(x._1), x._2))
+          )
       }
     userRec
   }
@@ -153,7 +160,7 @@ object ALSRecommender {
     val productFeatures = model.productFeatures.map {
       case (productId, features) => (productId, new DoubleMatrix(features))
     }
-    val productRecDF = productFeatures.cartesian(productFeatures)
+    val productRec = productFeatures.cartesian(productFeatures)
       .filter {
         // filter self-self pairs
         case (a, b) => a._1 != b._1
@@ -167,14 +174,16 @@ object ALSRecommender {
       .groupByKey()
       .map {
         case (productId, recs) =>
-          ProductRecList(productIdMapRev(productId), recs.toList.sortWith(_._2 > _._2).map(x => RecommendItem(productIdMapRev(x._1), x._2)))
+          ProductRecList(
+            productIdMapRev(productId),
+            recs.toList.sortWith(_._2 > _._2).take(RECOMMEND_NUM).map(x => RecommendItem(productIdMapRev(x._1), x._2))
+          )
       }
-    productRecDF
+    productRec
   }
 
   def saveToMongoDB(df: DataFrame, collectionName: String, index: String)(implicit mongoConfig: MongoConfig): Unit = {
     val mongoClient = MongoClient(MongoClientURI(mongoConfig.uri))
-
     val mongoCollection = mongoClient(mongoConfig.db)(collectionName)
     mongoCollection.dropCollection()
 
@@ -188,6 +197,7 @@ object ALSRecommender {
 
     mongoCollection.createIndex(MongoDBObject(index -> 1))
     mongoClient.close()
+    logger.warn("Save %d data to mongoDB".format(df.count()))
   }
 
 }

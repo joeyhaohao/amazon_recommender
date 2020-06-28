@@ -2,26 +2,14 @@ package edu.rice.cs
 
 import java.text.SimpleDateFormat
 import java.util.Date
+
 import com.mongodb.casbah.{MongoClient, MongoClientURI}
 import com.mongodb.casbah.commons.MongoDBObject
+import edu.rice.cs.RealtimeRecommender.logger
 import org.apache.spark.SparkConf
 import org.apache.spark.sql.{DataFrame, SparkSession}
 
 object TrendingRecommender {
-  // online db
-  //  val config = Map(
-  //    "spark.cores" -> "local[*]",
-  //    "mongo.uri" -> "mongodb+srv://amazon:amazon666@cluster0-u2qt7.mongodb.net/amazon_recommender?retryWrites=true&w=majority",
-  //    "mongo.db" -> "amazon_recommender"
-  //  )
-
-  // test db
-  val config = Map(
-    "spark.cores" -> "local[*]",
-    "mongo.uri" -> "mongodb+srv://amazon:amazon666@cluster0-u2qt7.mongodb.net/test?retryWrites=true&w=majority",
-    "mongo.db" -> "test"
-  )
-
   val RATING_COLLECTION = "rating"
   val TRENDING_REC_COLLECTION = "trending_recommendation"
   val TOPRATE_REC_COLLECTION = "top_rate_recommendation"
@@ -83,6 +71,7 @@ object TrendingRecommender {
 
     mongoCollection.createIndex(MongoDBObject(index -> 1))
     mongoClient.close()
+    logger.warn("Save %d data to mongoDB".format(df.count()))
   }
 
 }

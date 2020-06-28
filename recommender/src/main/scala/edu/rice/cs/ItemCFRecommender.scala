@@ -2,24 +2,11 @@ package edu.rice.cs
 
 import com.mongodb.casbah.{MongoClient, MongoClientURI}
 import com.mongodb.casbah.commons.MongoDBObject
+import edu.rice.cs.RealtimeRecommender.logger
 import org.apache.spark.SparkConf
 import org.apache.spark.sql.{DataFrame, SparkSession}
 
 object ItemCFRecommender {
-  // online db
-  //  val config = Map(
-  //    "spark.cores" -> "local[*]",
-  //    "mongo.uri" -> "mongodb+srv://amazon:amazon666@cluster0-u2qt7.mongodb.net/amazon_recommender?retryWrites=true&w=majority",
-  //    "mongo.db" -> "amazon_recommender"
-  //  )
-
-  // test db
-  val config = Map(
-    "spark.cores" -> "local[*]",
-    "mongo.uri" -> "mongodb+srv://amazon:amazon666@cluster0-u2qt7.mongodb.net/test?retryWrites=true&w=majority",
-    "mongo.db" -> "test"
-  )
-
   val RATING_COLLECTION = "rating"
   val ITEMCF_REC_COLLECTION = "itemcf_recommendation"
   val RECOMMENDATION_NUM = 20
@@ -99,7 +86,6 @@ object ItemCFRecommender {
 
   def saveToMongoDB(df: DataFrame, collectionName: String, index: String)(implicit mongoConfig: MongoConfig): Unit = {
     val mongoClient = MongoClient(MongoClientURI(mongoConfig.uri))
-
     val mongoCollection = mongoClient(mongoConfig.db)(collectionName)
     mongoCollection.dropCollection()
 
@@ -113,5 +99,6 @@ object ItemCFRecommender {
 
     mongoCollection.createIndex(MongoDBObject(index -> 1))
     mongoClient.close()
+    logger.warn("Save %d data to mongoDB".format(df.count()))
   }
 }

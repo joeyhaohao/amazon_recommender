@@ -81,13 +81,14 @@ class Album extends Component {
 
     console.log("load guess again!");
 
+    var starttime = Date.now();
     getRecommendList("realtime/" + userId).then(
       (response) => {
         this.setState({
           guessList: response.recList,
           isLoading: false,
         });
-        console.log("real time");
+        console.log("real time, ", Date.now()-starttime);
       },
       (error) => {
         getRecommendList("top_rate")
@@ -96,7 +97,7 @@ class Album extends Component {
               guessList: response,
               isLoading: false,
             });
-            console.log("top rate");
+            console.log("top rate, ", Date.now()-starttime);
           })
           .catch((err) => {
             this.setState({
@@ -115,13 +116,14 @@ class Album extends Component {
 
     let userId = this.state.currentUser.userId;
 
+    var starttime = Date.now();
     getRecommendList("als/" + userId).then(
       (response) => {
         this.setState({
           recommendList: response.recList,
           isLoading: false,
         });
-        console.log("als");
+        console.log("als, ", Date.now()-starttime);
       },
       (error) => {
         getRecommendList("trending")
@@ -130,7 +132,7 @@ class Album extends Component {
               recommendList: response,
               isLoading: false,
             });
-            console.log("trending");
+            console.log("trending, ", Date.now()-starttime);
           })
           .catch((err) => {
             this.setState({

@@ -27,7 +27,7 @@ public class MongoDBConfig {
 
     @Bean
     public MongoTemplate mongoTemplate() {
-        MongoTemplate template = new MongoTemplate(mongoClient(), "test");
+        MongoTemplate template = new MongoTemplate(mongoClient(), "amazon_recommender");
         return template;
     }
 }
