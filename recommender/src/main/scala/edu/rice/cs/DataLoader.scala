@@ -2,6 +2,7 @@ package edu.rice.cs
 
 import com.mongodb.casbah.commons.MongoDBObject
 import com.mongodb.casbah.{MongoClient, MongoClientURI}
+import edu.rice.cs.RealtimeRecommender.logger
 import org.apache.spark.SparkConf
 import org.apache.spark.sql.{DataFrame, SparkSession}
 import org.apache.spark.sql.functions.lit
@@ -19,7 +20,6 @@ object DataLoader {
     val sparkConf = new SparkConf()
       .setMaster(config("spark.cores"))
       .setAppName("DataLoader")
-      .set("spark.testing.memory", "2147480000")
     // create a spark session
     val spark = SparkSession.builder().config(sparkConf).getOrCreate()
     val sc = spark.sparkContext
@@ -27,14 +27,13 @@ object DataLoader {
 
     implicit val mongoConfig = MongoConfig(config("mongo.uri"), config("mongo.db"))
     // load product
-//    val productDF = spark.read.json(PRODUCT_PATH)
-//      .withColumnRenamed("asin", "productId")
-//      .select("productId", "categories", "description", "imUrl", "price", "title")
-//      .na.drop(Seq("productId", "title"))
-//      .cache()
-//    productDF.printSchema()
-//    println(productDF.count())
-//    saveToMongoDB(productDF, PRODUCT_COLLECTION, "productId")
+    val productDF = spark.read.json(PRODUCT_PATH)
+      .withColumnRenamed("asin", "productId")
+      .select("productId", "categories", "description", "imUrl", "price", "title")
+      .na.drop(Seq("productId", "title"))
+      .cache()
+    productDF.printSchema()
+    saveToMongoDB(productDF, PRODUCT_COLLECTION, "productId")
 
     val ratingDF = spark.read.format("csv")
       .option("inferSchema", "true")
@@ -42,17 +41,16 @@ object DataLoader {
       .toDF("userId", "productId", "rating", "timestamp")
       .cache()
     ratingDF.printSchema()
-    println(ratingDF.count())
     saveToMongoDB(ratingDF, RATING_COLLECTION, "userId")
 
-    val userDF = ratingDF
-      .select("userId")
-      .dropDuplicates()
-      .withColumn("password", lit("default"))
-      .cache()
-    userDF.printSchema()
-    println(userDF.count())
-    saveToMongoDB(userDF, USER_COLLECTION, "userId")
+//    val userDF = ratingDF
+//      .select("userId")
+//      .dropDuplicates()
+//      .withColumn("password", lit("default"))
+//      .cache()
+//    userDF.printSchema()
+//    println(userDF.count())
+//    saveToMongoDB(userDF, USER_COLLECTION, "userId")
 
     spark.stop()
   }
@@ -76,5 +74,6 @@ object DataLoader {
     // create index
     mongoCollection.createIndex(MongoDBObject(index -> 1))
     mongoClient.close()
+    logger.warn("Save %d data to mongoDB".format(df.count()))
   }
 }

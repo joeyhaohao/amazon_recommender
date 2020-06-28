@@ -5,32 +5,34 @@ package object cs {
 //  val RATING_PATH = "/home/ubuntu/data/ratings_Movies_and_TV.csv"
 
   // test data
-  val PRODUCT_PATH = "recommender/src/main/resources/data/meta_Movies_and_TV_test.json"
-  val RATING_PATH = "recommender/src/main/resources/data/ratings_Movies_and_TV_test.csv"
+//  val PRODUCT_PATH = "recommender/src/main/resources/data/meta_Movies_and_TV_test.json"
+//  val RATING_PATH = "recommender/src/main/resources/data/ratings_Movies_and_TV_test.csv"
   // complete data
 //  val PRODUCT_PATH = "recommender/src/main/resources/data/meta_Movies_and_TV.json"
 //  val RATING_PATH = "recommender/src/main/resources/data/ratings_Movies_and_TV.csv"
+  val PRODUCT_PATH = "recommender/src/main/resources/data/meta_5cat.json"
+  val RATING_PATH = "recommender/src/main/resources/data/ratings_5cat.csv"
 
   // local db
 //  val config = Map(
 //    "spark.cores" -> "local[*]",
-//    "spark.testing.memory" -> "2147480000",
+////    "spark.testing.memory" -> "2147480000",
 //    "mongo.uri" -> "mongodb://127.0.0.1:27017/recommender",
 //    "mongo.db" -> "recommender"
 //  )
   // test db
-    val config = Map(
-      "spark.cores" -> "local[*]",
-      "mongo.uri" -> "mongodb+srv://amazon:amazon666@cluster0-u2qt7.mongodb.net/test?retryWrites=true&w=majority",
-      "mongo.db" -> "test",
-      "kafka.topic" -> "rating"
-    )
+//  val config = Map(
+//    "spark.cores" -> "local[*]",
+//    "mongo.uri" -> "mongodb+srv://amazon:amazon666@cluster0-u2qt7.mongodb.net/test?retryWrites=true&w=majority",
+//    "mongo.db" -> "test",
+//    "kafka.topic" -> "rating"
+//  )
   // online db
-  //  val config = Map(
-  //    "spark.cores" -> "local[*]",
-  //    "mongo.uri" -> "mongodb+srv://amazon:amazon666@cluster0-u2qt7.mongodb.net/amazon_recommender?retryWrites=true&w=majority",
-  //    "mongo.db" -> "amazon_recommender"
-  //  )
+  val config = Map(
+    "spark.cores" -> "local[*]",
+    "mongo.uri" -> "mongodb+srv://amazon:amazon666@cluster0-u2qt7.mongodb.net/amazon_recommender?retryWrites=true&w=majority",
+    "mongo.db" -> "amazon_recommender"
+  )
 
   /**
    * MongoDB connection configuration
