@@ -112,8 +112,8 @@ object ALSRecommender {
     val rmse = evaluator.evaluate(predDF)
     println(s"rmse: $rmse")
 
-    val userRDD = ratingTransRDD.map(_.user).distinct()
-    val productRDD = ratingTransRDD.map(_.product).distinct()
+//    val userRDD = ratingTransRDD.map(_.user).distinct()
+//    val productRDD = ratingTransRDD.map(_.product).distinct()
 //    val userRecDF = recommendTopK(userRDD, productRDD, model, userIdMapRev, productIdMapRev).toDF()
     val userRecDF = model.recommendProductsForUsers(RECOMMEND_NUM)
       .map(x => UserRecList(userIdMapRev(x._1),
