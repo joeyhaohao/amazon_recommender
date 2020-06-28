@@ -7,9 +7,9 @@ import CardActions from "@material-ui/core/CardActions";
 import CardContent from "@material-ui/core/CardContent";
 import CardMedia from "@material-ui/core/CardMedia";
 import Typography from "@material-ui/core/Typography";
-import Grid from "@material-ui/core/Grid";
+
 import Rating from "@material-ui/lab/Rating";
-import CircularProgress from "@material-ui/core/CircularProgress";
+
 import { withStyles } from "@material-ui/core/styles";
 
 import { getProduct } from "../util/APIUtils";
@@ -73,7 +73,7 @@ class Product extends Component {
               image={
                 this.state.productDetail
                   ? this.state.productDetail.product.imUrl
-                  : "https://source.unsplash.com/random"
+                  : "null"
               }
               title="Image title"
             />

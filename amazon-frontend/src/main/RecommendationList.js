@@ -38,9 +38,8 @@ class RecommendList extends Component {
         <Container className={classes.cardGrid} maxWidth="lg">
           <Grid container spacing={4}>
             {this.props.productList.map((product, index) => (
-              <Grid item xs={12} sm={6} md={4}>
+              <Grid item xs={12} sm={6} md={4} key={index}>
                 <Product
-                  key={index}
                   product={product}
                   loadGuess={this.props.loadGuess}
                   userId={this.props.userId}
