@@ -39,6 +39,7 @@ object DataLoader {
       .option("inferSchema", "true")
       .load(RATING_PATH)
       .toDF("userId", "productId", "rating", "timestamp")
+      .join(productDF.select("productId"), Seq("productId"))
       .cache()
     ratingDF.printSchema()
     saveToMongoDB(ratingDF, RATING_COLLECTION, "userId")
