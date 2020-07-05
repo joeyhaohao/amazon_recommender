@@ -37,6 +37,7 @@ class App extends Component {
           />
           <PrivateRouter
             path="/product/:id"
+            exact
             component={ProductView}
             handleLogout={this.handleLogout}
           />

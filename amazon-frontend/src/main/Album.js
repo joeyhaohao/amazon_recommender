@@ -6,6 +6,8 @@ import ShoppingBasketIcon from '@material-ui/icons/ShoppingBasket';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
+import IconButton from '@material-ui/core/IconButton';
+import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 import { withStyles } from '@material-ui/core/styles';
 
 import { Link } from 'react-router-dom';
@@ -126,9 +128,12 @@ class Album extends Component {
 								Login
 							</Button>
 						)}
-						<Button color="inherit" onClick={this.props.handleLogout}>
+						<IconButton onClick={this.props.handleLogout} color="inherit" title="logout">
+							<ExitToAppIcon fontSize="large"/>
+						</IconButton>
+						{/* <Button color="inherit" onClick={this.props.handleLogout}>
 							Log out
-						</Button>
+						</Button> */}
 					</Toolbar>
 				</AppBar>
 

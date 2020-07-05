@@ -1,42 +1,55 @@
-import React, { Component } from 'react';
+import React, { Component } from "react";
 
-import Container from '@material-ui/core/Container';
-import Typography from '@material-ui/core/Typography';
-import Box from '@material-ui/core/Box';
-import Grid from '@material-ui/core/Grid';
-import Paper from '@material-ui/core/Paper';
-import Rating from '@material-ui/lab/Rating';
+import Container from "@material-ui/core/Container";
+import Typography from "@material-ui/core/Typography";
+import Box from "@material-ui/core/Box";
+import Grid from "@material-ui/core/Grid";
+import Paper from "@material-ui/core/Paper";
+import Rating from "@material-ui/lab/Rating";
+import Button from "@material-ui/core/Button";
+import AppBar from "@material-ui/core/AppBar";
+import ShoppingBasketIcon from "@material-ui/icons/ShoppingBasket";
+import CssBaseline from "@material-ui/core/CssBaseline";
+import Toolbar from "@material-ui/core/Toolbar";
+import IconButton from "@material-ui/core/IconButton";
+import ExitToAppIcon from "@material-ui/icons/ExitToApp";
+import { Link } from "react-router-dom";
+import { withStyles } from "@material-ui/core/styles";
+import { getProduct } from "../util/APIUtils";
 
-import { withStyles } from '@material-ui/core/styles';
-import CssBaseline from '@material-ui/core/CssBaseline';
-import { getProduct } from '../util/APIUtils';
-
-import Product from '../main/Product';
-import MyCarousel from '../util/MyCarousel';
-import { getRecommendList } from '../util/APIUtils';
+import Product from "../main/Product";
+import MyCarousel from "../util/MyCarousel";
+import { getRecommendList } from "../util/APIUtils";
 
 const useStyles = (theme) => ({
 	root: {
-		display: 'flex',
-		flexDirection: 'column',
-		minHeight: '100vh',
+		display: "flex",
+		flexDirection: "column",
+		minHeight: "100vh",
 	},
 	main: {
 		marginTop: theme.spacing(8),
 		marginBottom: theme.spacing(2),
 	},
 	detailsGrid: {
-		minHeight: '50vh',
+		minHeight: "50vh",
 	},
 	image: {
 		// backgroundImage: "url({https://source.unsplash.com/random})",
-		backgroundRepeat: 'no-repeat',
-		backgroundColor: theme.palette.type === 'light' ? theme.palette.grey[50] : theme.palette.grey[900],
-		backgroundSize: 'cover',
-		backgroundPosition: 'center',
+		backgroundRepeat: "no-repeat",
+		backgroundColor: theme.palette.type === "light" ? theme.palette.grey[50] : theme.palette.grey[900],
+		backgroundSize: "cover",
+		backgroundPosition: "center",
 	},
 	items: {
-		margin: '8px',
+		margin: "8px",
+	},
+
+	icon: {
+		marginRight: theme.spacing(2),
+	},
+	title: {
+		flexGrow: 1,
 	},
 });
 
@@ -53,11 +66,20 @@ class ProductView extends Component {
 			peopleAlsoLike: [],
 		};
 		this.loadProduct = this.loadProduct.bind(this);
+		this.loadPeopleAlsoLike = this.loadPeopleAlsoLike.bind(this);
 	}
 
 	componentDidMount() {
 		// product: {productId, score}
 		this.loadProduct();
+		this.loadPeopleAlsoLike();
+	}
+
+	componentDidUpdate(prevProps) {
+		if (prevProps.match.params.id !== this.props.match.params.id) {
+			this.loadProduct();
+			this.loadPeopleAlsoLike();
+		}
 	}
 
 	loadProduct() {
@@ -85,15 +107,18 @@ class ProductView extends Component {
 
 	loadPeopleAlsoLike() {
 		let productId = this.props.match.params.id;
-
-		getRecommendList('top_rate').then(
+		console.log(productId);
+		getRecommendList("itemcf/" + productId).then(
 			(response) => {
 				this.setState({
 					peopleAlsoLike: response.recList,
 				});
-				console.log('itemcf');
+				console.log(this.state.peopleAlsoLike);
+				console.log("itemcf");
 			},
-			(error) => {}
+			(error) => {
+				console.log(error);
+			}
 		);
 	}
 
@@ -105,6 +130,28 @@ class ProductView extends Component {
 				{this.state.productDetail ? (
 					<div className={classes.root}>
 						<CssBaseline />
+
+						<AppBar position="relative">
+							<Toolbar>
+								<ShoppingBasketIcon className={classes.icon} />
+								<Typography component={Link} to={"/"} className={classes.title} variant="h6" color="inherit" noWrap>
+									Amazon Recommender
+								</Typography>
+								{/* {this.state.currentUser ? (
+									<Typography variant="h6" color="inherit">
+										Hello {this.state.currentUser.username}!
+									</Typography>
+								) : (
+									<Button component={Link} to="/login" color="inherit">
+										Login
+									</Button>
+								)} */}
+								<IconButton onClick={this.props.handleLogout} color="inherit" title="logout">
+									<ExitToAppIcon fontSize="large" />
+								</IconButton>
+							</Toolbar>
+						</AppBar>
+
 						<Container component="main" className={classes.main} maxWidth="lg">
 							<Box m={2} p={2}>
 								<Typography variant="h2" component="h1" gutterBottom align="center">
@@ -120,7 +167,7 @@ class ProductView extends Component {
 										lg={6}
 										className={classes.image}
 										style={{
-											backgroundImage: 'url(' + this.state.productDetail.imUrl + ')',
+											backgroundImage: "url(" + this.state.productDetail.imUrl + ")",
 										}}
 									/>
 									<Grid item xs={12} sm={8} md={6} lg={6} component={Paper} elevation={6} square>
