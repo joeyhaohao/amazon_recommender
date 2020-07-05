@@ -1,21 +1,15 @@
 import React, { Component } from "react";
 
-import Grid from "@material-ui/core/Grid";
+import Container from "@material-ui/core/Container";
+import Box from "@material-ui/core/Box";
 import Typography from "@material-ui/core/Typography";
 import { withStyles } from "@material-ui/core/styles";
-import Container from "@material-ui/core/Container";
 
 import Product from "./Product";
+import MyCarousel from "../util/MyCarousel";
 import { useStyles } from "./css/MyStyle";
 
-class RecommendList extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      isLoading: false,
-    };
-  }
-
+class CarouselView extends Component {
   render() {
     const { classes } = this.props;
 
@@ -29,29 +23,29 @@ class RecommendList extends Component {
               align="center"
               color="textPrimary"
               gutterBottom
+              fontWeight="fontWeightBold"
+              fontFamily="italic"
             >
               {this.props.title}
             </Typography>
           </Container>
         </div>
-
         <Container className={classes.cardGrid} maxWidth="lg">
-          <Grid container spacing={4}>
+          <MyCarousel>
             {this.props.productList.map((product, index) => (
-              <Grid item xs={12} sm={6} md={4} key={index}>
+              <Box key={index} component="div" m={2} height="90%">
                 <Product
                   product={product}
-                  loadGuess={this.props.loadGuess}
+                  // loadGuess={this.props.loadGuess}
                   userId={this.props.userId}
-
                 />
-              </Grid>
+              </Box>
             ))}
-          </Grid>
+          </MyCarousel>
         </Container>
       </React.Fragment>
     );
   }
 }
 
-export default withStyles(useStyles)(RecommendList);
+export default withStyles(useStyles)(CarouselView);
