@@ -13,8 +13,8 @@ import { Link } from "react-router-dom";
 import { getRecommendList, getCurrentUser } from "../util/APIUtils";
 import MyCarousel from "./MyCarousel";
 
-import { useStyles } from "./MyStyle";
-import "./Popup.css";
+import { useStyles } from "./css/MyStyle";
+import "./css/Popup.css";
 
 function Copyright() {
   return (
@@ -34,7 +34,6 @@ class Album extends Component {
     super(props);
     this.state = {
       title: "Amazon Recommender",
-      isLoading: false,
       currentUser: null,
       recommendList: null,
       guessList: null,
@@ -53,56 +52,42 @@ class Album extends Component {
   }
 
   async loadCurrentUser() {
-    this.setState({
-      isLoading: true,
-    });
     await getCurrentUser()
       .then((response) => {
         this.setState({
           currentUser: response,
-          isLoading: false,
         });
         console.log("load user success");
       })
       .catch((error) => {
-        this.setState({
-          isLoading: false,
-        });
+        console.log("Cannot load user");
       });
     console.log(this.state.currentUser);
   }
 
   loadGuess() {
-    this.setState({
-      isLoading: true,
-    });
+
 
     let userId = this.state.currentUser.userId;
 
-    console.log("load guess again!");
-
-    var starttime = Date.now();
     getRecommendList("realtime/" + userId).then(
       (response) => {
         this.setState({
           guessList: response.recList,
-          isLoading: false,
         });
-        console.log("real time, ", Date.now()-starttime);
+        console.log("realtime");
       },
       (error) => {
         getRecommendList("top_rate")
           .then((response) => {
             this.setState({
               guessList: response,
-              isLoading: false,
             });
-            console.log("top rate, ", Date.now()-starttime);
+            console.log("top rate");
           })
           .catch((err) => {
             this.setState({
               guessList: [],
-              isLoading: false,
             });
           });
       }
@@ -110,20 +95,13 @@ class Album extends Component {
   }
 
   loadRecommendation() {
-    this.setState({
-      isLoading: true,
-    });
-
     let userId = this.state.currentUser.userId;
 
-    var starttime = Date.now();
     getRecommendList("als/" + userId).then(
       (response) => {
         this.setState({
           recommendList: response.recList,
-          isLoading: false,
         });
-        console.log(this.state.recommendList);
         console.log("als");
       },
       (error) => {
@@ -131,14 +109,12 @@ class Album extends Component {
           .then((response) => {
             this.setState({
               recommendList: response,
-              isLoading: false,
             });
-            console.log("trending, ", Date.now()-starttime);
+            console.log("trending");
           })
           .catch((err) => {
             this.setState({
               recommendList: [],
-              isLoading: false,
             });
           });
       }
@@ -176,22 +152,16 @@ class Album extends Component {
           {this.state.recommendList && this.state.guessList ? (
             <div>
               <MyCarousel
-                currentUser={this.props.currentUser}
                 title="Recommend for you"
                 productList={this.state.recommendList}
-                loadGuess={this.loadGuess}
-                userId={
-                  this.state.currentUser ? this.state.currentUser.userId : 0
-                }
+                // loadGuess={this.loadGuess}
+                userId={this.state.currentUser.userId}
               />
               <MyCarousel
-                currentUser={this.props.currentUser}
                 title="Guess you like"
                 productList={this.state.guessList}
-                loadGuess={this.loadGuess}
-                userId={
-                  this.state.currentUser ? this.state.currentUser.userId : 0
-                }
+                // loadGuess={this.loadGuess}
+                userId={this.state.currentUser.userId}
               />
               {/* <RecommendList
                 currentUser={this.props.currentUser}
@@ -209,8 +179,8 @@ class Album extends Component {
                 loadGuess={this.loadGuess}
                 userId={
                   this.state.currentUser ? this.state.currentUser.userId : 0
-                } */}
-              />
+                }
+              /> */}
             </div>
           ) : null}
         </main>

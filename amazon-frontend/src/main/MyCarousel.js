@@ -2,12 +2,12 @@ import React, { Component } from "react";
 import Carousel from "react-multi-carousel";
 import "react-multi-carousel/lib/styles.css";
 import Container from "@material-ui/core/Container";
-import Box from '@material-ui/core/Box';
+import Box from "@material-ui/core/Box";
 import Typography from "@material-ui/core/Typography";
 import { withStyles } from "@material-ui/core/styles";
 
 import Product from "./Product";
-import { useStyles } from "./MyStyle";
+import { useStyles } from "./css/MyStyle";
 
 const responsive = {
   desktop: {
@@ -27,7 +27,7 @@ const responsive = {
   },
 };
 
-class MyCarousel extends Component {
+class MyCarousel extends React.PureComponent {
   render() {
     const { classes } = this.props;
 
@@ -60,8 +60,8 @@ class MyCarousel extends Component {
             autoPlay={false}
             // autoPlaySpeed={3000}
             keyBoardControl={true}
-            customTransition="all .5"
-            transitionDuration={500}
+            // customTransition="all .5"
+            // transitionDuration={500}
             containerClass="carousel-container"
             // removeArrowOnDeviceType={["tablet", "mobile"]}
             // deviceType={this.props.deviceType}
@@ -72,11 +72,9 @@ class MyCarousel extends Component {
               <Box key={index} component="div" m={2} height="90%">
                 <Product
                   product={product}
-                  loadGuess={this.props.loadGuess}
+                  // loadGuess={this.props.loadGuess}
                   userId={this.props.userId}
-                  listTitle={this.props.title}
                 />
-
               </Box>
             ))}
           </Carousel>

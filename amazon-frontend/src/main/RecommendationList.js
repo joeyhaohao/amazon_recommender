@@ -6,7 +6,7 @@ import { withStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
 
 import Product from "./Product";
-import { useStyles } from "./MyStyle";
+import { useStyles } from "./css/MyStyle";
 
 class RecommendList extends Component {
   constructor(props) {
@@ -43,7 +43,7 @@ class RecommendList extends Component {
                   product={product}
                   loadGuess={this.props.loadGuess}
                   userId={this.props.userId}
-                  listTitle={this.props.title}
+
                 />
               </Grid>
             ))}

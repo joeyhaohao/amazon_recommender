@@ -13,8 +13,9 @@ import Rating from "@material-ui/lab/Rating";
 import { withStyles } from "@material-ui/core/styles";
 
 import { getProduct } from "../util/APIUtils";
-import { useStyles } from "./MyStyle";
+import { useStyles } from "./css/MyStyle";
 import ProductDetail from "./ProductDetail";
+import ProductModal from "./ProductModal";
 
 class Product extends Component {
   constructor(props) {
@@ -36,6 +37,7 @@ class Product extends Component {
 
   loadProduct() {
     let productId = this.props.product.productId;
+    console.log(productId)
     this.setState({
       isLoading: true,
     });
@@ -55,11 +57,11 @@ class Product extends Component {
   }
 
   // This syntax ensures `this` is bound within
-  togglePop = () => {
-    this.setState({
-      popup: !this.state.popup,
-    });
-  };
+  // togglePop = () => {
+  //   this.setState({
+  //     popup: !this.state.popup,
+  //   });
+  // };
 
   render() {
     const { classes } = this.props;
@@ -106,7 +108,19 @@ class Product extends Component {
           </CardContent>
 
           <CardActions>
-            <Button size="small" color="primary" onClick={this.togglePop}>
+            {this.state.productDetail ? (
+              <ProductModal
+                productDetail={this.state.productDetail}
+                // loadGuess={this.props.loadGuess}
+                loadCurrentProduct={this.loadProduct}
+                userId={this.props.userId}
+              />
+            ) : (
+              <Button size="small" color="primary">
+                Show details
+              </Button>
+            )}
+            {/* <Button size="small" color="primary" onClick={this.togglePop}>
               View
             </Button>
 
@@ -114,12 +128,11 @@ class Product extends Component {
               <ProductDetail
                 toggle={this.togglePop}
                 productDetail={this.state.productDetail}
-                loadGuess={this.props.loadGuess}
+                // loadGuess={this.props.loadGuess}
                 loadCurrentProduct={this.loadProduct}
                 userId={this.props.userId}
-                listTitle={this.props.listTitle}
               />
-            ) : null}
+            ) : null} */}
           </CardActions>
         </Card>
       </React.Fragment>

@@ -7,6 +7,7 @@ import Login from "../auth/Login";
 import Registration from "../auth/Registration";
 import Album from "../main/Album";
 import PrivateRouter from "../util/PrivateRouter";
+import ProductView from "../product/ProductView"
 
 class App extends Component {
   constructor(props) {
@@ -32,6 +33,11 @@ class App extends Component {
             path="/"
             exact
             component={Album}
+            handleLogout={this.handleLogout}
+          />
+          <PrivateRouter
+            path="/product/:id"
+            component={ProductView}
             handleLogout={this.handleLogout}
           />
         </Switch>
