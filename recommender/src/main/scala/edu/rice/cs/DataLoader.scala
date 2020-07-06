@@ -2,10 +2,10 @@ package edu.rice.cs
 
 import com.mongodb.casbah.commons.MongoDBObject
 import com.mongodb.casbah.{MongoClient, MongoClientURI}
-import edu.rice.cs.RealtimeRecommender.logger
 import org.apache.spark.SparkConf
 import org.apache.spark.sql.{DataFrame, SparkSession}
 import org.apache.spark.sql.functions.lit
+import org.apache.log4j.Logger
 
 object DataLoader {
 
@@ -14,6 +14,7 @@ object DataLoader {
 //  val REVIEW_COLLECTION = "review"
   val RATING_COLLECTION = "rating"
   val USER_COLLECTION = "user"
+  val logger = Logger.getLogger(this.getClass)
 
   def main(args: Array[String]): Unit = {
     // create a spark config
@@ -27,9 +28,15 @@ object DataLoader {
 
     implicit val mongoConfig = MongoConfig(config("mongo.uri"), config("mongo.db"))
     // load product
-    val productDF = spark.read.json(PRODUCT_PATH)
-      .withColumnRenamed("asin", "productId")
-      .select("productId", "categories", "description", "imUrl", "price", "title")
+//    val productDF = spark.read.json(PRODUCT_PATH)
+//      .withColumnRenamed("asin", "productId")
+//      .select("productId", "categories", "description", "imUrl", "price", "title")
+//      .na.drop(Seq("productId", "title"))
+//      .cache()
+    val productDF = spark.read.format("csv")
+      .option("inferSchema", "true")
+      .load(PRODUCT_PATH)
+      .toDF("productId", "categories", "description", "imUrl", "price", "title")
       .na.drop(Seq("productId", "title"))
       .cache()
     productDF.printSchema()

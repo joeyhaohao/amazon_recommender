@@ -8,9 +8,7 @@ package object cs {
 //  val PRODUCT_PATH = "recommender/src/main/resources/data/meta_Movies_and_TV_test.json"
 //  val RATING_PATH = "recommender/src/main/resources/data/ratings_Movies_and_TV_test.csv"
   // complete data
-//  val PRODUCT_PATH = "recommender/src/main/resources/data/meta_Movies_and_TV.json"
-//  val RATING_PATH = "recommender/src/main/resources/data/ratings_Movies_and_TV.csv"
-  val PRODUCT_PATH = "recommender/src/main/resources/data/meta_5cat.json"
+  val PRODUCT_PATH = "recommender/src/main/resources/data/meta_5cat.csv"
   val RATING_PATH = "recommender/src/main/resources/data/ratings_5cat.csv"
 
   // local db
