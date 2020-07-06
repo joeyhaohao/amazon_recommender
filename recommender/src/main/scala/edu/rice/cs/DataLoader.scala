@@ -28,15 +28,9 @@ object DataLoader {
 
     implicit val mongoConfig = MongoConfig(config("mongo.uri"), config("mongo.db"))
     // load product
-//    val productDF = spark.read.json(PRODUCT_PATH)
-//      .withColumnRenamed("asin", "productId")
-//      .select("productId", "categories", "description", "imUrl", "price", "title")
-//      .na.drop(Seq("productId", "title"))
-//      .cache()
-    val productDF = spark.read.format("csv")
-      .option("inferSchema", "true")
-      .load(PRODUCT_PATH)
-      .toDF("productId", "categories", "description", "imUrl", "price", "title")
+    val productDF = spark.read.json(PRODUCT_PATH)
+      .withColumnRenamed("asin", "productId")
+      .select("productId", "categories", "description", "imUrl", "price", "title")
       .na.drop(Seq("productId", "title"))
       .cache()
     productDF.printSchema()
