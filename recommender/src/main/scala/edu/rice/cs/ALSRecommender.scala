@@ -2,7 +2,6 @@ package edu.rice.cs
 
 import com.mongodb.casbah.commons.MongoDBObject
 import com.mongodb.casbah.{MongoClient, MongoClientURI}
-import edu.rice.cs.RealtimeRecommender.logger
 import org.apache.spark.SparkConf
 import org.apache.spark.ml.evaluation.RegressionEvaluator
 import org.apache.spark.ml.feature.StringIndexer
@@ -13,6 +12,7 @@ import org.apache.spark.mllib.recommendation.{Rating => ALSRating, ALS}
 import org.apache.spark.rdd.RDD
 import org.apache.spark.sql.SparkSession
 import org.jblas.DoubleMatrix
+import org.apache.log4j.Logger
 
 object ALSRecommender {
 
@@ -21,6 +21,10 @@ object ALSRecommender {
   val USER_REC_COLLECTION = "als_recommendation"
   val PRODUCT_SIM_COLLECTION = "product_similarity"
   val RECOMMEND_NUM = 20
+  val ALS_RANK = 10
+  val ALS_ITERATIONS = 10
+  val ALS_LAMBDA = 0.05
+  val logger = Logger.getLogger(this.getClass)
 
   def main(args: Array[String]): Unit = {
     // create a spark config
@@ -44,8 +48,7 @@ object ALSRecommender {
       .load()
       .as[Rating]
       .rdd
-//      .cache()
-//    ratingRDD.show(10)
+      .cache()
 //    ratingRDD.take(10).foreach(println)
 
     // create id map from string to int
@@ -90,8 +93,7 @@ object ALSRecommender {
 
     // train ALS model
     val Array(trainData, testData) = ratingTransRDD.randomSplit(Array(0.8, 0.2))
-    val (rank, iterations, lambda) = (10, 10, 0.05)
-    val model = ALS.train(trainData, rank, iterations, lambda)
+    val model = ALS.train(trainData, ALS_RANK, ALS_ITERATIONS, ALS_LAMBDA)
 
     // evaluate test data
     val userProductsTest = testData.map(r => (r.user, r.product))
@@ -121,8 +123,8 @@ object ALSRecommender {
       .toDF()
     saveToMongoDB(userRecDF, USER_REC_COLLECTION, "userId")
 
-    val productRecDF = computeProductSimMatrix(model, productIdMapRev).toDF()
-    saveToMongoDB(productRecDF, PRODUCT_SIM_COLLECTION, "productId")
+    val productSimDF = computeProductSimMatrix(model, productIdMapRev).toDF()
+    saveToMongoDB(productSimDF, PRODUCT_SIM_COLLECTION, "productId")
 
     spark.stop()
   }
@@ -134,11 +136,8 @@ object ALSRecommender {
                     userIdMapRev: scala.collection.Map[Long, String],
                     productIdMapRev: scala.collection.Map[Long, String]
                    ) : RDD[UserRecList] = {
-
-
     val userProducts = userRDD.cartesian(productRDD)
     val preds = model.predict(userProducts)
-//    val userRecs = model.recommendProductsForUsers(RECOMMEND_NUM).toDF("userId", "recommendations")
     val userRec = preds.filter(_.rating > 0)
       .map(
         rating => (rating.user, (rating.product, rating.rating))

@@ -2,10 +2,10 @@ package edu.rice.cs
 
 import com.mongodb.casbah.commons.MongoDBObject
 import com.mongodb.casbah.{MongoClient, MongoClientURI}
-import edu.rice.cs.RealtimeRecommender.logger
 import org.apache.spark.SparkConf
 import org.apache.spark.sql.{DataFrame, SparkSession}
 import org.apache.spark.sql.functions.lit
+import org.apache.log4j.Logger
 
 object DataLoader {
 
@@ -14,6 +14,7 @@ object DataLoader {
 //  val REVIEW_COLLECTION = "review"
   val RATING_COLLECTION = "rating"
   val USER_COLLECTION = "user"
+  val logger = Logger.getLogger(this.getClass)
 
   def main(args: Array[String]): Unit = {
     // create a spark config

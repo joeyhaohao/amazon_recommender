@@ -1,8 +1,8 @@
 # amazon_recommender
 
 ## Dataset
-The dataset is a part of [Amazon Review Data by UCSD](https://nijianmo.github.io/amazon/index.html).
-* user: 170k
-* product: 42k
-   * 5 categories: All_Beauty, All_Electronics, Amazon_Fashion, Home_Improvement, Kitchen_and_Dining
-* rating: 221k
+The dataset is a part of [Amazon Review Data by Stanford](http://snap.stanford.edu/data/amazon/).
+* user: 126k
+* product: 45k
+   * 5 categories: Automotive, Beauty, Office_Products, Software, Video_Games
+* rating: 742k

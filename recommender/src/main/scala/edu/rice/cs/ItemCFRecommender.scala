@@ -77,7 +77,7 @@ object ItemCFRecommender {
       }
       .toDF()
 
-    saveToMongoDB(itemCF, ITEMCF_REC_COLLECTION, "productId");
+    saveToMongoDB(itemCF, ITEMCF_REC_COLLECTION, "productId")
   }
 
   def getSimilarity(conCount: Long, count1: Long, count2: Long): Double = {
