@@ -1,26 +1,30 @@
-import React, { Component } from 'react';
+import React, { Component } from "react";
 
-import Button from '@material-ui/core/Button';
-import AppBar from '@material-ui/core/AppBar';
-import ShoppingBasketIcon from '@material-ui/icons/ShoppingBasket';
-import CssBaseline from '@material-ui/core/CssBaseline';
-import Toolbar from '@material-ui/core/Toolbar';
-import Typography from '@material-ui/core/Typography';
-import IconButton from '@material-ui/core/IconButton';
-import ExitToAppIcon from '@material-ui/icons/ExitToApp';
-import { withStyles } from '@material-ui/core/styles';
+import Button from "@material-ui/core/Button";
+import AppBar from "@material-ui/core/AppBar";
+import ShoppingBasketIcon from "@material-ui/icons/ShoppingBasket";
+import CssBaseline from "@material-ui/core/CssBaseline";
+import Toolbar from "@material-ui/core/Toolbar";
+import Typography from "@material-ui/core/Typography";
+import IconButton from "@material-ui/core/IconButton";
+import ExitToAppIcon from "@material-ui/icons/ExitToApp";
+import { withStyles } from "@material-ui/core/styles";
 
-import { Link } from 'react-router-dom';
+import { Link } from "react-router-dom";
 
-import { getRecommendList, getCurrentUser } from '../util/APIUtils';
-import CarouselView from './CarouselView';
-import { useStyles } from './css/MyStyle';
+import { getRecommendList, getCurrentUser } from "../util/APIUtils";
+import CarouselView from "./CarouselView";
+import { useStyles } from "./css/MyStyle";
+import { UserContext } from "../auth/UserContext";
 
 class Album extends Component {
+	static contextType = UserContext;
+	_isMounted = false;
+
 	constructor(props) {
 		super(props);
 		this.state = {
-			title: 'Amazon Recommender',
+			title: "Amazon Recommender",
 			currentUser: null,
 			recommendList: null,
 			guessList: null,
@@ -31,23 +35,33 @@ class Album extends Component {
 	}
 
 	async componentDidMount() {
+		this._isMounted = true;
 		await this.loadCurrentUser();
+		this.context.setUserId(this.state.currentUser.userId);
+		console.log("Context: " + this.context.userId);
 		if (this.state.currentUser) {
 			this.loadRecommendation();
 			this.loadGuess();
 		}
 	}
 
+	componentWillUnmount() {
+		this._isMounted = false;
+	}
+
 	async loadCurrentUser() {
 		await getCurrentUser()
 			.then((response) => {
-				this.setState({
-					currentUser: response,
-				});
-				console.log('load user success');
+				if (this._isMounted) {
+					this.setState({
+						currentUser: response,
+					});
+				}
+				console.log("load user success");
 			})
 			.catch((error) => {
-				console.log('Cannot load user');
+				console.log(error);
+				console.log("Cannot load user");
 			});
 		console.log(this.state.currentUser);
 	}
@@ -55,25 +69,31 @@ class Album extends Component {
 	loadGuess() {
 		let userId = this.state.currentUser.userId;
 
-		getRecommendList('realtime/' + userId).then(
+		getRecommendList("realtime/" + userId).then(
 			(response) => {
-				this.setState({
-					guessList: response.recList,
-				});
-				console.log('realtime');
+				if (this._isMounted) {
+					this.setState({
+						guessList: response.recList,
+					});
+				}
+				console.log("realtime");
 			},
 			(error) => {
-				getRecommendList('top_rate')
+				getRecommendList("top_rate")
 					.then((response) => {
-						this.setState({
-							guessList: response,
-						});
-						console.log('top rate');
+						if (this._isMounted) {
+							this.setState({
+								guessList: response,
+							});
+						}
+						console.log("top rate");
 					})
 					.catch((err) => {
-						this.setState({
-							guessList: [],
-						});
+						if (this._isMounted) {
+							this.setState({
+								guessList: [],
+							});
+						}
 					});
 			}
 		);
@@ -82,25 +102,31 @@ class Album extends Component {
 	loadRecommendation() {
 		let userId = this.state.currentUser.userId;
 
-		getRecommendList('als/' + userId).then(
+		getRecommendList("als/" + userId).then(
 			(response) => {
-				this.setState({
-					recommendList: response.recList,
-				});
-				console.log('als');
+				if (this._isMounted) {
+					this.setState({
+						recommendList: response.recList,
+					});
+				}
+				console.log("als");
 			},
 			(error) => {
-				getRecommendList('trending')
+				getRecommendList("trending")
 					.then((response) => {
-						this.setState({
-							recommendList: response,
-						});
-						console.log('trending');
+						if (this._isMounted) {
+							this.setState({
+								recommendList: response,
+							});
+						}
+						console.log("trending");
 					})
 					.catch((err) => {
-						this.setState({
-							recommendList: [],
-						});
+						if (this._isMounted) {
+							this.setState({
+								recommendList: [],
+							});
+						}
 					});
 			}
 		);
@@ -129,7 +155,7 @@ class Album extends Component {
 							</Button>
 						)}
 						<IconButton onClick={this.props.handleLogout} color="inherit" title="logout">
-							<ExitToAppIcon fontSize="large"/>
+							<ExitToAppIcon fontSize="large" />
 						</IconButton>
 						{/* <Button color="inherit" onClick={this.props.handleLogout}>
 							Log out

@@ -6,7 +6,6 @@ import Box from "@material-ui/core/Box";
 import Grid from "@material-ui/core/Grid";
 import Paper from "@material-ui/core/Paper";
 import Rating from "@material-ui/lab/Rating";
-import Button from "@material-ui/core/Button";
 import AppBar from "@material-ui/core/AppBar";
 import ShoppingBasketIcon from "@material-ui/icons/ShoppingBasket";
 import CssBaseline from "@material-ui/core/CssBaseline";
@@ -15,11 +14,11 @@ import IconButton from "@material-ui/core/IconButton";
 import ExitToAppIcon from "@material-ui/icons/ExitToApp";
 import { Link } from "react-router-dom";
 import { withStyles } from "@material-ui/core/styles";
-import { getProduct } from "../util/APIUtils";
 
 import Product from "../main/Product";
 import MyCarousel from "../util/MyCarousel";
-import { getRecommendList } from "../util/APIUtils";
+import { getProduct, getRecommendList, rateProduct } from "../util/APIUtils";
+import { UserContext } from "../auth/UserContext";
 
 const useStyles = (theme) => ({
 	root: {
@@ -32,7 +31,7 @@ const useStyles = (theme) => ({
 		marginBottom: theme.spacing(2),
 	},
 	detailsGrid: {
-		minHeight: "50vh",
+		height: "50vh",
 	},
 	image: {
 		// backgroundImage: "url({https://source.unsplash.com/random})",
@@ -54,6 +53,8 @@ const useStyles = (theme) => ({
 });
 
 class ProductView extends Component {
+	static contextType = UserContext;
+
 	constructor(props) {
 		super(props);
 		this.state = {
@@ -83,7 +84,8 @@ class ProductView extends Component {
 	}
 
 	loadProduct() {
-		let productId = this.props.match.params.id;
+		const productId = this.props.match.params.id;
+		console.log("product Id is: "+ productId)
 		this.setState({
 			isLoading: true,
 		});
@@ -106,14 +108,13 @@ class ProductView extends Component {
 	}
 
 	loadPeopleAlsoLike() {
-		let productId = this.props.match.params.id;
+		const productId = this.props.match.params.id;
 		console.log(productId);
 		getRecommendList("itemcf/" + productId).then(
 			(response) => {
 				this.setState({
 					peopleAlsoLike: response.recList,
 				});
-				console.log(this.state.peopleAlsoLike);
 				console.log("itemcf");
 			},
 			(error) => {
@@ -121,6 +122,28 @@ class ProductView extends Component {
 			}
 		);
 	}
+
+	handleRate = (newVal) => {
+		const productId = this.props.match.params.id;
+		const rateRequest = {
+			userId: this.context.userId,
+			rate: newVal,
+		};
+		console.log("Rating!!");
+		console.log(rateRequest);
+		rateProduct(productId, rateRequest).then(
+			(response) => {
+				console.log("response!!");
+				console.log(response);
+				// this.props.loadGuess();
+				this.loadProduct();
+			},
+			(error) => {
+				console.log("fail to rate product");
+				console.log(error);
+			}
+		);
+	};
 
 	render() {
 		const { classes } = this.props;
@@ -137,15 +160,7 @@ class ProductView extends Component {
 								<Typography component={Link} to={"/"} className={classes.title} variant="h6" color="inherit" noWrap>
 									Amazon Recommender
 								</Typography>
-								{/* {this.state.currentUser ? (
-									<Typography variant="h6" color="inherit">
-										Hello {this.state.currentUser.username}!
-									</Typography>
-								) : (
-									<Button component={Link} to="/login" color="inherit">
-										Login
-									</Button>
-								)} */}
+
 								<IconButton onClick={this.props.handleLogout} color="inherit" title="logout">
 									<ExitToAppIcon fontSize="large" />
 								</IconButton>
@@ -176,7 +191,15 @@ class ProductView extends Component {
 												{this.state.productDetail.title}
 											</Typography>
 											<div className={classes.items}>
-												<Rating name="simple-controlled" precision={0.1} value={this.state.ratingAvg} />
+												<Rating
+													name="simple-controlled"
+													precision={0.1}
+													value={this.state.ratingAvg}
+													onChange={(event, newValue) => {
+														event.preventDefault();
+														this.handleRate(newValue);
+													}}
+												/>
 												<div>
 													<Typography>{this.state.ratingCount} ratings</Typography>
 												</div>
@@ -213,7 +236,6 @@ class ProductView extends Component {
 											<Product
 												product={product}
 												// loadGuess={this.props.loadGuess}
-												userId={this.props.userId}
 											/>
 										</Box>
 									))}

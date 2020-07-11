@@ -6,7 +6,6 @@ import Card from "@material-ui/core/Card";
 import CardActions from "@material-ui/core/CardActions";
 import CardContent from "@material-ui/core/CardContent";
 import CardMedia from "@material-ui/core/CardMedia";
-import Typography from "@material-ui/core/Typography";
 import Box from "@material-ui/core/Box";
 import Rating from "@material-ui/lab/Rating";
 import { withStyles } from "@material-ui/core/styles";
@@ -17,6 +16,7 @@ import { getProduct } from "../util/APIUtils";
 import { useStyles } from "./css/MyStyle";
 
 class Product extends Component {
+	_isMounted = false;
 	constructor(props) {
 		super(props);
 		this.state = {
@@ -31,8 +31,13 @@ class Product extends Component {
 	}
 
 	componentDidMount() {
+		this._isMounted = true;
 		// product: {productId, score}
 		this.loadProduct();
+	}
+
+	componentWillUnmount() {
+		this._isMounted = false;
 	}
 
 	componentDidUpdate(prevProps) {
@@ -49,17 +54,21 @@ class Product extends Component {
 		});
 		getProduct(productId).then(
 			(response) => {
-				this.setState({
-					productDetail: response.product,
-					ratingCount: response.ratingCount,
-					ratingAvg: response.ratingAvg,
-					isLoading: false,
-				});
+				if (this._isMounted) {
+					this.setState({
+						productDetail: response.product,
+						ratingCount: response.ratingCount,
+						ratingAvg: response.ratingAvg,
+						isLoading: false,
+					});
+				}
 			},
 			(error) => {
-				this.setState({
-					isLoading: false,
-				});
+				if (this._isMounted) {
+					this.setState({
+						isLoading: false,
+					});
+				}
 			}
 		);
 	}
@@ -70,14 +79,14 @@ class Product extends Component {
 		return (
 			<React.Fragment>
 				<Card className={classes.card}>
-					<CardMedia className={classes.cardMedia} image={this.state.productDetail ? this.state.productDetail.imUrl : "null"} title="Image title" />
+					<CardMedia className={classes.cardMedia} image={this.state.productDetail ? this.state.productDetail.imUrl : "null"} />
 
 					<CardContent className={classes.cardContent} style={{ whiteSpace: "nowrap" }}>
 						<Box component="div" my={2} textOverflow="ellipsis" overflow="hidden" bgcolor="background.paper">
 							{this.state.productDetail ? this.state.productDetail.title : "Product title"}
 						</Box>
 
-						<Rating precision={0.1} value={this.state.ratingAvg} name="disabled" disabled />
+						<Rating precision={0.5} value={this.state.ratingAvg} readOnly />
 					</CardContent>
 
 					<CardActions>
