@@ -142,60 +142,60 @@
       <plugin>
         <artifactId>maven-assembly-plugin</artifactId>
         <executions>
+<!--            <execution>-->
+<!--                <id>DataLoader</id>-->
+<!--                <configuration>-->
+<!--                    <archive>-->
+<!--                        <manifest>-->
+<!--                            <mainClass>edu.rice.cs.DataLoader</mainClass>-->
+<!--                        </manifest>-->
+<!--                    </archive>-->
+<!--                    <descriptorRefs>-->
+<!--                        <descriptorRef>jar-with-dependencies</descriptorRef>-->
+<!--                    </descriptorRefs>-->
+<!--                    <finalName>dataloader</finalName>-->
+<!--                </configuration>-->
+<!--                <phase>package</phase>-->
+<!--                <goals>-->
+<!--                    <goal>single</goal>-->
+<!--                </goals>-->
+<!--            </execution>-->
             <execution>
-                <id>DataLoader</id>
+                <id>ALSRecommender</id>
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>edu.rice.cs.DataLoader</mainClass>
+                            <mainClass>edu.rice.cs.ALSRecommender</mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>
                         <descriptorRef>jar-with-dependencies</descriptorRef>
                     </descriptorRefs>
-                    <finalName>dataloader</finalName>
+                    <finalName>als-recommender</finalName>
                 </configuration>
                 <phase>package</phase>
                 <goals>
                     <goal>single</goal>
                 </goals>
             </execution>
-<!--            <execution>-->
-<!--                <id>ALSRecommender</id>-->
-<!--                <configuration>-->
-<!--                    <archive>-->
-<!--                        <manifest>-->
-<!--                            <mainClass>edu.rice.cs.ALSRecommender</mainClass>-->
-<!--                        </manifest>-->
-<!--                    </archive>-->
-<!--                    <descriptorRefs>-->
-<!--                        <descriptorRef>jar-with-dependencies</descriptorRef>-->
-<!--                    </descriptorRefs>-->
-<!--                    <finalName>als-recommender</finalName>-->
-<!--                </configuration>-->
-<!--                <phase>package</phase>-->
-<!--                <goals>-->
-<!--                    <goal>single</goal>-->
-<!--                </goals>-->
-<!--            </execution>-->
-<!--            <execution>-->
-<!--                <id>RealtimeRecommender</id>-->
-<!--                <configuration>-->
-<!--                    <archive>-->
-<!--                        <manifest>-->
-<!--                            <mainClass>edu.rice.cs.RealtimeRecommender</mainClass>-->
-<!--                        </manifest>-->
-<!--                    </archive>-->
-<!--                    <descriptorRefs>-->
-<!--                        <descriptorRef>jar-with-dependencies</descriptorRef>-->
-<!--                    </descriptorRefs>-->
-<!--                    <finalName>realtime-recommender</finalName>-->
-<!--                </configuration>-->
-<!--                <phase>package</phase>-->
-<!--                <goals>-->
-<!--                    <goal>single</goal>-->
-<!--                </goals>-->
-<!--            </execution>-->
+            <execution>
+                <id>RealtimeRecommender</id>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <mainClass>edu.rice.cs.RealtimeRecommender</mainClass>
+                        </manifest>
+                    </archive>
+                    <descriptorRefs>
+                        <descriptorRef>jar-with-dependencies</descriptorRef>
+                    </descriptorRefs>
+                    <finalName>realtime-recommender</finalName>
+                </configuration>
+                <phase>package</phase>
+                <goals>
+                    <goal>single</goal>
+                </goals>
+            </execution>
 <!--            <execution>-->
 <!--                <id>TrendingRecommender</id>-->
 <!--                <configuration>-->

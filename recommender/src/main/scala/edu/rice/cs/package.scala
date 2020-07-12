@@ -30,7 +30,8 @@ package object cs {
   val config = Map(
     "spark.cores" -> "local[*]",
     "mongo.uri" -> "mongodb+srv://amazon:amazon666@cluster0-u2qt7.mongodb.net/amazon_recommender?retryWrites=true&w=majority",
-    "mongo.db" -> "amazon_recommender"
+    "mongo.db" -> "amazon_recommender",
+    "kafka.topic" -> "rating"
   )
 
   /**
