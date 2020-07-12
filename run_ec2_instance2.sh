@@ -5,11 +5,7 @@ then
   mkdir ./logs/
 fi
 
-sudo /etc/init.d/redis-server stop # stop redis
-sudo /usr/local/kafka_2.11-2.4.1/bin/zookeeper-server-stop.sh # stop zookeeper
-sudo /usr/local/kafka_2.11-2.4.1/bin/kafka-server-stop.sh # stop kafka
 
-sudo /etc/init.d/redis-server start > logs/redis-logs &
-nohup /usr/local/kafka_2.11-2.4.1/bin/zookeeper-server-start.sh /usr/local/kafka_2.11-2.4.1/config/zookeeper.properties > logs/zookeeper-logs &
-nohup /usr/local/kafka_2.11-2.4.1/bin/kafka-server-start.sh /usr/local/kafka_2.11-2.4.1/config/server.properties > logs/kafka-logs &
-nohup java -jar recommender/target/realtime-recommender-jar-with-dependencies.jar > logs/recommender-logs &
+kill $(sudo lsof -t -i:7878) # kill recommender server
+
+nohup java -Xmx512m -Xms512m -Dserver.port=7878 -jar recommender/target/realtime-recommender-jar-with-dependencies.jar > logs/recommender-logs &

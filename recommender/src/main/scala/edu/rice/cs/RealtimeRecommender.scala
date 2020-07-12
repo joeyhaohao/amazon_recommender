@@ -23,7 +23,7 @@ object RealtimeRecommender {
     val sparkConf = new SparkConf()
       .setMaster(config("spark.cores"))
       .setAppName("RealtimeRecommender")
-      .set("spark.testing.memory", "2147480000")
+//      .set("spark.testing.memory", "2147480000")
     val spark = SparkSession.builder().config(sparkConf).getOrCreate()
     val sc = spark.sparkContext
     sc.setLogLevel("WARN")
@@ -51,7 +51,7 @@ object RealtimeRecommender {
     val productSimMatrixBcast = sc.broadcast(productSimMatrix)
 
     val kafkaParam = Map(
-      "bootstrap.servers" -> "ec2-18-216-65-57.us-east-2.compute.amazonaws.com:9092",
+      "bootstrap.servers" -> "ec2-18-217-80-11.us-east-2.compute.amazonaws.com:9092",
       "key.deserializer" -> classOf[StringDeserializer],
       "value.deserializer" -> classOf[StringDeserializer],
       "group.id" -> "rating",
@@ -108,7 +108,7 @@ object RealtimeRecommender {
   import scala.collection.JavaConversions._
 
   def getUserRecentRatings(userId: String, num: Int): Array[(String, Double)] = {
-    val jedis = new Jedis("ec2-18-216-65-57.us-east-2.compute.amazonaws.com")
+    val jedis = new Jedis("ec2-18-217-80-11.us-east-2.compute.amazonaws.com")
     jedis.lrange("userId:" + userId.toString, 0, num)
       .map { item =>
         val attr = item.split("\\:")

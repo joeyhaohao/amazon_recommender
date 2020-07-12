@@ -209,7 +209,7 @@ class ProductView extends Component {
 												Categories: {this.state.productDetail.categories}
 											</Typography>
 											<Typography variant="h6" gutterBottom className={classes.items}>
-												Prices: {this.state.productDetail.price} $
+												Prices: $ {this.state.productDetail.price}
 											</Typography>
 
 											<br />
