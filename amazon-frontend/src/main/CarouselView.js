@@ -8,6 +8,7 @@ import { withStyles } from "@material-ui/core/styles";
 import Product from "./Product";
 import MyCarousel from "../util/MyCarousel";
 import { useStyles } from "./css/MyStyle";
+import { MAX_NUM_ITEMS_IN_CAROUSEL } from "../constants/index";
 
 class CarouselView extends Component {
 	render() {
@@ -24,7 +25,7 @@ class CarouselView extends Component {
 				</div>
 				<Container className={classes.cardGrid} maxWidth="lg">
 					<MyCarousel>
-						{this.props.productList.map((product, index) => (
+						{this.props.productList.slice(0, MAX_NUM_ITEMS_IN_CAROUSEL).map((product, index) => (
 							<Box key={index} component="div" m={2} height="90%">
 								<Product
 									product={product}

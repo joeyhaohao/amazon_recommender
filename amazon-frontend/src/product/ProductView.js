@@ -19,6 +19,7 @@ import Product from "../main/Product";
 import MyCarousel from "../util/MyCarousel";
 import { getProduct, getRecommendList, rateProduct } from "../util/APIUtils";
 import { UserContext } from "../auth/UserContext";
+import { MAX_NUM_ITEMS_IN_PEOPLE_ALSO_SEE } from "../constants/index";
 
 const useStyles = (theme) => ({
 	root: {
@@ -30,7 +31,7 @@ const useStyles = (theme) => ({
 		marginTop: theme.spacing(8),
 		marginBottom: theme.spacing(2),
 	},
-	detailsGrid: {
+	detailsBox: {
 		height: "50vh",
 	},
 	image: {
@@ -85,7 +86,7 @@ class ProductView extends Component {
 
 	loadProduct() {
 		const productId = this.props.match.params.id;
-		console.log("product Id is: "+ productId)
+		console.log("product Id is: " + productId);
 		this.setState({
 			isLoading: true,
 		});
@@ -168,12 +169,12 @@ class ProductView extends Component {
 						</AppBar>
 
 						<Container component="main" className={classes.main} maxWidth="lg">
-							<Box m={2} p={2}>
+							<Box m={2} p={2} className={classes.detailsBox}>
 								<Typography variant="h2" component="h1" gutterBottom align="center">
 									Product Details
 								</Typography>
 
-								<Grid container className={classes.detailsGrid}>
+								<Grid container>
 									<Grid
 										item
 										xs={false}
@@ -193,7 +194,7 @@ class ProductView extends Component {
 											<div className={classes.items}>
 												<Rating
 													name="simple-controlled"
-													precision={0.1}
+													precision={0.5}
 													value={this.state.ratingAvg}
 													onChange={(event, newValue) => {
 														event.preventDefault();
@@ -231,7 +232,7 @@ class ProductView extends Component {
 								</Typography>
 
 								<MyCarousel>
-									{this.state.peopleAlsoLike.map((product, index) => (
+									{this.state.peopleAlsoLike.slice(0, MAX_NUM_ITEMS_IN_PEOPLE_ALSO_SEE).map((product, index) => (
 										<Box key={index} component="div" m={2} height="90%">
 											<Product
 												product={product}
