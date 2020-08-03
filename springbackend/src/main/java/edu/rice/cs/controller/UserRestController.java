@@ -1,7 +1,6 @@
 package edu.rice.cs.controller;
 
 import edu.rice.cs.exception.UserNotFoundException;
-import edu.rice.cs.model.Product;
 import edu.rice.cs.model.User;
 import edu.rice.cs.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;

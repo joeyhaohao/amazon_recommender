@@ -4,7 +4,7 @@ target/
 out/
 *.iml
 node_modules/
-recommender/src/main/resources/data/
+*/src/main/resources/data/
 logs/
 
 # dependencies
