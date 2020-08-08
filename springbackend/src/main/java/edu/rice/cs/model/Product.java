@@ -1,106 +1,38 @@
 package edu.rice.cs.model;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.elasticsearch.annotations.Document;
+import org.springframework.data.elasticsearch.annotations.Field;
+import org.springframework.data.elasticsearch.annotations.FieldType;
 
-import java.util.Objects;
+import java.util.List;
 
-/**
- * Created by joeyhaohao on 5/20/20
- */
-
-@Document(collection = "product")
+@Document(indexName = "product")
+@Getter
+@Setter
 public class Product {
+
     @Id
-    private String id;
     private String productId;
+    @Field(type = FieldType.Keyword, index = true, analyzer = "ik_max_word")
     private String title;
+    @Field(type = FieldType.Keyword)
     private String description;
-    private String categories;
+    @Field(type = FieldType.Keyword)
+    private List<List<String>> categories;
     private String imUrl;
     private double price;
 
-    public Product() {
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Product product = (Product) o;
-        return Objects.equals(id, product.id) &&
-                Objects.equals(productId, product.productId) &&
-                Objects.equals(title, product.title);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, productId, title);
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public String getProductId() {
-        return productId;
-    }
-
-    public void setProductId(String productId) {
-        this.productId = productId;
-    }
-
-    public String getImUrl() {
-        return imUrl;
-    }
-
-    public void setImUrl(String imUrl) {
-        this.imUrl = imUrl;
-    }
-
-    public String getCategories() {
-        return categories;
-    }
-
-    public void setCategories(String categories) {
-        this.categories = categories;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public double getPrice() {
-        return price;
-    }
-
-    public void setPrice(double price) {
-        this.price = price;
-    }
-
     @Override
     public String toString() {
-        return "Product{" +
-                "id=" + id +
-                ", productId='" + productId + '\'' +
+        return "ProductES{" +
+                "productId='" + productId + '\'' +
                 ", title='" + title + '\'' +
-                ", categories='" + categories + '\'' +
+                ", description='" + description + '\'' +
+                ", categories=" + categories +
+                ", imUrl='" + imUrl + '\'' +
                 ", price=" + price +
                 '}';
     }

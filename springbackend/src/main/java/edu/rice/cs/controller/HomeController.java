@@ -1,8 +1,6 @@
 package edu.rice.cs.controller;
 
-import edu.rice.cs.repositories.ProductRepository;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 /**
@@ -10,10 +8,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
  */
 @Controller
 public class HomeController {
-    private final ProductRepository productRepository;
 
-    public HomeController(ProductRepository productRepository) {
-        this.productRepository = productRepository;
+    public HomeController() {
     }
 
     @RequestMapping(value = "/")

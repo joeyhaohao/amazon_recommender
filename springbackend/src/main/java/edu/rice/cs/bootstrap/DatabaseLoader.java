@@ -12,12 +12,10 @@ import org.springframework.stereotype.Component;
 @Component
 public class DatabaseLoader implements CommandLineRunner {
 
-
     private final UserRepository users;
 
     @Autowired
-    public DatabaseLoader( UserRepository userRepository) {
-
+    public DatabaseLoader(UserRepository userRepository) {
         this.users = userRepository;
     }
 

@@ -2,16 +2,14 @@ package edu.rice.cs.controller;
 
 import edu.rice.cs.exception.ProductNotFoundException;
 import edu.rice.cs.model.Product;
-import edu.rice.cs.model.ProductRecList;
 import edu.rice.cs.model.Rating;
-import edu.rice.cs.model.Review;
 import edu.rice.cs.payload.ApiResponse;
-import edu.rice.cs.payload.JwtAuthenticationResponse;
 import edu.rice.cs.payload.ProductResponse;
+import edu.rice.cs.payload.SearchRequest;
 import edu.rice.cs.repositories.ProductRepository;
 import edu.rice.cs.repositories.RatingRepository;
-import edu.rice.cs.repositories.ReviewRepository;
 import edu.rice.cs.service.KafkaProducer;
+import edu.rice.cs.service.SearchService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +18,6 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.redis.core.ListOperations;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -33,6 +30,8 @@ import java.util.List;
 @RestController
 @RequestMapping("/product")
 public class ProductRestController {
+
+    private static Logger logger = LogManager.getLogger(ProductRestController.class.getName());
 
     @Autowired
     private ProductRepository productRepository;
@@ -49,28 +48,23 @@ public class ProductRestController {
     @Autowired
     private MongoTemplate mongoTemplate;
 
-    private static Logger logger = LogManager.getLogger(ProductRestController.class.getName());
-
-    @GetMapping("/")
-    List<Product> getProducts() {
-        return productRepository.findAll();
-    }
+    @Autowired
+    private SearchService searchService;
 
     @PostMapping("/")
-    Product newProduct(@RequestBody Product product) {
-        System.out.println("product");
-//        return productRepository.save(product);
-        return null;
+    Product addProduct(@RequestBody Product product) {
+        return productRepository.save(product);
     }
 
     @GetMapping("/{productId}")
     ProductResponse getProduct(@PathVariable String productId) {
         String PRODUCT_COLLECTION = "product";
         String RATING_COLLECTION = "rating";
-        Product product = mongoTemplate.findOne(Query.query(Criteria.where("productId").is(productId)), Product.class, PRODUCT_COLLECTION);
-        if (product == null) {
-            throw new ProductNotFoundException(productId);
-        }
+//        Product product = mongoTemplate.findOne(Query.query(Criteria.where("productId").is(productId)), Product.class, PRODUCT_COLLECTION);
+//        if (product == null) {
+//            throw new ProductNotFoundException(productId);
+//        }
+        Product product = productRepository.findByProductId(productId).orElseThrow(() -> new ProductNotFoundException(productId));
         List<Rating> ratingList = mongoTemplate.find(
                 Query.query(Criteria.where("productId").is(productId)), Rating.class, RATING_COLLECTION);
         return new ProductResponse(product, ratingList);
@@ -121,5 +115,10 @@ public class ProductRestController {
         kafkaProducer.sendMessage(msg);
 
         return new ApiResponse(true, "rate success");
+    }
+
+    @PostMapping("/search")
+    ResponseEntity<List<Product>> search(@RequestBody SearchRequest request) {
+        return ResponseEntity.ok(searchService.search(request));
     }
 }
