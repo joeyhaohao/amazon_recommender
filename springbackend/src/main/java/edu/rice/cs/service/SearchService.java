@@ -31,13 +31,8 @@ public class SearchService {
                 .withPageable(PageRequest.of(pageInd, DEFAULT_SIZE))
                 .withQuery(QueryBuilders.matchQuery("title", request.getKeyword()));
         Page<Product> result = productRepository.search(queryBuilder.build());
-//        AggregatedPage<ProductES> result = template.queryForPage(queryBuilder.build(), ProductES.class);
+        List<Product> productList = result.getContent();
 
-//        long total = result.getTotalElements();
-//        Integer totalPages1 = result.getTotalPages();
-//        Long totalPages = total % size == 0 ? total / size : total / size + 1;
-        List<Product> goodsList = result.getContent();
-
-        return goodsList;
+        return productList;
     }
 }

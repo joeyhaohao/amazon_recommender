@@ -26,7 +26,7 @@ public class ProductLoader {
     private ProductRepository productRepository;
 
     public static void main(String[] args) {
-        SpringApplication.run(ProductLoader.class, args).close();
+//        SpringApplication.run(ProductLoader.class, args).close();
     }
 
     @Bean
@@ -35,7 +35,7 @@ public class ProductLoader {
             int count = 0;
             ObjectMapper mapper = new ObjectMapper();
             TypeReference<Product> typeReference = new TypeReference<Product>(){};
-            InputStream inputStream = TypeReference.class.getResourceAsStream("/data/meta_test.json");
+            InputStream inputStream = TypeReference.class.getResourceAsStream("/data/meta_5cat.json");
             BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
             String line;
             while ((line = reader.readLine()) != null) {

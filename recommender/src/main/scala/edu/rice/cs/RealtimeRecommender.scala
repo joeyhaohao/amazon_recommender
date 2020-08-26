@@ -15,7 +15,7 @@ object RealtimeRecommender {
   val RATING_COLLECTION = "rating"
   val REALTIME_REC_COLLECTION = "realtime_recommendation"
   val PRODUCT_SIM_COLLECTION = "product_similarity"
-  val USER_RATING_NUM = 20
+  val RECENT_EVENT_NUM = 20
   val SIMILAR_PRODUCTS_NUM = 20
   val logger = Logger.getLogger(this.getClass)
 
@@ -51,7 +51,8 @@ object RealtimeRecommender {
     val productSimMatrixBcast = sc.broadcast(productSimMatrix)
 
     val kafkaParam = Map(
-      "bootstrap.servers" -> "ec2-18-217-80-11.us-east-2.compute.amazonaws.com:9092",
+      "bootstrap.servers" -> "127.0.0.1:9092",
+//      "bootstrap.servers" -> "ec2-18-217-80-11.us-east-2.compute.amazonaws.com:9092",
       "key.deserializer" -> classOf[StringDeserializer],
       "value.deserializer" -> classOf[StringDeserializer],
       "group.id" -> "rating",
@@ -65,29 +66,29 @@ object RealtimeRecommender {
       ConsumerStrategies.Subscribe[String, String](Array(config("kafka.topic")), kafkaParam)
     )
 
-    // userId|productId|score|timestamp
-    val ratingStream = kafkaStream.map { msg =>
+    // event|userId|productId|score|timestamp
+    val eventStream = kafkaStream.map { msg =>
       println(msg)
       var attr = msg.value().split("\\|")
-      (attr(0), attr(1), attr(2).toDouble, attr(3).toInt)
+      (attr(0), attr(1), attr(2), attr(3).toDouble, attr(4).toInt)
     }
 
-    ratingStream.foreachRDD {
+    eventStream.foreachRDD {
       rdds =>
         rdds.foreach {
-          case (userId, productId, score, timestamp) =>
-            println("new rating: " + userId + "|" + productId + "|" + score + "|" + timestamp)
+          case (event, userId, productId, score, timestamp) =>
+            println("new event: " + event + "|" + userId + "|" + productId + "|" + score + "|" + timestamp)
 
             // retrieve the latest ratings of the user
-            val latestRatings = getUserRecentRatings(userId, USER_RATING_NUM)
-            logger.warn("Fetch recent ratings")
-            latestRatings.foreach(println)
+            val latestEvents = getUserRecentEvents(userId, RECENT_EVENT_NUM)
+            latestEvents.foreach(println)
 
             // retrieve similar products from product similarity matrix
             val similarProducts = getSimilarProducts(userId, productId, SIMILAR_PRODUCTS_NUM, productSimMatrixBcast.value)
 
             // compute product scores and generate real-time recommendation
-            val recommendList = generateRecommendList(similarProducts, latestRatings, productSimMatrixBcast.value)
+            val recommendList = generateRecommendList(similarProducts, latestEvents, productSimMatrixBcast.value)
+            println("realtime recommendation list update")
             recommendList.foreach(println)
 
             saveToMongoDB(userId, recommendList)
@@ -107,12 +108,13 @@ object RealtimeRecommender {
    */
   import scala.collection.JavaConversions._
 
-  def getUserRecentRatings(userId: String, num: Int): Array[(String, Double)] = {
-    val jedis = new Jedis("ec2-18-217-80-11.us-east-2.compute.amazonaws.com")
+  def getUserRecentEvents(userId: String, num: Int): Array[(String, String, Double)] = {
+    val jedis = new Jedis("127.0.0.1")
+//    val jedis = new Jedis("ec2-18-217-80-11.us-east-2.compute.amazonaws.com")
     jedis.lrange("userId:" + userId.toString, 0, num)
       .map { item =>
-        val attr = item.split("\\:")
-        (attr(0).trim, attr(1).trim.toDouble)
+        val attr = item.split("\\|")
+        (attr(0).trim(), attr(1).trim, attr(2).trim.toDouble)
       }
       .toArray
   }
@@ -156,8 +158,8 @@ object RealtimeRecommender {
    * @return Array[(productId, score)]
    */
   def generateRecommendList(candidates: Array[String],
-                          ratings: Array[(String, Double)],
-                          productSimMatrix: scala.collection.Map[String, scala.collection.immutable.Map[String, Double]]): Array[(String, Double)] = {
+                            events: Array[(String, String, Double)],
+                            productSimMatrix: scala.collection.Map[String, scala.collection.immutable.Map[String, Double]]): Array[(String, Double)] = {
     // base score of products, (productId, score)
     val scores = scala.collection.mutable.ArrayBuffer[(String, Double)]()
 
@@ -166,14 +168,14 @@ object RealtimeRecommender {
     // low-rating product counter
     val decreMap = scala.collection.mutable.HashMap[String, Int]()
 
-    for (product <- candidates; rating <- ratings) {
+    for (product <- candidates; event <- events) {
       // get similarity between candidate product and rated product
-      val simScore = getProductsSimScore(product, rating._1, productSimMatrix)
+      val simScore = getProductsSimScore(product, event._2, productSimMatrix)
       if (simScore > 0.5) {
         // sum(similarity * rating)
-        scores += ((product, simScore * rating._2))
-        if (rating._2 >= 4) {
-          // high-rating product
+        scores += ((product, simScore * event._3))
+        if (event._3 >= 4) {
+          // high-rating/search product
           increMap(product) = increMap.getOrDefault(product, 0) + 1
         } else {
           decreMap(product) = decreMap.getOrDefault(product, 0) + 1
