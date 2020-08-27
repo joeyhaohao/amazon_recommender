@@ -6,6 +6,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class SearchRequest {
+    private String userId;
     private String keyword;
     private Integer page;
 

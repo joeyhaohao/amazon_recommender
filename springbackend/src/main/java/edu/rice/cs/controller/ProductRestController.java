@@ -31,6 +31,7 @@ import java.util.List;
 @RequestMapping("/product")
 public class ProductRestController {
 
+    private double SEARCH_SCORE = 4.0;
     private static Logger logger = LogManager.getLogger(ProductRestController.class.getName());
 
     @Autowired
@@ -60,10 +61,12 @@ public class ProductRestController {
     ProductResponse getProduct(@PathVariable String productId) {
         String PRODUCT_COLLECTION = "product";
         String RATING_COLLECTION = "rating";
+//        // Get product from MongoDB
 //        Product product = mongoTemplate.findOne(Query.query(Criteria.where("productId").is(productId)), Product.class, PRODUCT_COLLECTION);
 //        if (product == null) {
 //            throw new ProductNotFoundException(productId);
 //        }
+        // Get product from Elasticsearch
         Product product = productRepository.findByProductId(productId).orElseThrow(() -> new ProductNotFoundException(productId));
         List<Rating> ratingList = mongoTemplate.find(
                 Query.query(Criteria.where("productId").is(productId)), Rating.class, RATING_COLLECTION);
@@ -95,9 +98,9 @@ public class ProductRestController {
     ApiResponse rateProduct(@PathVariable("productId") String productId, @RequestParam("userId") String userId, @RequestParam("rate") Double score) {
         ListOperations<String, String> ops = redisTemplate.opsForList();
         String key = "userId:" + userId;
-        String value = productId + ":" + score;
+        String value = "rating|" + productId + "|" + score;
         ops.leftPush(key, value);
-        logger.info(String.format("Save rating to Redis, key: %s, value: %s", key, value));
+        logger.info(String.format("Save rating event to Redis, key: %s, value: %s", key, value));
 
         Rating rating = ratingRepository.findByUserIdAndProductId(userId, productId);
         // update the rating if exists
@@ -110,7 +113,7 @@ public class ProductRestController {
         ratingRepository.save(rating);
         logger.info(String.format("Save rating to mongoDB: %s", rating.toString()));
 
-        String msg = userId + "|" + productId + "|" + score + "|" + System.currentTimeMillis() / 1000;
+        String msg = "rating|" + userId + "|" + productId + "|" + score + "|" + System.currentTimeMillis() / 1000;
         logger.info(String.format("Send message to Kafka: %s", msg));
         kafkaProducer.sendMessage(msg);
 
@@ -119,6 +122,19 @@ public class ProductRestController {
 
     @PostMapping("/search")
     ResponseEntity<List<Product>> search(@RequestBody SearchRequest request) {
-        return ResponseEntity.ok(searchService.search(request));
+        List<Product> searchResult = searchService.search(request);
+        String userId = request.getUserId();
+        String productId = searchResult.get(0).getProductId();
+
+        ListOperations<String, String> ops = redisTemplate.opsForList();
+        String key = "userId:" + userId;
+        String value = "search|" + productId + "|" + SEARCH_SCORE;
+        ops.leftPush(key, value);
+        logger.info(String.format("Save search event to Redis, key: %s, value: %s", key, value));
+
+        String msg = "search|" + userId + "|" + productId + "|" + SEARCH_SCORE + "|" + System.currentTimeMillis() / 1000;
+        logger.info(String.format("Send message to Kafka: %s", msg));
+        kafkaProducer.sendMessage(msg);
+        return ResponseEntity.ok(searchResult);
     }
 }
