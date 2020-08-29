@@ -19,6 +19,7 @@ import { getRecommendList, getCurrentUser } from "../util/APIUtils";
 import CarouselView from "./CarouselView";
 import { useStyles } from "./css/MyStyle";
 import { UserContext } from "../auth/UserContext";
+import { MAX_NUM_ITEMS_IN_CAROUSEL } from "../constants/index";
 
 class Album extends Component {
 	static contextType = UserContext;
@@ -194,13 +195,13 @@ class Album extends Component {
 							<Container maxWidth="lg" className={classes.mainContainer}>
 								<CarouselView
 									title="Recommend for you"
-									productList={this.state.recommendList}
+									productList={this.state.recommendList.slice(0, MAX_NUM_ITEMS_IN_CAROUSEL)}
 									// loadGuess={this.loadGuess}
 									userId={this.state.currentUser.userId}
 								/>
 								<CarouselView
 									title="Guess you like"
-									productList={this.state.guessList}
+									productList={this.state.guessList.slice(0, MAX_NUM_ITEMS_IN_CAROUSEL)}
 									// loadGuess={this.loadGuess}
 									userId={this.state.currentUser.userId}
 								/>

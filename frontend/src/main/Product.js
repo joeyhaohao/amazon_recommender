@@ -56,7 +56,7 @@ class Product extends Component {
 			(response) => {
 				if (this._isMounted) {
 					this.setState({
-						productDetail: response.product,
+						productDetail: response,
 						ratingCount: response.ratingCount,
 						ratingAvg: response.ratingAvg,
 						isLoading: false,

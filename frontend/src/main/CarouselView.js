@@ -27,7 +27,7 @@ class CarouselView extends Component {
 				</div>
 				<Container className={classes.cardGrid} maxWidth="lg">
 					<MyCarousel>
-						{this.props.productList.slice(0, MAX_NUM_ITEMS_IN_CAROUSEL).map((product, index) => (
+						{this.props.productList.map((product, index) => (
 							<Box key={index} component="div" m={2} height="90%">
 								<Product
 									product={product}

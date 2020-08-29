@@ -26,7 +26,7 @@ public class ProductLoader {
     private ProductRepository productRepository;
 
     public static void main(String[] args) {
-//        SpringApplication.run(ProductLoader.class, args).close();
+        SpringApplication.run(ProductLoader.class, args).close();
     }
 
     @Bean
@@ -44,6 +44,7 @@ public class ProductLoader {
                     line = line.replace("asin", "productId");
                     Product product = mapper.readValue(line, typeReference);
                     productRepository.save(product);
+                    logger.info("save products: " + count);
                     count ++;
                 } catch (IOException e){
                     logger.info("Unable to save products: " + e.getMessage());

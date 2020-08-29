@@ -1,22 +1,17 @@
 import React from "react";
-import Button from "@material-ui/core/Button";
 import AppBar from "@material-ui/core/AppBar";
+import Button from "@material-ui/core/Button";
 import ShoppingBasketIcon from "@material-ui/icons/ShoppingBasket";
-import Box from "@material-ui/core/Box";
-import Toolbar from "@material-ui/core/Toolbar";
-import Typography from "@material-ui/core/Typography";
 import IconButton from "@material-ui/core/IconButton";
 import ExitToAppIcon from "@material-ui/icons/ExitToApp";
 import SearchIcon from "@material-ui/icons/Search";
 import InputBase from "@material-ui/core/InputBase";
-import Container from "@material-ui/core/Container";
+import Toolbar from "@material-ui/core/Toolbar";
+import Typography from "@material-ui/core/Typography";
+import Box from "@material-ui/core/Box";
 import { fade, makeStyles } from "@material-ui/core/styles";
 import { Link } from "react-router-dom";
-
-import { getCurrentUser, searchProducts } from "../util/APIUtils";
-import CarouselView from "../main/CarouselView";
-
-const queryString = require("query-string");
+import { getCurrentUser } from "../util/APIUtils";
 
 const useStyles = makeStyles((theme) => ({
 	icon: {
@@ -24,19 +19,6 @@ const useStyles = makeStyles((theme) => ({
 	},
 	title: {
 		flexGrow: 1,
-	},
-	heroContent: {
-		// backgroundColor: theme.palette.background.paper,
-		padding: theme.spacing(3, 0, 2),
-		borderColor: "black",
-	},
-	main: {
-		// backgroundColor: "white",
-		paddingTop: "60px",
-		minHeight: "100vh",
-	},
-	mainContainer: {
-		backgroundColor: theme.palette.background.paper,
 	},
 	search: {
 		position: "relative",
@@ -53,6 +35,15 @@ const useStyles = makeStyles((theme) => ({
 			width: "auto",
 		},
 	},
+	searchIcon: {
+		padding: theme.spacing(0, 1),
+		height: "100%",
+		position: "absolute",
+		pointerEvents: "auto",
+		display: "flex",
+		alignItems: "center",
+		justifyContent: "center",
+	},
 	inputRoot: {
 		color: "inherit",
 	},
@@ -68,12 +59,12 @@ const useStyles = makeStyles((theme) => ({
 	},
 }));
 
-export default function SearchView(props) {
+export default function MyAppBar(props) {
+	const appBarTitle = "Amazon Recommender";
 	const classes = useStyles();
 	const isCancelled = React.useRef(false);
 	const [currentUser, setCurrentUser] = React.useState(null);
 	const [searchText, setSearchText] = React.useState("");
-	const [resultList, setResultList] = React.useState([]);
 
 	const onSearchChange = (event) => {
 		setSearchText(event.target.value);
@@ -86,13 +77,6 @@ export default function SearchView(props) {
 	};
 
 	React.useEffect(() => {
-		const searchResult = async (searchRequest) => {
-			await searchProducts(searchRequest).then((res) => {
-				setResultList(res);
-				console.log(resultList);
-			});
-		};
-
 		const loadCurrentUser = async () => {
 			await getCurrentUser()
 				.then((response) => {
@@ -104,18 +88,6 @@ export default function SearchView(props) {
 				.catch((error) => {
 					console.log(error);
 				});
-			console.log(currentUser);
-			if (currentUser) {
-				const parsed = queryString.parse(props.location.search);
-				console.log(parsed);
-				const q = parsed.q;
-				const searchRequest = {
-					userId: currentUser.userId,
-					keyword: q,
-					page: 1,
-				};
-				await searchResult(searchRequest);
-			}
 		};
 
 		loadCurrentUser();
@@ -123,7 +95,7 @@ export default function SearchView(props) {
 		return () => {
 			isCancelled.current = true;
 		};
-	}, [currentUser,props.location.search,isCancelled.current]);
+	}, []);
 
 	return (
 		<div>
@@ -131,7 +103,7 @@ export default function SearchView(props) {
 				<Toolbar>
 					<ShoppingBasketIcon className={classes.icon} />
 					<Typography component={Link} to={"/"} className={classes.title} variant="h6" color="inherit" noWrap>
-						<Box>Amazon Recommender</Box>
+						<Box>{appBarTitle}</Box>
 					</Typography>
 					<div className={classes.search}>
 						<InputBase
@@ -157,22 +129,11 @@ export default function SearchView(props) {
 							Login
 						</Button>
 					)}
-
 					<IconButton onClick={props.handleLogout} color="inherit" title="logout">
 						<ExitToAppIcon fontSize="large" />
 					</IconButton>
 				</Toolbar>
 			</AppBar>
-
-			<main className={classes.main}>
-				{currentUser && resultList ? (
-					<div>
-						<Container maxWidth="lg" className={classes.mainContainer}>
-							<CarouselView title="Search Result" productList={resultList} userId={currentUser.userId} />
-						</Container>
-					</div>
-				) : null}
-			</main>
 		</div>
 	);
 }

@@ -10,6 +10,7 @@ import PrivateRouter from "../util/PrivateRouter";
 import ProductView from "../product/ProductView";
 import { UserContext } from "../auth/UserContext";
 import SearchView from "../search/SearchView";
+import MyAppBar from "./MyAppBar"
 
 class App extends Component {
 	constructor(props) {
@@ -45,6 +46,7 @@ class App extends Component {
 						<PrivateRouter path="/" exact component={Album} handleLogout={this.handleLogout} />
 						<PrivateRouter path="/product/:id" exact component={ProductView} handleLogout={this.handleLogout} />
 						<PrivateRouter path="/search" exact component={SearchView} handleLogout={this.handleLogout} />
+						<PrivateRouter path="/appBar" exact component={MyAppBar} handleLogout={this.handleLogout} />
 					</Switch>
 				</UserContext.Provider>
 			</div>
