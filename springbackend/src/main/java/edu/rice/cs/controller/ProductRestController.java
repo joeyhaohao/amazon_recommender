@@ -31,7 +31,7 @@ import java.util.List;
 @RequestMapping("/product")
 public class ProductRestController {
 
-    private double SEARCH_SCORE = 4.0;
+    private double SEARCH_SCORE = 3.0;
     private static Logger logger = LogManager.getLogger(ProductRestController.class.getName());
 
     @Autowired

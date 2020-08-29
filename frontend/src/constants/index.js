@@ -22,5 +22,5 @@ export const EMAIL_MAX_LENGTH = 40;
 export const PASSWORD_MIN_LENGTH = 6;
 export const PASSWORD_MAX_LENGTH = 20;
 
-export const MAX_NUM_ITEMS_IN_CAROUSEL = 15;
-export const MAX_NUM_ITEMS_IN_PEOPLE_ALSO_SEE = 10;
+export const MAX_NUM_ITEMS_IN_CAROUSEL = 20;
+export const MAX_NUM_ITEMS_IN_PEOPLE_ALSO_SEE = 20;
