@@ -21,6 +21,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -58,19 +59,19 @@ public class ProductRestController {
     }
 
     @GetMapping("/{productId}")
-    ProductResponse getProduct(@PathVariable String productId) {
+    ResponseEntity<Product> getProduct(@PathVariable String productId) {
         String PRODUCT_COLLECTION = "product";
         String RATING_COLLECTION = "rating";
+
 //        // Get product from MongoDB
 //        Product product = mongoTemplate.findOne(Query.query(Criteria.where("productId").is(productId)), Product.class, PRODUCT_COLLECTION);
 //        if (product == null) {
 //            throw new ProductNotFoundException(productId);
 //        }
+
         // Get product from Elasticsearch
         Product product = productRepository.findByProductId(productId).orElseThrow(() -> new ProductNotFoundException(productId));
-        List<Rating> ratingList = mongoTemplate.find(
-                Query.query(Criteria.where("productId").is(productId)), Rating.class, RATING_COLLECTION);
-        return new ProductResponse(product, ratingList);
+        return ResponseEntity.ok(product);
     }
 
     @PutMapping("/{productId}")

@@ -5,6 +5,7 @@ import com.mongodb.casbah.{MongoClient, MongoClientURI}
 import org.apache.spark.SparkConf
 import org.apache.spark.sql.{DataFrame, SparkSession}
 import org.apache.spark.sql.functions.lit
+import org.apache.spark.sql.functions._
 import org.apache.log4j.Logger
 
 object DataLoader {
@@ -28,24 +29,29 @@ object DataLoader {
 
     implicit val mongoConfig = MongoConfig(config("mongo.uri"), config("mongo.db"))
     // load product
-    val productDF = spark.read.json(PRODUCT_PATH)
+    var productDF = spark.read.json(PRODUCT_PATH)
       .withColumnRenamed("asin", "productId")
       .select("productId", "categories", "description", "imUrl", "price", "title")
       .na.drop(Seq("productId", "title"))
       .cache()
     productDF.printSchema()
-    saveToMongoDB(productDF, PRODUCT_COLLECTION, "productId")
 
     val ratingDF = spark.read.format("csv")
       .option("inferSchema", "true")
       .load(RATING_PATH)
       .toDF("userId", "productId", "rating", "timestamp")
-      .join(productDF.select("productId"), Seq("productId"))
       .cache()
     ratingDF.printSchema()
     saveToMongoDB(ratingDF, RATING_COLLECTION, "userId")
 
-//    val userDF = ratingDF
+    // calculate product rating count, average
+    val ratingAvg = ratingDF.groupBy("productId").agg(
+      avg("rating").as("ratingAvg"),
+      count("*").as("ratingCount"))
+    productDF = productDF.join(ratingAvg, Seq("productId"))
+    saveToMongoDB(productDF, PRODUCT_COLLECTION, "productId")
+
+    //    val userDF = ratingDF
 //      .select("userId")
 //      .dropDuplicates()
 //      .withColumn("password", lit("default"))
