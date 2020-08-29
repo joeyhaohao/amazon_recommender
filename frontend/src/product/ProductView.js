@@ -93,7 +93,7 @@ class ProductView extends Component {
 		getProduct(productId).then(
 			(response) => {
 				this.setState({
-					productDetail: response.product,
+					productDetail: response,
 					ratingAvg: response.ratingAvg,
 					ratingCount: response.ratingCount,
 					isLoading: false,
@@ -153,8 +153,6 @@ class ProductView extends Component {
 			<div>
 				{this.state.productDetail ? (
 					<div className={classes.root}>
-						<CssBaseline />
-
 						<AppBar position="relative">
 							<Toolbar>
 								<ShoppingBasketIcon className={classes.icon} />
