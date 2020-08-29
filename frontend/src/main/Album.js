@@ -31,6 +31,7 @@ class Album extends Component {
 			currentUser: null,
 			recommendList: null,
 			guessList: null,
+			searchText: "",
 		};
 
 		this.loadCurrentUser = this.loadCurrentUser.bind(this);
@@ -135,19 +136,19 @@ class Album extends Component {
 	};
 
 	onSearchChange = (event) => {
-		console.log("event.target.value");
-		console.log(event.target.value);
+		this.setState({ searchText: event.target.value });
 	};
 
 	handleSearch = () => {
-		console.log("search");
+		this.props.history.push("/search?q=" + this.state.searchText);
+		this.setState({ searchText: "" });
 	};
 
 	render() {
 		const { classes } = this.props;
 
 		return (
-			<React.Fragment>
+			<div>
 				<AppBar position="fixed">
 					<Toolbar>
 						<ShoppingBasketIcon className={classes.icon} />
@@ -163,10 +164,8 @@ class Album extends Component {
 								}}
 								inputProps={{ "aria-label": "search" }}
 								onChange={this.onSearchChange}
+								value={this.state.searchText}
 							/>
-							{/* <div className={classes.searchIcon}>
-								
-							</div> */}
 						</div>
 						<IconButton onClick={this.handleSearch} color="inherit">
 							<SearchIcon fontSize="large" />
@@ -209,7 +208,7 @@ class Album extends Component {
 						</div>
 					) : null}
 				</main>
-			</React.Fragment>
+			</div>
 		);
 	}
 }
