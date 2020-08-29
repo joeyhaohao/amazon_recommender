@@ -18,8 +18,10 @@ class CarouselView extends Component {
 			<React.Fragment>
 				<div className={classes.heroContent}>
 					<Container maxWidth="lg">
-						<Typography component="h1" variant="h2" align="center" color="textPrimary" gutterBottom fontWeight="fontWeightBold" fontFamily="italic">
-							{this.props.title}
+						<Typography component="h1" variant="h2" align="center" color="textPrimary" gutterBottom>
+							<Box fontWeight={400} m={1}>
+								{this.props.title}
+							</Box>
 						</Typography>
 					</Container>
 				</div>

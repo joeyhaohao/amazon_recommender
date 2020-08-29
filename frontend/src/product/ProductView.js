@@ -159,7 +159,7 @@ class ProductView extends Component {
 							<Toolbar>
 								<ShoppingBasketIcon className={classes.icon} />
 								<Typography component={Link} to={"/"} className={classes.title} variant="h6" color="inherit" noWrap>
-									Amazon Recommender
+									<Box>Amazon Recommender</Box>
 								</Typography>
 
 								<IconButton onClick={this.props.handleLogout} color="inherit" title="logout">

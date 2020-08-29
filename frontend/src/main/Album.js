@@ -3,11 +3,14 @@ import React, { Component } from "react";
 import Button from "@material-ui/core/Button";
 import AppBar from "@material-ui/core/AppBar";
 import ShoppingBasketIcon from "@material-ui/icons/ShoppingBasket";
-import CssBaseline from "@material-ui/core/CssBaseline";
+import Box from "@material-ui/core/Box";
 import Toolbar from "@material-ui/core/Toolbar";
 import Typography from "@material-ui/core/Typography";
 import IconButton from "@material-ui/core/IconButton";
 import ExitToAppIcon from "@material-ui/icons/ExitToApp";
+import SearchIcon from "@material-ui/icons/Search";
+import InputBase from "@material-ui/core/InputBase";
+import Container from "@material-ui/core/Container";
 import { withStyles } from "@material-ui/core/styles";
 
 import { Link } from "react-router-dom";
@@ -29,8 +32,7 @@ class Album extends Component {
 			recommendList: null,
 			guessList: null,
 		};
-		this.loadRecommendation = this.loadRecommendation.bind(this);
-		this.loadGuess = this.loadGuess.bind(this);
+
 		this.loadCurrentUser = this.loadCurrentUser.bind(this);
 	}
 
@@ -66,7 +68,7 @@ class Album extends Component {
 		console.log(this.state.currentUser);
 	}
 
-	loadGuess() {
+	loadGuess = () => {
 		let userId = this.state.currentUser.userId;
 
 		getRecommendList("realtime/" + userId).then(
@@ -97,9 +99,9 @@ class Album extends Component {
 					});
 			}
 		);
-	}
+	};
 
-	loadRecommendation() {
+	loadRecommendation = () => {
 		let userId = this.state.currentUser.userId;
 
 		getRecommendList("als/" + userId).then(
@@ -130,21 +132,45 @@ class Album extends Component {
 					});
 			}
 		);
-	}
+	};
+
+	onSearchChange = (event) => {
+		console.log("event.target.value");
+		console.log(event.target.value);
+	};
+
+	handleSearch = () => {
+		console.log("search");
+	};
 
 	render() {
 		const { classes } = this.props;
 
 		return (
 			<React.Fragment>
-				<CssBaseline />
-
-				<AppBar position="relative">
+				<AppBar position="fixed">
 					<Toolbar>
 						<ShoppingBasketIcon className={classes.icon} />
-						<Typography className={classes.title} variant="h6" color="inherit" noWrap>
-							{this.state.title}
+						<Typography component={Link} to={"/"} className={classes.title} variant="h6" color="inherit" noWrap>
+							<Box>{this.state.title}</Box>
 						</Typography>
+						<div className={classes.search}>
+							<InputBase
+								placeholder="Search…"
+								classes={{
+									root: classes.inputRoot,
+									input: classes.inputInput,
+								}}
+								inputProps={{ "aria-label": "search" }}
+								onChange={this.onSearchChange}
+							/>
+							{/* <div className={classes.searchIcon}>
+								
+							</div> */}
+						</div>
+						<IconButton onClick={this.handleSearch} color="inherit">
+							<SearchIcon fontSize="large" />
+						</IconButton>
 						{this.state.currentUser ? (
 							<Typography variant="h6" color="inherit">
 								Hello {this.state.currentUser.username}!
@@ -166,18 +192,20 @@ class Album extends Component {
 				<main className={classes.main}>
 					{this.state.recommendList && this.state.guessList ? (
 						<div>
-							<CarouselView
-								title="Recommend for you"
-								productList={this.state.recommendList}
-								// loadGuess={this.loadGuess}
-								userId={this.state.currentUser.userId}
-							/>
-							<CarouselView
-								title="Guess you like"
-								productList={this.state.guessList}
-								// loadGuess={this.loadGuess}
-								userId={this.state.currentUser.userId}
-							/>
+							<Container maxWidth="lg" className={classes.mainContainer}>
+								<CarouselView
+									title="Recommend for you"
+									productList={this.state.recommendList}
+									// loadGuess={this.loadGuess}
+									userId={this.state.currentUser.userId}
+								/>
+								<CarouselView
+									title="Guess you like"
+									productList={this.state.guessList}
+									// loadGuess={this.loadGuess}
+									userId={this.state.currentUser.userId}
+								/>
+							</Container>
 						</div>
 					) : null}
 				</main>
