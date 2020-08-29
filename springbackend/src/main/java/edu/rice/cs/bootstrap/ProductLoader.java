@@ -30,6 +30,7 @@ public class ProductLoader {
     }
 
     @Bean
+    // load data to Elasticsearch
     CommandLineRunner runner() {
         return args -> {
             int count = 0;

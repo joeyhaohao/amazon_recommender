@@ -18,9 +18,9 @@ public class Product {
 
     @Id
     private String productId;
-    @Field(type = FieldType.Keyword, index = true, analyzer = "ik_max_word")
+    @Field(type = FieldType.Keyword, index = true)
     private String title;
-    @Field(type = FieldType.Keyword)
+    @Field(type = FieldType.Text)
     private String description;
     @Field(type = FieldType.Keyword)
     private List<List<String>> categories;
