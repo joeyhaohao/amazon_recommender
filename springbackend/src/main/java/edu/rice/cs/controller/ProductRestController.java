@@ -124,17 +124,22 @@ public class ProductRestController {
     ResponseEntity<List<Product>> search(@RequestBody SearchRequest request) {
         List<Product> searchResult = searchService.search(request);
         String userId = request.getUserId();
-        String productId = searchResult.get(0).getProductId();
 
-        ListOperations<String, String> ops = redisTemplate.opsForList();
-        String key = "userId:" + userId;
-        String value = "search|" + productId + "|" + SEARCH_SCORE;
-        ops.leftPush(key, value);
-        logger.info(String.format("Save search event to Redis, key: %s, value: %s", key, value));
+        // send search message to Kafka
+        if (searchResult.size() > 0) {
+            String productId = searchResult.get(0).getProductId();
 
-        String msg = "search|" + userId + "|" + productId + "|" + SEARCH_SCORE + "|" + System.currentTimeMillis() / 1000;
-        logger.info(String.format("Send message to Kafka: %s", msg));
-        kafkaProducer.sendMessage(msg);
+            ListOperations<String, String> ops = redisTemplate.opsForList();
+            String key = "userId:" + userId;
+            String value = "search|" + productId + "|" + SEARCH_SCORE;
+            ops.leftPush(key, value);
+            logger.info(String.format("Save search event to Redis, key: %s, value: %s", key, value));
+
+            String msg = "search|" + userId + "|" + productId + "|" + SEARCH_SCORE + "|" + System.currentTimeMillis() / 1000;
+            logger.info(String.format("Send message to Kafka: %s", msg));
+            kafkaProducer.sendMessage(msg);
+        }
+
         return ResponseEntity.ok(searchResult);
     }
 }

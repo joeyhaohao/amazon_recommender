@@ -15,7 +15,7 @@ import java.util.List;
 @Service
 public class SearchService {
 
-    private static final int DEFAULT_SIZE = 10;
+    private static final int DEFAULT_SIZE = 20;
 
     @Autowired
     private ProductRepository productRepository;

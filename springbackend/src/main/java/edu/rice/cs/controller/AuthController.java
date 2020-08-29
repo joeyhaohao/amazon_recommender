@@ -37,7 +37,6 @@ public class AuthController {
 
     private static final Logger logger = LoggerFactory.getLogger(AuthController.class);
 
-
     @Autowired
     AuthenticationManager authenticationManager;
 
