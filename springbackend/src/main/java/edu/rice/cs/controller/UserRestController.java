@@ -15,13 +15,15 @@ public class UserRestController {
 
     @GetMapping(value = "/{username}", produces = "application/json")
     User getUser(@PathVariable String username) {
-        User user = userRepository.findByUsername(username).orElseThrow(() -> new UserNotFoundException("User not found"));
+        User user = userRepository.findByUsername(username).orElseThrow(
+                () -> new UserNotFoundException("User not found"));
         return user;
     }
 
     @PutMapping(value = "/{username}", produces = "application/json")
     User updateUser(@PathVariable String username, @RequestBody User newUser) {
-        User user = userRepository.findByUsername(username).orElseThrow(() -> new UserNotFoundException("User not found"));
+        User user = userRepository.findByUsername(username).orElseThrow(
+                () -> new UserNotFoundException("User not found"));
         user.setUserId(newUser.getUserId());
         user.setUsername(newUser.getUsername());
         return user;
@@ -29,7 +31,8 @@ public class UserRestController {
 
     @PostMapping("/")
     User newUser(@RequestBody User newUser) {
-        User user = userRepository.findByUsername(newUser.getUsername()).orElseThrow(() -> new UserNotFoundException("User not found"));
+        User user = userRepository.findByUsername(newUser.getUsername()).orElseThrow(
+                () -> new UserNotFoundException("User not found"));
         userRepository.save(newUser);
         return newUser;
     }
