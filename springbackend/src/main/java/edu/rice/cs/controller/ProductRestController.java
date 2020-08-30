@@ -141,7 +141,7 @@ public class ProductRestController {
     }
 
     @PostMapping("/search")
-    SearchResponse search(@RequestBody SearchRequest request) {
+    ResponseEntity<?> search(@RequestBody SearchRequest request) {
         String userId = request.getUserId();
 
         // TODO: cache search result
@@ -156,10 +156,13 @@ public class ProductRestController {
 
         // return result of a page
         int pageInd = request.getPage();
-        List<Product> productList = searchResult.subList(SEARCH_ITEMS_PER_PAGE*pageInd, SEARCH_ITEMS_PER_PAGE*(pageInd+1));
+        if (searchResult.size() > 0 && pageInd >= totalPages) {
+            return ResponseEntity.badRequest().body("Request page exceeds maximum");
+        }
+        List<Product> productList = searchResult.subList(SEARCH_ITEMS_PER_PAGE*pageInd, Math.min(searchResult.size(), SEARCH_ITEMS_PER_PAGE*(pageInd+1)));
 
         // send search event to Kafka, only when user visit the first page
-        if (pageInd == 0 && searchResult.size() > 0) {
+        if (searchResult.size() > 0 && pageInd == 0) {
             String productId = searchResult.get(0).getProductId();
 
             ListOperations<String, String> ops = redisTemplate.opsForList();
@@ -173,6 +176,6 @@ public class ProductRestController {
             kafkaProducer.sendMessage(msg);
         }
 
-        return new SearchResponse(productList, pageInd, totalPages);
+        return ResponseEntity.ok(new SearchResponse(productList, pageInd, totalPages));
     }
 }
