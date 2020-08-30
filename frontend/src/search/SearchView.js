@@ -52,10 +52,13 @@ function SearchView(props) {
 	const [searchText, setSearchText] = React.useState("");
 	const [resultList, setResultList] = React.useState([]);
 	const [page, setPage] = React.useState(1);
+	const [totalPage, setTotalPage] = React.useState(10);
 
 	const handlePageChange = (event, value) => {
 		setPage(value);
-		props.history.push("/search?q=" + searchText + "&page=" + value);
+		const parsed = queryString.parse(props.location.search);
+		const q = parsed.q;
+		props.history.push("/search?q=" + q + "&page=" + value);
 	};
 
 	React.useEffect(() => {
@@ -64,6 +67,7 @@ function SearchView(props) {
 			await searchProducts(searchRequest).then((res) => {
 				if (!isCancelled) {
 					setResultList(res.searchResult);
+					setTotalPage(res.totalPages);
 					console.log(res);
 				}
 			});
@@ -127,7 +131,7 @@ function SearchView(props) {
 					</div>
 				) : null}
 				<div className={classes.pagination}>
-					<Pagination count={10} color="primary" page={page} onChange={handlePageChange} />
+					<Pagination count={totalPage} color="primary" page={page} onChange={handlePageChange} />
 				</div>
 			</main>
 		</div>
