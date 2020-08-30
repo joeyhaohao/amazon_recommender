@@ -6,6 +6,7 @@ import edu.rice.cs.model.Rating;
 import edu.rice.cs.payload.ApiResponse;
 import edu.rice.cs.payload.ProductResponse;
 import edu.rice.cs.payload.SearchRequest;
+import edu.rice.cs.payload.SearchResponse;
 import edu.rice.cs.repositories.ProductRepository;
 import edu.rice.cs.repositories.RatingRepository;
 import edu.rice.cs.service.KafkaProducer;
@@ -33,6 +34,7 @@ import java.util.List;
 public class ProductRestController {
 
     private double SEARCH_SCORE = 3.0;
+    private int SEARCH_ITEMS_PER_PAGE = 20;
     private static Logger logger = LogManager.getLogger(ProductRestController.class.getName());
 
     @Autowired
@@ -139,12 +141,25 @@ public class ProductRestController {
     }
 
     @PostMapping("/search")
-    ResponseEntity<List<Product>> search(@RequestBody SearchRequest request) {
-        List<Product> searchResult = searchService.search(request);
+    SearchResponse search(@RequestBody SearchRequest request) {
         String userId = request.getUserId();
 
-        // send search event to Kafka
-        if (searchResult.size() > 0) {
+        // TODO: cache search result
+        List<Product> searchResult = searchService.search(request);
+
+        // compute total pages
+        int productCount = searchResult.size();
+        int totalPages = productCount / SEARCH_ITEMS_PER_PAGE;
+        if (productCount % SEARCH_ITEMS_PER_PAGE > 0) {
+            totalPages ++;
+        }
+
+        // return result of a page
+        int pageInd = request.getPage();
+        List<Product> productList = searchResult.subList(SEARCH_ITEMS_PER_PAGE*pageInd, SEARCH_ITEMS_PER_PAGE*(pageInd+1));
+
+        // send search event to Kafka, only when user visit the first page
+        if (pageInd == 0 && searchResult.size() > 0) {
             String productId = searchResult.get(0).getProductId();
 
             ListOperations<String, String> ops = redisTemplate.opsForList();
@@ -158,6 +173,6 @@ public class ProductRestController {
             kafkaProducer.sendMessage(msg);
         }
 
-        return ResponseEntity.ok(searchResult);
+        return new SearchResponse(productList, pageInd, totalPages);
     }
 }
