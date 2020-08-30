@@ -153,7 +153,7 @@ class ProductView extends Component {
 			<div>
 				{this.state.productDetail ? (
 					<div className={classes.root}>
-						<AppBar position="relative">
+						{/* <AppBar position="relative">
 							<Toolbar>
 								<ShoppingBasketIcon className={classes.icon} />
 								<Typography component={Link} to={"/"} className={classes.title} variant="h6" color="inherit" noWrap>
@@ -164,7 +164,7 @@ class ProductView extends Component {
 									<ExitToAppIcon fontSize="large" />
 								</IconButton>
 							</Toolbar>
-						</AppBar>
+						</AppBar> */}
 
 						<Container component="main" className={classes.main} maxWidth="lg">
 							<Box m={2} p={2} className={classes.detailsBox}>

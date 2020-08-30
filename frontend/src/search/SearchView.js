@@ -127,7 +127,7 @@ export default function SearchView(props) {
 
 	return (
 		<div>
-			<AppBar position="fixed">
+			{/* <AppBar position="fixed">
 				<Toolbar>
 					<ShoppingBasketIcon className={classes.icon} />
 					<Typography component={Link} to={"/"} className={classes.title} variant="h6" color="inherit" noWrap>
@@ -162,7 +162,7 @@ export default function SearchView(props) {
 						<ExitToAppIcon fontSize="large" />
 					</IconButton>
 				</Toolbar>
-			</AppBar>
+			</AppBar> */}
 
 			<main className={classes.main}>
 				{currentUser && resultList ? (

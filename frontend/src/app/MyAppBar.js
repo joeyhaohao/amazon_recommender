@@ -11,6 +11,7 @@ import Typography from "@material-ui/core/Typography";
 import Box from "@material-ui/core/Box";
 import { fade, makeStyles } from "@material-ui/core/styles";
 import { Link } from "react-router-dom";
+import { withRouter } from "react-router-dom";
 import { getCurrentUser } from "../util/APIUtils";
 
 const useStyles = makeStyles((theme) => ({
@@ -59,7 +60,7 @@ const useStyles = makeStyles((theme) => ({
 	},
 }));
 
-export default function MyAppBar(props) {
+function MyAppBar(props) {
 	const appBarTitle = "Amazon Recommender";
 	const classes = useStyles();
 	const isCancelled = React.useRef(false);
@@ -71,7 +72,7 @@ export default function MyAppBar(props) {
 	};
 
 	const handleSearch = (event) => {
-		// console.log(searchText);
+		console.log(props);
 		props.history.push("/search?q=" + searchText);
 		setSearchText("");
 	};
@@ -137,3 +138,5 @@ export default function MyAppBar(props) {
 		</div>
 	);
 }
+
+export default withRouter(MyAppBar);

@@ -150,7 +150,7 @@ class Album extends Component {
 
 		return (
 			<div>
-				<AppBar position="fixed">
+				{/* <AppBar position="fixed">
 					<Toolbar>
 						<ShoppingBasketIcon className={classes.icon} />
 						<Typography component={Link} to={"/"} className={classes.title} variant="h6" color="inherit" noWrap>
@@ -183,11 +183,8 @@ class Album extends Component {
 						<IconButton onClick={this.props.handleLogout} color="inherit" title="logout">
 							<ExitToAppIcon fontSize="large" />
 						</IconButton>
-						{/* <Button color="inherit" onClick={this.props.handleLogout}>
-							Log out
-						</Button> */}
 					</Toolbar>
-				</AppBar>
+				</AppBar> */}
 
 				<main className={classes.main}>
 					{this.state.recommendList && this.state.guessList ? (

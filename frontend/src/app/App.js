@@ -10,7 +10,7 @@ import PrivateRouter from "../util/PrivateRouter";
 import ProductView from "../product/ProductView";
 import { UserContext } from "../auth/UserContext";
 import SearchView from "../search/SearchView";
-import MyAppBar from "./MyAppBar"
+import MyAppBar from "./MyAppBar";
 
 class App extends Component {
 	constructor(props) {
@@ -39,14 +39,15 @@ class App extends Component {
 			<div className="App">
 				<UserContext.Provider value={userState}>
 					<CssBaseline />
+					<MyAppBar handleLogout={this.handleLogout} />
 					<Switch>
 						<Route path="/login" exact component={Login} />
 						<Route path="/registration" exact component={Registration} />
 
-						<PrivateRouter path="/" exact component={Album} handleLogout={this.handleLogout} />
-						<PrivateRouter path="/product/:id" exact component={ProductView} handleLogout={this.handleLogout} />
-						<PrivateRouter path="/search" exact component={SearchView} handleLogout={this.handleLogout} />
-						<PrivateRouter path="/appBar" exact component={MyAppBar} handleLogout={this.handleLogout} />
+						<PrivateRouter path="/" exact component={Album} />
+						<PrivateRouter path="/product/:id" exact component={ProductView} />
+						<PrivateRouter path="/search" exact component={SearchView} />
+						{/* <PrivateRouter path="/appBar" exact component={MyAppBar} /> */}
 					</Switch>
 				</UserContext.Provider>
 			</div>
