@@ -44,7 +44,6 @@ public class ProductLoader {
                     line = line.replace("asin", "productId");
                     Product product = mapper.readValue(line, typeReference);
                     productRepository.save(product);
-                    logger.info("save products: " + count);
                     count ++;
                 } catch (IOException e){
                     logger.info("Unable to save products: " + e.getMessage());

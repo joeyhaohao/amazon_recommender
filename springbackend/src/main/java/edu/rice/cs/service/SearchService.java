@@ -29,7 +29,8 @@ public class SearchService {
         // send a query to Elasticsearch
         NativeSearchQueryBuilder queryBuilder = new NativeSearchQueryBuilder()
                 .withPageable(PageRequest.of(pageInd, DEFAULT_SIZE))
-                .withQuery(QueryBuilders.matchQuery("title", request.getKeyword()));
+                .withQuery(QueryBuilders.multiMatchQuery(request.getKeyword(),
+                        "title", "description", "category"));
         Page<Product> result = productRepository.search(queryBuilder.build());
         List<Product> productList = result.getContent();
 

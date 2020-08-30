@@ -18,11 +18,11 @@ public class Product {
 
     @Id
     private String productId;
-    @Field(type = FieldType.Keyword, index = true)
+    @Field(type = FieldType.Text)
     private String title;
     @Field(type = FieldType.Text)
     private String description;
-    @Field(type = FieldType.Keyword)
+    @Field(type = FieldType.Text)
     private List<List<String>> categories;
     private String imUrl;
     private double price;
