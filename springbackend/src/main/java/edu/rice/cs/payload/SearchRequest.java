@@ -10,7 +10,7 @@ public class SearchRequest {
     private String keyword;
     private Integer page;
 
-    private static final Integer DEFAULT_PAGE = 1;
+    private static final Integer DEFAULT_PAGE = 0;
 
     public Integer getPage() {
         if (page == null){

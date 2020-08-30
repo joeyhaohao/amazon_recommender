@@ -29,27 +29,27 @@ public class ProductLoader {
         SpringApplication.run(ProductLoader.class, args).close();
     }
 
-    @Bean
-    // load data to Elasticsearch
-    CommandLineRunner runner() {
-        return args -> {
-            int count = 0;
-            ObjectMapper mapper = new ObjectMapper();
-            TypeReference<Product> typeReference = new TypeReference<Product>(){};
-            InputStream inputStream = TypeReference.class.getResourceAsStream("/data/meta_5cat.json");
-            BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
-            String line;
-            while ((line = reader.readLine()) != null) {
-                try {
-                    line = line.replace("asin", "productId");
-                    Product product = mapper.readValue(line, typeReference);
-                    productRepository.save(product);
-                    count ++;
-                } catch (IOException e){
-                    logger.info("Unable to save products: " + e.getMessage());
-                }
-            }
-            logger.info(String.format("Saved %d products to Elasticsearch", count));
-        };
-    }
+//    @Bean
+//    // load data to Elasticsearch
+//    CommandLineRunner runner() {
+//        return args -> {
+//            int count = 0;
+//            ObjectMapper mapper = new ObjectMapper();
+//            TypeReference<Product> typeReference = new TypeReference<Product>(){};
+//            InputStream inputStream = TypeReference.class.getResourceAsStream("/data/meta_5cat.json");
+//            BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+//            String line;
+//            while ((line = reader.readLine()) != null) {
+//                try {
+//                    line = line.replace("asin", "productId");
+//                    Product product = mapper.readValue(line, typeReference);
+//                    productRepository.save(product);
+//                    count ++;
+//                } catch (IOException e){
+//                    logger.info("Unable to save products: " + e.getMessage());
+//                }
+//            }
+//            logger.info(String.format("Saved %d products to Elasticsearch", count));
+//        };
+//    }
 }

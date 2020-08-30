@@ -24,11 +24,9 @@ public class SearchService {
 //    private ElasticsearchTemplate template;
 
     public List<Product> search(SearchRequest request) {
-        int pageInd = request.getPage() - 1;
 
         // send a query to Elasticsearch
         NativeSearchQueryBuilder queryBuilder = new NativeSearchQueryBuilder()
-                .withPageable(PageRequest.of(pageInd, DEFAULT_SIZE))
                 .withQuery(QueryBuilders.multiMatchQuery(request.getKeyword(),
                         "title", "description", "category"));
         Page<Product> result = productRepository.search(queryBuilder.build());
