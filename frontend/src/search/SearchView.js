@@ -1,20 +1,15 @@
 import React from "react";
-import Button from "@material-ui/core/Button";
-import AppBar from "@material-ui/core/AppBar";
-import ShoppingBasketIcon from "@material-ui/icons/ShoppingBasket";
 import Box from "@material-ui/core/Box";
-import Toolbar from "@material-ui/core/Toolbar";
 import Typography from "@material-ui/core/Typography";
-import IconButton from "@material-ui/core/IconButton";
-import ExitToAppIcon from "@material-ui/icons/ExitToApp";
-import SearchIcon from "@material-ui/icons/Search";
-import InputBase from "@material-ui/core/InputBase";
 import Container from "@material-ui/core/Container";
+import Grid from "@material-ui/core/Grid";
 import { fade, makeStyles } from "@material-ui/core/styles";
 import { Link } from "react-router-dom";
-
+import Pagination from "@material-ui/lab/Pagination";
+import { withRouter } from "react-router-dom";
 import { getCurrentUser, searchProducts } from "../util/APIUtils";
-import CarouselView from "../main/CarouselView";
+
+import Product from "../main/Product";
 
 const queryString = require("query-string");
 
@@ -38,22 +33,29 @@ const useStyles = makeStyles((theme) => ({
 	cardContent: {
 		flexGrow: 1,
 	},
+	heroContent: {
+		// backgroundColor: theme.palette.background.paper,
+		padding: theme.spacing(3, 0, 2),
+		borderColor: "black",
+	},
+	pagination: {
+		display: "flex",
+		justifyContent: "center",
+		alignItems: "center",
+		margin: theme.spacing(4),
+	},
 }));
 
-export default function SearchView(props) {
+function SearchView(props) {
 	const classes = useStyles();
 	const [currentUser, setCurrentUser] = React.useState(null);
 	const [searchText, setSearchText] = React.useState("");
 	const [resultList, setResultList] = React.useState([]);
+	const [page, setPage] = React.useState(1);
 
-	const onSearchChange = (event) => {
-		setSearchText(event.target.value);
-	};
-
-	const handleSearch = (event) => {
-		// console.log(searchText);
-		props.history.push("/search?q=" + searchText);
-		setSearchText("");
+	const handlePageChange = (event, value) => {
+		setPage(value);
+		props.history.push("/search?q=" + searchText + "&page=" + value);
 	};
 
 	React.useEffect(() => {
@@ -61,7 +63,7 @@ export default function SearchView(props) {
 		const searchResult = async (searchRequest) => {
 			await searchProducts(searchRequest).then((res) => {
 				if (!isCancelled) {
-					setResultList(res);
+					setResultList(res.searchResult);
 					console.log(res);
 				}
 			});
@@ -70,10 +72,11 @@ export default function SearchView(props) {
 		if (currentUser) {
 			const parsed = queryString.parse(props.location.search);
 			const q = parsed.q;
+			const pageNum = parsed.page ? parsed.page : 1;
 			const searchRequest = {
 				userId: currentUser.userId,
 				keyword: q,
-				page: 1,
+				page: pageNum - 1,
 			};
 			searchResult(searchRequest);
 		}
@@ -103,35 +106,32 @@ export default function SearchView(props) {
 			<main className={classes.main}>
 				{currentUser && resultList ? (
 					<div>
-						<Container maxWidth="lg" className={classes.mainContainer}>
-							<CarouselView title="Search Result" productList={resultList} userId={currentUser.userId} />
-							{/* <Grid container spacing={4}>
-								{cards.map((card) => (
-									<Grid item key={card} xs={12} sm={6} md={4}>
-										<Card className={classes.card}>
-											<CardMedia className={classes.cardMedia} image="https://source.unsplash.com/random" title="Image title" />
-											<CardContent className={classes.cardContent}>
-												<Typography gutterBottom variant="h5" component="h2">
-													Heading
-												</Typography>
-												<Typography>This is a media card. You can use this section to describe the content.</Typography>
-											</CardContent>
-											<CardActions>
-												<Button size="small" color="primary">
-													View
-												</Button>
-												<Button size="small" color="primary">
-													Edit
-												</Button>
-											</CardActions>
-										</Card>
-									</Grid>
-								))}
-							</Grid>*/}
+						<Container maxWidth={false} className={classes.mainContainer}>
+							<div className={classes.heroContent}>
+								<Typography component="h1" variant="h2" align="center" color="textPrimary" gutterBottom>
+									<Box m={1}>Search Result</Box>
+								</Typography>
+							</div>
+							<Grid container spacing={2}>
+								{resultList
+									? resultList.map((product, index) => (
+											<Grid key={index} item xs={3}>
+												<Box component="div" m={2} height="90%">
+													<Product product={product} />
+												</Box>
+											</Grid>
+									  ))
+									: null}
+							</Grid>
 						</Container>
 					</div>
 				) : null}
+				<div className={classes.pagination}>
+					<Pagination count={10} color="primary" page={page} onChange={handlePageChange} />
+				</div>
 			</main>
 		</div>
 	);
 }
+
+export default withRouter(SearchView);

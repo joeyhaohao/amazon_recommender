@@ -19,9 +19,7 @@ class CarouselView extends Component {
 				<div className={classes.heroContent}>
 					<Container maxWidth="lg">
 						<Typography component="h1" variant="h2" align="center" color="textPrimary" gutterBottom>
-							<Box fontWeight={400} m={1}>
-								{this.props.title}
-							</Box>
+							<Box m={1}>{this.props.title}</Box>
 						</Typography>
 					</Container>
 				</div>
