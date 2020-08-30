@@ -110,7 +110,7 @@ function SearchView(props) {
 			<main className={classes.main}>
 				{currentUser && resultList ? (
 					<div>
-						<Container maxWidth={false} className={classes.mainContainer}>
+						<Container maxWidth="lg" className={classes.mainContainer}>
 							<div className={classes.heroContent}>
 								<Typography component="h1" variant="h2" align="center" color="textPrimary" gutterBottom>
 									<Box m={1}>Search Result</Box>
