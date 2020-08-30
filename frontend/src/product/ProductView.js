@@ -32,7 +32,7 @@ const useStyles = (theme) => ({
 		marginBottom: theme.spacing(2),
 	},
 	detailsBox: {
-		height: "50vh",
+		minHeight: "50vh",
 	},
 	image: {
 		// backgroundImage: "url({https://source.unsplash.com/random})",
