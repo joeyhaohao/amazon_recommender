@@ -19,17 +19,6 @@ import CarouselView from "../main/CarouselView";
 const queryString = require("query-string");
 
 const useStyles = makeStyles((theme) => ({
-	icon: {
-		marginRight: theme.spacing(2),
-	},
-	title: {
-		flexGrow: 1,
-	},
-	heroContent: {
-		// backgroundColor: theme.palette.background.paper,
-		padding: theme.spacing(3, 0, 2),
-		borderColor: "black",
-	},
 	main: {
 		// backgroundColor: "white",
 		paddingTop: "60px",
@@ -38,39 +27,21 @@ const useStyles = makeStyles((theme) => ({
 	mainContainer: {
 		backgroundColor: theme.palette.background.paper,
 	},
-	search: {
-		position: "relative",
-		borderRadius: theme.shape.borderRadius,
-		backgroundColor: fade(theme.palette.common.white, 0.15),
-		"&:hover": {
-			backgroundColor: fade(theme.palette.common.white, 0.25),
-		},
-		marginRight: theme.spacing(1),
-		marginLeft: 0,
-		width: "100%",
-		[theme.breakpoints.up("sm")]: {
-			marginLeft: theme.spacing(3),
-			width: "auto",
-		},
+	card: {
+		height: "100%",
+		display: "flex",
+		flexDirection: "column",
 	},
-	inputRoot: {
-		color: "inherit",
+	cardMedia: {
+		paddingTop: "56.25%", // 16:9
 	},
-	inputInput: {
-		padding: theme.spacing(1, 1, 1, 0),
-		// vertical padding + font size from searchIcon
-		paddingLeft: `calc(1em + ${theme.spacing(0)}px)`,
-		transition: theme.transitions.create("width"),
-		width: "100%",
-		[theme.breakpoints.up("md")]: {
-			width: "20ch",
-		},
+	cardContent: {
+		flexGrow: 1,
 	},
 }));
 
 export default function SearchView(props) {
 	const classes = useStyles();
-	const isCancelled = React.useRef(false);
 	const [currentUser, setCurrentUser] = React.useState(null);
 	const [searchText, setSearchText] = React.useState("");
 	const [resultList, setResultList] = React.useState([]);
@@ -86,89 +57,77 @@ export default function SearchView(props) {
 	};
 
 	React.useEffect(() => {
+		let isCancelled = false;
 		const searchResult = async (searchRequest) => {
 			await searchProducts(searchRequest).then((res) => {
-				setResultList(res);
-				console.log(resultList);
+				if (!isCancelled) {
+					setResultList(res);
+					console.log(res);
+				}
 			});
 		};
 
+		if (currentUser) {
+			const parsed = queryString.parse(props.location.search);
+			const q = parsed.q;
+			const searchRequest = {
+				userId: currentUser.userId,
+				keyword: q,
+				page: 1,
+			};
+			searchResult(searchRequest);
+		}
+	}, [currentUser, props.location.search]);
+
+	React.useEffect(() => {
+		let isCancelled = false;
 		const loadCurrentUser = async () => {
 			await getCurrentUser()
 				.then((response) => {
-					if (!isCancelled.current) {
+					if (!isCancelled) {
 						setCurrentUser(response);
 					}
-					console.log(response);
 				})
 				.catch((error) => {
 					console.log(error);
 				});
-			console.log(currentUser);
-			if (currentUser) {
-				const parsed = queryString.parse(props.location.search);
-				console.log(parsed);
-				const q = parsed.q;
-				const searchRequest = {
-					userId: currentUser.userId,
-					keyword: q,
-					page: 1,
-				};
-				await searchResult(searchRequest);
-			}
 		};
-
 		loadCurrentUser();
-
 		return () => {
-			isCancelled.current = true;
+			isCancelled = true;
 		};
-	}, [currentUser,props.location.search,isCancelled.current]);
+	}, []);
 
 	return (
 		<div>
-			{/* <AppBar position="fixed">
-				<Toolbar>
-					<ShoppingBasketIcon className={classes.icon} />
-					<Typography component={Link} to={"/"} className={classes.title} variant="h6" color="inherit" noWrap>
-						<Box>Amazon Recommender</Box>
-					</Typography>
-					<div className={classes.search}>
-						<InputBase
-							placeholder="Search…"
-							classes={{
-								root: classes.inputRoot,
-								input: classes.inputInput,
-							}}
-							inputProps={{ "aria-label": "search" }}
-							onChange={onSearchChange}
-							value={searchText}
-						/>
-					</div>
-					<IconButton onClick={handleSearch} color="inherit">
-						<SearchIcon fontSize="large" />
-					</IconButton>
-					{currentUser ? (
-						<Typography variant="h6" color="inherit">
-							Hello {currentUser.username}!
-						</Typography>
-					) : (
-						<Button component={Link} to="/login" color="inherit">
-							Login
-						</Button>
-					)}
-
-					<IconButton onClick={props.handleLogout} color="inherit" title="logout">
-						<ExitToAppIcon fontSize="large" />
-					</IconButton>
-				</Toolbar>
-			</AppBar> */}
-
 			<main className={classes.main}>
 				{currentUser && resultList ? (
 					<div>
 						<Container maxWidth="lg" className={classes.mainContainer}>
 							<CarouselView title="Search Result" productList={resultList} userId={currentUser.userId} />
+							{/* <Grid container spacing={4}>
+								{cards.map((card) => (
+									<Grid item key={card} xs={12} sm={6} md={4}>
+										<Card className={classes.card}>
+											<CardMedia className={classes.cardMedia} image="https://source.unsplash.com/random" title="Image title" />
+											<CardContent className={classes.cardContent}>
+												<Typography gutterBottom variant="h5" component="h2">
+													Heading
+												</Typography>
+												<Typography>This is a media card. You can use this section to describe the content.</Typography>
+											</CardContent>
+											<CardActions>
+												<Button size="small" color="primary">
+													View
+												</Button>
+												<Button size="small" color="primary">
+													Edit
+												</Button>
+											</CardActions>
+										</Card>
+									</Grid>
+								))}
+							</Grid>*/}
 						</Container>
 					</div>
 				) : null}
