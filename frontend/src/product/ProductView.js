@@ -226,7 +226,7 @@ class ProductView extends Component {
 
 							<Box mt={20}>
 								<Typography variant="h2" component="h1" gutterBottom align="center">
-									People also like
+									People Also Like
 								</Typography>
 
 								<MyCarousel>

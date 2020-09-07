@@ -191,13 +191,13 @@ class Album extends Component {
 						<div>
 							<Container maxWidth="lg" className={classes.mainContainer}>
 								<CarouselView
-									title="Recommend for you"
+									title="Recommend For You"
 									productList={this.state.recommendList.slice(0, MAX_NUM_ITEMS_IN_CAROUSEL)}
 									// loadGuess={this.loadGuess}
 									userId={this.state.currentUser.userId}
 								/>
 								<CarouselView
-									title="Guess you like"
+									title="Guess You Like"
 									productList={this.state.guessList.slice(0, MAX_NUM_ITEMS_IN_CAROUSEL)}
 									// loadGuess={this.loadGuess}
 									userId={this.state.currentUser.userId}
