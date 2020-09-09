@@ -2,17 +2,19 @@
 A collaborative filtering recommender system that delivers customized recommendations for online-shopping goods. It learns from customers recent events (browsing, searching, rating) and updates recommendation in real time.
 
 ## Getting Started
-* Download the product metadata and user ratings and put them under `resources/data` folder. Please see the data format in the next section.
-* Use `bootstrap/ProductLoader` under springbackend to load the prodcut meta data into Elasticsearch.
-* Use `DataLoader` under recommender to load the rating data into MongoDB.
+* Download the product metadata to `springbackend/src/main/resources/data`. Please see the data format in the next section.
+* Download the user rating data to `recommender/src/main/resources/data`. Please see the data format in the next section.
+* Use `springbackend/.../ProductLoader` to load the product metadata into Elasticsearch.
+* Configure MongoDB connection in `application_properties`. Use `recommender/.../DataLoader` to load the rating data into MongoDB.
+* Run `ALSRecommender, ItemCFRecommender, TrendingRecommmender` to train offline models.
 * Install all service modules in Frontend and Backend sections.
-* Build packages for Spring backend service and online recommender.
+* Build packages for Spring backend and online recommender.
 
     `cd springbackend && mvn clean install`
     
     `cd recommender && mvn clean install`
     
-* Execute the script to start the services
+* Execute the script to start services (FE, BE, online recommender)
 
     `sh run_local.sh`
     
