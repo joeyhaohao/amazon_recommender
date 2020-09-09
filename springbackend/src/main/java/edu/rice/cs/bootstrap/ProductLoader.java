@@ -20,14 +20,14 @@ import java.io.InputStreamReader;
 @SpringBootApplication(scanBasePackages={"edu.rice.cs"})
 public class ProductLoader {
 
-    private static Logger logger = LogManager.getLogger(ProductLoader.class.getName());
-
-    @Autowired
-    private ProductRepository productRepository;
-
-    public static void main(String[] args) {
-        SpringApplication.run(ProductLoader.class, args).close();
-    }
+//    private static Logger logger = LogManager.getLogger(ProductLoader.class.getName());
+//
+//    @Autowired
+//    private ProductRepository productRepository;
+//
+//    public static void main(String[] args) {
+//        SpringApplication.run(ProductLoader.class, args).close();
+//    }
 
 //    @Bean
 //    // load data to Elasticsearch

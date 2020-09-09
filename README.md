@@ -1,23 +1,41 @@
 # amazon_recommender
+A collaborative filtering recommender system that delivers customized recommendations for online-shopping goods. It learns from customers recent events (browsing, searching, rating) and updates recommendation in real time.
 
+## Getting Started
+* Download the product metadata and user ratings and put them under `resources/data` folder. Please see the data format in the next section.
+* Use `bootstrap/ProductLoader` under springbackend to load the prodcut meta data into Elasticsearch.
+* Use `DataLoader` under recommender to load the rating data into MongoDB.
+* Install all service modules in Frontend and Backend sections.
+* Build packages for Spring backend service and online recommender.
+
+    `cd springbackend && mvn clean install`
+    
+    `cd recommender && mvn clean install`
+    
+* Execute the script to start the services
+
+    `sh run_local.sh`
+    
 ## Dataset
-The dataset is a part of [Amazon Review Data by Stanford](http://snap.stanford.edu/data/amazon/).
-* user: 126k
-* product: 45k
+In this project the model is trained with part of the dataset [Amazon Review Data by Stanford](http://snap.stanford.edu/data/amazon/).
+* User: 126k
+* Product: 45k
    * 5 categories: Automotive, Beauty, Office_Products, Software, Video_Games
-* rating: 742k
+> {"asin":"B0000223J1","categories":[["Automotive","Tools & Equipment","Body Repair Tools","Buffing & Polishing Pads"]],"description":"This hook and loop polishing bonnet is an accessory for Makita polisher model 9227C.","imUrl":"http:\/\/ecx.images-amazon.com\/images\/I\/81E3GK0PEKL._SX300_.gif","price":14.4,"title":"Makita 743403-A Polishing Bonnet","ratingAvg":3.8333333333,"ratingCount":6}
+* Rating: 742k
+> {"userId":"A108J5O7DG2WIM","asin":B002YEY7EU,"rating":5,"timestamp":1382054400}
 
 ## Frontend
 * React
 * Material-UI
 
 ## Backend
-* Spring boot
-* MongoDB
-* Spark
-* Kafka
-* Redis
-* ElasticSearch
+* Spring Boot 2.3
+* MongoDB 3.6
+* Spark 2.2.0
+* Kafka 2.4.1
+* Redis 6.0.6
+* ElasticSearch 7.8.1
 
 ## Recommender
 ### ALS Recommender ("Recommend For You")
